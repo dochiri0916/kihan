@@ -1,4 +1,4 @@
-package com.example.pragmatic.domain;
+package com.example.kihan.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

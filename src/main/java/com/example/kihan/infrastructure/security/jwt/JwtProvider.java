@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.security.jwt;
+package com.example.kihan.infrastructure.security.jwt;
 
-import com.example.pragmatic.infrastructure.config.properties.JwtProperties;
+import com.example.kihan.infrastructure.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

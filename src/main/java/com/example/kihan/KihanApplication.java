@@ -1,4 +1,4 @@
-package com.example.pragmatic;
+package com.example.kihan;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

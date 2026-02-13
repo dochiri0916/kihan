@@ -1,8 +1,8 @@
-package com.example.pragmatic.presentation.common.exception.mapper;
+package com.example.kihan.presentation.common.exception.mapper;
 
-import com.example.pragmatic.domain.auth.InvalidRefreshTokenException;
-import com.example.pragmatic.domain.auth.RefreshTokenException;
-import com.example.pragmatic.domain.auth.RefreshTokenNotFoundException;
+import com.example.kihan.domain.auth.InvalidRefreshTokenException;
+import com.example.kihan.domain.auth.RefreshTokenException;
+import com.example.kihan.domain.auth.RefreshTokenNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

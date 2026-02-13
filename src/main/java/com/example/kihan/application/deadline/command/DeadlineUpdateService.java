@@ -1,8 +1,8 @@
-package com.example.pragmatic.application.deadline.command;
+package com.example.kihan.application.deadline.command;
 
-import com.example.pragmatic.domain.deadline.Deadline;
-import com.example.pragmatic.domain.deadline.DeadlineNotFoundException;
-import com.example.pragmatic.infrastructure.persistence.DeadlineRepository;
+import com.example.kihan.domain.deadline.Deadline;
+import com.example.kihan.domain.deadline.DeadlineNotFoundException;
+import com.example.kihan.infrastructure.persistence.DeadlineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

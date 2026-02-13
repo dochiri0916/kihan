@@ -1,10 +1,10 @@
-package com.example.pragmatic.presentation.user;
+package com.example.kihan.presentation.user;
 
-import com.example.pragmatic.application.user.command.RegisterService;
-import com.example.pragmatic.application.user.query.UserQueryService;
-import com.example.pragmatic.infrastructure.security.jwt.JwtPrincipal;
-import com.example.pragmatic.presentation.user.request.RegisterRequest;
-import com.example.pragmatic.presentation.user.response.UserResponse;
+import com.example.kihan.application.user.command.RegisterService;
+import com.example.kihan.application.user.query.UserQueryService;
+import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
+import com.example.kihan.presentation.user.request.RegisterRequest;
+import com.example.kihan.presentation.user.response.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

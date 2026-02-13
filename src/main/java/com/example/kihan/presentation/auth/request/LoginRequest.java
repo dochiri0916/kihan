@@ -1,4 +1,4 @@
-package com.example.pragmatic.presentation.auth.request;
+package com.example.kihan.presentation.auth.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,7 +1,7 @@
-package com.example.pragmatic.presentation.common.exception.mapper;
+package com.example.kihan.presentation.common.exception.mapper;
 
-import com.example.pragmatic.domain.auth.AuthenticationException;
-import com.example.pragmatic.domain.auth.InvalidCredentialsException;
+import com.example.kihan.domain.auth.AuthenticationException;
+import com.example.kihan.domain.auth.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

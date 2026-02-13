@@ -1,8 +1,8 @@
-package com.example.pragmatic.presentation.deadline.request;
+package com.example.kihan.presentation.deadline.request;
 
-import com.example.pragmatic.domain.deadline.DeadlineType;
-import com.example.pragmatic.domain.deadline.RecurrencePattern;
-import com.example.pragmatic.domain.deadline.RecurrenceRule;
+import com.example.kihan.domain.deadline.DeadlineType;
+import com.example.kihan.domain.deadline.RecurrencePattern;
+import com.example.kihan.domain.deadline.RecurrenceRule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

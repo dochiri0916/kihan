@@ -1,6 +1,6 @@
-package com.example.pragmatic.domain.auth;
+package com.example.kihan.domain.auth;
 
-import com.example.pragmatic.domain.BaseEntity;
+import com.example.kihan.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

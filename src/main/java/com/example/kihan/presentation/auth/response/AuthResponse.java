@@ -1,6 +1,6 @@
-package com.example.pragmatic.presentation.auth.response;
+package com.example.kihan.presentation.auth.response;
 
-import com.example.pragmatic.domain.user.User;
+import com.example.kihan.domain.user.User;
 
 public record AuthResponse(
         Long userId,

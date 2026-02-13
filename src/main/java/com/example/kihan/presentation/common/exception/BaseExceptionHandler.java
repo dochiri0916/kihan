@@ -1,4 +1,4 @@
-package com.example.pragmatic.presentation.common.exception;
+package com.example.kihan.presentation.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

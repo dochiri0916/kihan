@@ -1,4 +1,4 @@
-package com.example.pragmatic.infrastructure.config.properties;
+package com.example.kihan.infrastructure.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

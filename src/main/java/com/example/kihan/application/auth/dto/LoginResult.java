@@ -1,6 +1,6 @@
-package com.example.pragmatic.application.auth.dto;
+package com.example.kihan.application.auth.dto;
 
-import com.example.pragmatic.domain.user.User;
+import com.example.kihan.domain.user.User;
 
 public record LoginResult(
         User user,

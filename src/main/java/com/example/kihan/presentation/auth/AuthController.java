@@ -1,11 +1,11 @@
-package com.example.pragmatic.presentation.auth;
+package com.example.kihan.presentation.auth;
 
-import com.example.pragmatic.application.auth.dto.LoginResult;
-import com.example.pragmatic.application.auth.facade.LoginFacade;
-import com.example.pragmatic.application.auth.facade.ReissueTokenFacade;
-import com.example.pragmatic.infrastructure.security.cookie.CookieProvider;
-import com.example.pragmatic.presentation.auth.request.LoginRequest;
-import com.example.pragmatic.presentation.auth.response.AuthResponse;
+import com.example.kihan.application.auth.dto.LoginResult;
+import com.example.kihan.application.auth.facade.LoginFacade;
+import com.example.kihan.application.auth.facade.ReissueTokenFacade;
+import com.example.kihan.infrastructure.security.cookie.CookieProvider;
+import com.example.kihan.presentation.auth.request.LoginRequest;
+import com.example.kihan.presentation.auth.response.AuthResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

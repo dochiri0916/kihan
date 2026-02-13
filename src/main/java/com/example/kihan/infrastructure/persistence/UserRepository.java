@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.persistence;
+package com.example.kihan.infrastructure.persistence;
 
-import com.example.pragmatic.domain.user.User;
+import com.example.kihan.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

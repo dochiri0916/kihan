@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.scheduler;
+package com.example.kihan.infrastructure.scheduler;
 
-import com.example.pragmatic.application.auth.command.RevokeTokenService;
+import com.example.kihan.application.auth.command.RevokeTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

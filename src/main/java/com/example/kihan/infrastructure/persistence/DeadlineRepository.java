@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.persistence;
+package com.example.kihan.infrastructure.persistence;
 
-import com.example.pragmatic.domain.deadline.Deadline;
+import com.example.kihan.domain.deadline.Deadline;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

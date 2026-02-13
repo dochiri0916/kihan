@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.security.cookie;
+package com.example.kihan.infrastructure.security.cookie;
 
-import com.example.pragmatic.infrastructure.config.properties.CookieProperties;
+import com.example.kihan.infrastructure.config.properties.CookieProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

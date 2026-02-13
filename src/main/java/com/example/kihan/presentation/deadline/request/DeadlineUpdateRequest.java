@@ -1,4 +1,4 @@
-package com.example.pragmatic.presentation.deadline.request;
+package com.example.kihan.presentation.deadline.request;
 
 public record DeadlineUpdateRequest(
         String title,

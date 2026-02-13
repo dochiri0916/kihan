@@ -1,7 +1,7 @@
-package com.example.pragmatic.application.auth.command;
+package com.example.kihan.application.auth.command;
 
-import com.example.pragmatic.domain.auth.RefreshToken;
-import com.example.pragmatic.infrastructure.persistence.RefreshTokenRepository;
+import com.example.kihan.domain.auth.RefreshToken;
+import com.example.kihan.infrastructure.persistence.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

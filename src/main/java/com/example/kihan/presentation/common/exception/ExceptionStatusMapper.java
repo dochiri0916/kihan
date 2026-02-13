@@ -1,6 +1,6 @@
-package com.example.pragmatic.presentation.common.exception;
+package com.example.kihan.presentation.common.exception;
 
-import com.example.pragmatic.presentation.common.exception.mapper.DomainExceptionStatusMapper;
+import com.example.kihan.presentation.common.exception.mapper.DomainExceptionStatusMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

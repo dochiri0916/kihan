@@ -1,8 +1,8 @@
-package com.example.pragmatic.presentation.common.exception.mapper;
+package com.example.kihan.presentation.common.exception.mapper;
 
-import com.example.pragmatic.domain.deadline.DeadlineException;
-import com.example.pragmatic.domain.deadline.DeadlineNotFoundException;
-import com.example.pragmatic.domain.deadline.InvalidDeadlineRuleException;
+import com.example.kihan.domain.deadline.DeadlineException;
+import com.example.kihan.domain.deadline.DeadlineNotFoundException;
+import com.example.kihan.domain.deadline.InvalidDeadlineRuleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

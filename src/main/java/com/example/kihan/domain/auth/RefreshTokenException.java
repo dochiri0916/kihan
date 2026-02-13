@@ -1,4 +1,4 @@
-package com.example.pragmatic.domain.auth;
+package com.example.kihan.domain.auth;
 
 public abstract class RefreshTokenException extends RuntimeException {
 

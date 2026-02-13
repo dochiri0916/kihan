@@ -1,4 +1,4 @@
-package com.example.pragmatic.presentation.common.exception.mapper;
+package com.example.kihan.presentation.common.exception.mapper;
 
 import org.springframework.http.HttpStatus;
 

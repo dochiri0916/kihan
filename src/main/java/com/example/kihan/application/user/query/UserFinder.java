@@ -1,6 +1,6 @@
-package com.example.pragmatic.application.user.query;
+package com.example.kihan.application.user.query;
 
-import com.example.pragmatic.domain.user.User;
+import com.example.kihan.domain.user.User;
 
 public interface UserFinder {
 

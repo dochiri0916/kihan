@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.security.audit;
+package com.example.kihan.infrastructure.security.audit;
 
-import com.example.pragmatic.infrastructure.security.jwt.JwtPrincipal;
+import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

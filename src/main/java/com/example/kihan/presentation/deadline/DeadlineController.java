@@ -1,11 +1,11 @@
-package com.example.pragmatic.presentation.deadline;
+package com.example.kihan.presentation.deadline;
 
-import com.example.pragmatic.application.deadline.command.DeadlineRegisterService;
-import com.example.pragmatic.application.deadline.command.DeadlineUpdateService;
-import com.example.pragmatic.application.deadline.query.DeadlineQueryService;
-import com.example.pragmatic.presentation.deadline.request.DeadlineRegisterRequest;
-import com.example.pragmatic.presentation.deadline.request.DeadlineUpdateRequest;
-import com.example.pragmatic.presentation.deadline.response.DeadlineResponse;
+import com.example.kihan.application.deadline.command.DeadlineRegisterService;
+import com.example.kihan.application.deadline.command.DeadlineUpdateService;
+import com.example.kihan.application.deadline.query.DeadlineQueryService;
+import com.example.kihan.presentation.deadline.request.DeadlineRegisterRequest;
+import com.example.kihan.presentation.deadline.request.DeadlineUpdateRequest;
+import com.example.kihan.presentation.deadline.response.DeadlineResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

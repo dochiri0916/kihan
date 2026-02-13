@@ -1,6 +1,6 @@
-package com.example.pragmatic.presentation.user.response;
+package com.example.kihan.presentation.user.response;
 
-import com.example.pragmatic.domain.user.User;
+import com.example.kihan.domain.user.User;
 
 public record UserResponse(
         Long id,

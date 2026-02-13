@@ -1,9 +1,9 @@
-package com.example.pragmatic.presentation.common.exception.mapper;
+package com.example.kihan.presentation.common.exception.mapper;
 
-import com.example.pragmatic.domain.user.DuplicateEmailException;
-import com.example.pragmatic.domain.user.UserException;
-import com.example.pragmatic.domain.user.UserNotActiveException;
-import com.example.pragmatic.domain.user.UserNotFoundException;
+import com.example.kihan.domain.user.DuplicateEmailException;
+import com.example.kihan.domain.user.UserException;
+import com.example.kihan.domain.user.UserNotActiveException;
+import com.example.kihan.domain.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

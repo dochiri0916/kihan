@@ -1,6 +1,6 @@
-package com.example.pragmatic.infrastructure.persistence;
+package com.example.kihan.infrastructure.persistence;
 
-import com.example.pragmatic.domain.auth.RefreshToken;
+import com.example.kihan.domain.auth.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

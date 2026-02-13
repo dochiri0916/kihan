@@ -1,10 +1,10 @@
-package com.example.pragmatic;
+package com.example.kihan;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PragmaticApplicationTests {
+class KihanApplicationTests {
 
     @Test
     void contextLoads() {

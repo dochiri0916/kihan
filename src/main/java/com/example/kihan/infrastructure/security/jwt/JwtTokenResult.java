@@ -1,4 +1,4 @@
-package com.example.pragmatic.infrastructure.security.jwt;
+package com.example.kihan.infrastructure.security.jwt;
 
 import java.time.LocalDateTime;
 

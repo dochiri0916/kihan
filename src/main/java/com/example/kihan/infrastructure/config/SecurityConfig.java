@@ -1,9 +1,9 @@
-package com.example.pragmatic.infrastructure.config;
+package com.example.kihan.infrastructure.config;
 
-import com.example.pragmatic.infrastructure.config.properties.CorsProperties;
-import com.example.pragmatic.infrastructure.security.handler.JwtAccessDeniedHandler;
-import com.example.pragmatic.infrastructure.security.handler.JwtAuthenticationEntryPoint;
-import com.example.pragmatic.infrastructure.security.jwt.JwtAuthenticationFilter;
+import com.example.kihan.infrastructure.config.properties.CorsProperties;
+import com.example.kihan.infrastructure.security.handler.JwtAccessDeniedHandler;
+import com.example.kihan.infrastructure.security.handler.JwtAuthenticationEntryPoint;
+import com.example.kihan.infrastructure.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

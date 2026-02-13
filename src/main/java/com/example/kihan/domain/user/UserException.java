@@ -1,4 +1,4 @@
-package com.example.pragmatic.domain.user;
+package com.example.kihan.domain.user;
 
 public abstract class UserException extends RuntimeException {
 

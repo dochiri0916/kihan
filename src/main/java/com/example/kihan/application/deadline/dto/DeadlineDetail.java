@@ -1,8 +1,8 @@
-package com.example.pragmatic.application.deadline.dto;
+package com.example.kihan.application.deadline.dto;
 
-import com.example.pragmatic.domain.deadline.Deadline;
-import com.example.pragmatic.domain.deadline.DeadlineType;
-import com.example.pragmatic.domain.deadline.RecurrenceRule;
+import com.example.kihan.domain.deadline.Deadline;
+import com.example.kihan.domain.deadline.DeadlineType;
+import com.example.kihan.domain.deadline.RecurrenceRule;
 
 import java.time.LocalDateTime;
 
