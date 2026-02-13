@@ -1,7 +1,7 @@
 package com.example.kihan.application.auth.facade;
 
-import com.example.kihan.application.auth.query.RefreshTokenQueryService;
-import com.example.kihan.application.user.query.UserFinder;
+import com.example.kihan.application.auth.query.RefreshTokenLoader;
+import com.example.kihan.application.user.query.UserLoader;
 import com.example.kihan.domain.auth.InvalidRefreshTokenException;
 import com.example.kihan.domain.auth.RefreshToken;
 import com.example.kihan.domain.user.User;
@@ -18,14 +18,14 @@ import java.time.LocalDateTime;
 public class ReissueTokenFacade {
 
     private final RefreshTokenVerifier refreshTokenVerifier;
-    private final RefreshTokenQueryService refreshTokenQueryService;
-    private final UserFinder userFinder;
+    private final RefreshTokenLoader refreshTokenLoader;
+    private final UserLoader userLoader;
     private final JwtTokenGenerator jwtTokenGenerator;
 
     public AuthResponse reissue(final String refreshTokenValue) {
         Long userId = refreshTokenVerifier.verifyAndExtractUserId(refreshTokenValue);
 
-        RefreshToken refreshToken = refreshTokenQueryService.getValidToken(
+        RefreshToken refreshToken = refreshTokenLoader.loadValidToken(
                 refreshTokenValue,
                 LocalDateTime.now()
         );
@@ -34,7 +34,7 @@ public class ReissueTokenFacade {
             throw InvalidRefreshTokenException.ownerMismatch();
         }
 
-        User user = userFinder.findActiveUserById(userId);
+        User user = userLoader.loadActiveUserById(userId);
 
         String newAccessToken = jwtTokenGenerator.generateAccessToken(
                 user.getId(),

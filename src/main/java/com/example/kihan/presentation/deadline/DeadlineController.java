@@ -3,12 +3,14 @@ package com.example.kihan.presentation.deadline;
 import com.example.kihan.application.deadline.command.DeadlineRegisterService;
 import com.example.kihan.application.deadline.command.DeadlineUpdateService;
 import com.example.kihan.application.deadline.query.DeadlineQueryService;
+import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.example.kihan.presentation.deadline.request.DeadlineRegisterRequest;
 import com.example.kihan.presentation.deadline.request.DeadlineUpdateRequest;
 import com.example.kihan.presentation.deadline.response.DeadlineResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -24,8 +26,12 @@ public class DeadlineController {
     private final DeadlineQueryService deadlineQueryService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@Valid @RequestBody DeadlineRegisterRequest request) {
+    public ResponseEntity<Void> register(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @Valid @RequestBody DeadlineRegisterRequest request
+    ) {
         Long deadlineId = deadlineRegisterService.register(
+                principal.userId(),
                 request.title(),
                 request.description(),
                 request.type(),
@@ -36,32 +42,42 @@ public class DeadlineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DeadlineResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(DeadlineResponse.from(deadlineQueryService.findById(id)));
+    public ResponseEntity<DeadlineResponse> findById(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(DeadlineResponse.from(deadlineQueryService.findById(principal.userId(), id)));
     }
 
     @GetMapping
-    public ResponseEntity<List<DeadlineResponse>> findAll() {
-        List<DeadlineResponse> responses = deadlineQueryService.findAll().stream()
+    public ResponseEntity<List<DeadlineResponse>> findAll(@AuthenticationPrincipal JwtPrincipal principal) {
+        List<DeadlineResponse> responses = deadlineQueryService.findAllByUserId(principal.userId()).stream()
                 .map(DeadlineResponse::from)
                 .toList();
         return ResponseEntity.ok(responses);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody DeadlineUpdateRequest request) {
+    public ResponseEntity<Void> update(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody DeadlineUpdateRequest request
+    ) {
         if (request.title() != null) {
-            deadlineUpdateService.changeTitle(id, request.title());
+            deadlineUpdateService.changeTitle(principal.userId(), id, request.title());
         }
         if (request.description() != null) {
-            deadlineUpdateService.changeDescription(id, request.description());
+            deadlineUpdateService.changeDescription(principal.userId(), id, request.description());
         }
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        deadlineUpdateService.markAsCompleted(id);
+    public ResponseEntity<Void> delete(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id
+    ) {
+        deadlineUpdateService.markAsCompleted(principal.userId(), id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -3,37 +3,56 @@ package com.example.kihan.application.user.query;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.domain.user.UserNotFoundException;
 import com.example.kihan.infrastructure.persistence.UserRepository;
+import com.example.kihan.presentation.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserQueryService implements UserFinder {
+@RequiredArgsConstructor
+public class UserQueryService implements UserFinder, UserLoader {
 
     private final UserRepository userRepository;
 
     @Override
-    public User findActiveUserById(Long id) {
-        return userRepository.findByIdAndDeletedAtIsNull(id)
+    public Optional<User> findActiveUserById(Long id) {
+        return userRepository.findByIdAndDeletedAtIsNull(id);
+    }
+
+    @Override
+    public Optional<User> findActiveUserByEmail(String email) {
+        return userRepository.findByEmailAndDeletedAtIsNull(email);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User loadActiveUserById(Long id) {
+        return findActiveUserById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
-    public User findActiveUserByEmail(String email) {
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
+    public User loadActiveUserByEmail(String email) {
+        return findActiveUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public User loadByEmail(String email) {
+        return findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public User getActiveUser(Long id) {
-        return findActiveUserById(id);
+    public UserResponse getActiveUser(Long userId) {
+        User user = loadActiveUserById(userId);
+        return UserResponse.from(user);
     }
 
 }

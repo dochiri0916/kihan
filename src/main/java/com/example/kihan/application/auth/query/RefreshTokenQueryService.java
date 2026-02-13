@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class RefreshTokenQueryService {
+public class RefreshTokenQueryService implements RefreshTokenLoader {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshToken getValidToken(final String token, final LocalDateTime now) {
+    @Override
+    public RefreshToken loadValidToken(String token, LocalDateTime now) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(RefreshTokenNotFoundException::new);
 
@@ -26,6 +27,5 @@ public class RefreshTokenQueryService {
 
         return refreshToken;
     }
-
 
 }

@@ -31,17 +31,14 @@ public class UserController {
             @AuthenticationPrincipal JwtPrincipal principal
     ) {
         return ResponseEntity.ok(
-                UserResponse.from(
-                        userQueryService.getActiveUser(principal.userId())
-                )
+                userQueryService.getActiveUser(principal.userId())
         );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getActiveUser(@PathVariable Long id) {
         return ResponseEntity.ok(
-                UserResponse.from(userQueryService.getActiveUser(id)
-                )
+                userQueryService.getActiveUser(id)
         );
     }
 

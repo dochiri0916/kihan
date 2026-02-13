@@ -17,8 +17,8 @@ public class DeadlineRegisterService {
 
     private final DeadlineRepository deadlineRepository;
 
-    public Long register(String title, String description, DeadlineType type, LocalDateTime dueDate, RecurrenceRule recurrenceRule) {
-        Deadline deadline = Deadline.register(title, description, type, dueDate, recurrenceRule);
+    public Long register(Long userId, String title, String description, DeadlineType type, LocalDateTime dueDate, RecurrenceRule recurrenceRule) {
+        Deadline deadline = Deadline.register(userId, title, description, type, dueDate, recurrenceRule);
         return deadlineRepository.save(deadline).getId();
     }
 }

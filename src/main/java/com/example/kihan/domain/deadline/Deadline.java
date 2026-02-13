@@ -15,6 +15,8 @@ import static java.util.Objects.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deadline extends BaseEntity {
 
+    private Long userId;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -28,8 +30,9 @@ public class Deadline extends BaseEntity {
     @Embedded
     private RecurrenceRule recurrenceRule;
 
-    public static Deadline register(final String title, final String description, final DeadlineType type, final LocalDateTime dueDate, final RecurrenceRule recurrenceRule) {
+    public static Deadline register(final Long userId, final String title, final String description, final DeadlineType type, final LocalDateTime dueDate, final RecurrenceRule recurrenceRule) {
         Deadline deadline = new Deadline();
+        deadline.userId = requireNonNull(userId);
         deadline.title = requireNonNull(title);
         deadline.description = description;
         deadline.type = requireNonNull(type);
