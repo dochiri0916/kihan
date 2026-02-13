@@ -1,15 +1,15 @@
 package com.example.kihan.domain.user;
 
 public class UserNotFoundException extends UserException {
-    public UserNotFoundException() {
-        super("사용자를 찾을 수 없습니다.");
+    private UserNotFoundException(String message) {
+        super(message);
     }
 
-    public UserNotFoundException(Long userId) {
-        super("사용자를 찾을 수 없습니다: " + userId);
+    public static UserNotFoundException withId(Long userId) {
+        return new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId);
     }
 
-    public UserNotFoundException(String email) {
-        super("사용자를 찾을 수 없습니다: " + email);
+    public static UserNotFoundException withEmail(String email) {
+        return new UserNotFoundException("사용자를 찾을 수 없습니다: " + email);
     }
 }

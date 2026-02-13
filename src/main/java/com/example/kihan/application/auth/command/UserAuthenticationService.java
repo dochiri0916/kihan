@@ -19,7 +19,7 @@ public class UserAuthenticationService {
     public User authenticate(final LoginRequest request) {
         User user = userLoader.loadByEmail(request.email());
 
-        if (!user.isActive()) {
+        if (user.isDeleted()) {
             throw new InactiveUserException();
         }
 

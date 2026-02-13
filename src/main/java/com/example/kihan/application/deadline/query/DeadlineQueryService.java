@@ -42,4 +42,5 @@ public class DeadlineQueryService implements DeadlineFinder, DeadlineLoader {
                 .map(DeadlineDetail::from)
                 .toList();
     }
+
 }

@@ -40,7 +40,7 @@ public class UserController {
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal
     ) {
         return ResponseEntity.ok(
-                userQueryService.getActiveUser(principal.userId())
+                UserResponse.from(userQueryService.getActiveUser(principal.userId()))
         );
     }
 
@@ -49,7 +49,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getActiveUser(@Parameter(description = "사용자 ID") @PathVariable Long id) {
         return ResponseEntity.ok(
-                userQueryService.getActiveUser(id)
+                UserResponse.from(userQueryService.getActiveUser(id))
         );
     }
 

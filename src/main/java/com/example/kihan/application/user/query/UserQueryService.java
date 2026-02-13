@@ -1,9 +1,9 @@
 package com.example.kihan.application.user.query;
 
+import com.example.kihan.application.user.dto.UserDetail;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.domain.user.UserNotFoundException;
 import com.example.kihan.infrastructure.persistence.UserRepository;
-import com.example.kihan.presentation.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,24 +35,24 @@ public class UserQueryService implements UserFinder, UserLoader {
     @Override
     public User loadActiveUserById(Long id) {
         return findActiveUserById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> UserNotFoundException.withId(id));
     }
 
     @Override
     public User loadActiveUserByEmail(String email) {
         return findActiveUserByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> UserNotFoundException.withEmail(email));
     }
 
     @Override
     public User loadByEmail(String email) {
         return findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> UserNotFoundException.withEmail(email));
     }
 
-    public UserResponse getActiveUser(Long userId) {
+    public UserDetail getActiveUser(Long userId) {
         User user = loadActiveUserById(userId);
-        return UserResponse.from(user);
+        return UserDetail.from(user);
     }
 
 }

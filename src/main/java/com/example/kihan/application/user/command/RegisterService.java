@@ -1,5 +1,6 @@
 package com.example.kihan.application.user.command;
 
+import com.example.kihan.application.user.dto.UserDetail;
 import com.example.kihan.domain.user.DuplicateEmailException;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.infrastructure.persistence.UserRepository;
@@ -17,16 +18,17 @@ public class RegisterService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User register(final RegisterRequest request) {
+    public UserDetail register(final RegisterRequest request) {
         checkDuplicateEmail(request.email());
 
-        return userRepository.save(
+        User user = userRepository.save(
                 User.register(
                         request.email(),
                         passwordEncoder.encode(request.password()),
                         request.name()
                 )
         );
+        return UserDetail.from(user);
     }
 
     private void checkDuplicateEmail(String email) {

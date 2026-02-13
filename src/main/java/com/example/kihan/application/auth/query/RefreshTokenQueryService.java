@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class RefreshTokenQueryService implements RefreshTokenLoader {
 
     private final RefreshTokenRepository refreshTokenRepository;
