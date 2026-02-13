@@ -42,3 +42,16 @@ cookie:
 cors:
   allowed-origins:
     - "http://localhost:3000"
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+security:
+  public-endpoints:
+    - /h2-console/**
+    - /api/users/register
+    - /api/auth/login
+    - /api/auth/reissue

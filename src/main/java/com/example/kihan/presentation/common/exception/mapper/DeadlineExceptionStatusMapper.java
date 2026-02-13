@@ -1,5 +1,6 @@
 package com.example.kihan.presentation.common.exception.mapper;
 
+import com.example.kihan.domain.deadline.DeadlineAccessDeniedException;
 import com.example.kihan.domain.deadline.DeadlineException;
 import com.example.kihan.domain.deadline.DeadlineNotFoundException;
 import com.example.kihan.domain.deadline.InvalidDeadlineRuleException;
@@ -19,9 +20,13 @@ public class DeadlineExceptionStatusMapper implements DomainExceptionStatusMappe
         if (exception instanceof DeadlineNotFoundException) {
             return HttpStatus.NOT_FOUND;
         }
+        if (exception instanceof DeadlineAccessDeniedException) {
+            return HttpStatus.FORBIDDEN;
+        }
         if (exception instanceof InvalidDeadlineRuleException) {
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.BAD_REQUEST;
     }
+
 }

@@ -19,22 +19,25 @@ public class DeadlineQueryService implements DeadlineFinder, DeadlineLoader {
     private final DeadlineRepository deadlineRepository;
 
     @Override
-    public Optional<Deadline> findByIdAndUserId(Long deadlineId, Long userId) {
-        return deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId);
+    public Optional<Deadline> findByIdAndUserId(final Long deadlineId, final Long userId) {
+        return deadlineRepository.findByIdAndDeletedAtIsNull(deadlineId)
+                .filter(deadline -> deadline.getUserId().equals(userId));
     }
 
     @Override
-    public Deadline loadByIdAndUserId(Long deadlineId, Long userId) {
-        return findByIdAndUserId(deadlineId, userId)
+    public Deadline loadByIdAndUserId(final Long deadlineId, final Long userId) {
+        Deadline deadline = deadlineRepository.findByIdAndDeletedAtIsNull(deadlineId)
                 .orElseThrow(() -> new DeadlineNotFoundException(deadlineId));
+        deadline.verifyOwnership(userId);
+        return deadline;
     }
 
-    public DeadlineDetail findById(Long userId, Long deadlineId) {
+    public DeadlineDetail getById(final Long userId, final Long deadlineId) {
         Deadline deadline = loadByIdAndUserId(deadlineId, userId);
         return DeadlineDetail.from(deadline);
     }
 
-    public List<DeadlineDetail> findAllByUserId(Long userId) {
+    public List<DeadlineDetail> getAllByUserId(final Long userId) {
         return deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
                 .map(DeadlineDetail::from)
                 .toList();

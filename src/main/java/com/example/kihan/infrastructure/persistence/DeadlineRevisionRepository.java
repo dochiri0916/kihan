@@ -1,0 +1,9 @@
+package com.example.kihan.infrastructure.persistence;
+
+import com.example.kihan.domain.deadline.Deadline;
+import org.springframework.data.repository.history.RevisionRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface DeadlineRevisionRepository extends RevisionRepository<Deadline, Long, Long> {
+}

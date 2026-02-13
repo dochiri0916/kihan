@@ -1,12 +1,14 @@
 package com.example.kihan.infrastructure.config;
 
 import com.example.kihan.infrastructure.config.properties.CorsProperties;
+import com.example.kihan.infrastructure.config.properties.SecurityProperties;
 import com.example.kihan.infrastructure.security.handler.JwtAccessDeniedHandler;
 import com.example.kihan.infrastructure.security.handler.JwtAuthenticationEntryPoint;
 import com.example.kihan.infrastructure.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,8 +30,10 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CorsProperties corsProperties;
+    private final SecurityProperties securityProperties;
 
     @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 
         return http.csrf(AbstractHttpConfigurer::disable)
@@ -45,13 +49,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/h2-console/**",
-                                "/api/users/register",
-                                "/api/auth/login",
-                                "/api/auth/reissue",
-                                "/api/deadlines/**"
-                        ).permitAll()
+                        .requestMatchers(securityProperties.publicEndpoints().toArray(String[]::new))
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

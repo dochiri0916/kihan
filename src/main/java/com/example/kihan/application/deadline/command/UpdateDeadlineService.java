@@ -7,24 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-public class DeadlineUpdateService {
+public class UpdateDeadlineService {
 
     private final DeadlineLoader deadlineLoader;
 
-    public void changeTitle(Long userId, Long deadlineId, String newTitle) {
+    @Transactional
+    public void update(final Long userId, final Long deadlineId, final String newTitle, final String newDescription) {
         Deadline deadline = deadlineLoader.loadByIdAndUserId(deadlineId, userId);
-        deadline.changeTitle(newTitle);
+        deadline.update(newTitle, newDescription);
     }
 
-    public void changeDescription(Long userId, Long deadlineId, String newDescription) {
-        Deadline deadline = deadlineLoader.loadByIdAndUserId(deadlineId, userId);
-        deadline.changeDescription(newDescription);
-    }
-
-    public void markAsCompleted(Long userId, Long deadlineId) {
+    public void markAsCompleted(final Long userId, final Long deadlineId) {
         Deadline deadline = deadlineLoader.loadByIdAndUserId(deadlineId, userId);
         deadline.markAsCompleted();
     }
+
 }

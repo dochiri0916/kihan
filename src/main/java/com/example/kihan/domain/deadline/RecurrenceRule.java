@@ -1,5 +1,6 @@
 package com.example.kihan.domain.deadline;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,6 +20,7 @@ public class RecurrenceRule {
     @Enumerated(EnumType.STRING)
     private RecurrencePattern pattern;
 
+    @Column(name = "recurrence_interval")
     private int interval;
 
     private LocalDate startDate;

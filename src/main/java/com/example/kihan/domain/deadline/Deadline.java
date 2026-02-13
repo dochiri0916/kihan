@@ -5,12 +5,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
 import static java.util.Objects.*;
 
 @Entity
+@Table(name = "deadlines")
+@Audited
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deadline extends BaseEntity {
@@ -42,11 +45,25 @@ public class Deadline extends BaseEntity {
         return deadline;
     }
 
-    public void changeTitle(final String newTitle) {
-        this.title = requireNonNull(newTitle);
+    public void update(final String newTitle, final String newDescription) {
+        if (newTitle != null) {
+            changeTitle(newTitle);
+        }
+
+        if (newDescription != null) {
+            changeDescription(newDescription);
+        }
     }
 
-    public void changeDescription(final String newDescription) {
+    private void changeTitle(final String newTitle) {
+        requireNonNull(newTitle);
+        if (newTitle.isBlank()) {
+            throw new InvalidDeadlineTitleException();
+        }
+        this.title = newTitle;
+    }
+
+    private void changeDescription(final String newDescription) {
         this.description = newDescription;
     }
 
@@ -54,13 +71,16 @@ public class Deadline extends BaseEntity {
         this.delete();
     }
 
+    public void verifyOwnership(final Long requestUserId) {
+        if (!this.userId.equals(requestUserId)) {
+            throw new DeadlineAccessDeniedException(this.getId(), requestUserId);
+        }
+    }
+
     private void validate(final DeadlineType type, final LocalDateTime dueDate, final RecurrenceRule recurrenceRule) {
         if (type == DeadlineType.ONE_TIME) {
             if (dueDate == null) {
                 throw InvalidDeadlineRuleException.oneTimeDueDateRequired();
-            }
-            if (dueDate.isBefore(LocalDateTime.now())) {
-                throw InvalidDeadlineRuleException.dueDateMustBeFuture();
             }
             if (recurrenceRule != null) {
                 throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
