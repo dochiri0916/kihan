@@ -6,12 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.Objects.*;
 
@@ -36,10 +32,6 @@ public class Deadline extends BaseEntity {
 
     @Embedded
     private RecurrenceRule recurrenceRule;
-
-    @NotAudited
-    @OneToMany(mappedBy = "deadline", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Execution> executions = new ArrayList<>();
 
     public static Deadline register(final Long userId, final String title, final String description, final DeadlineType type, final LocalDateTime dueDate, final RecurrenceRule recurrenceRule) {
         Deadline deadline = new Deadline();
@@ -103,17 +95,6 @@ public class Deadline extends BaseEntity {
                 throw InvalidDeadlineRuleException.recurringNoDueDate();
             }
         }
-    }
-
-    public Execution createExecution(final LocalDate scheduledDate) {
-        requireNonNull(scheduledDate);
-        Execution execution = Execution.create(this, scheduledDate);
-        this.executions.add(execution);
-        return execution;
-    }
-
-    public List<Execution> getExecutions() {
-        return List.copyOf(executions);
     }
 
 }

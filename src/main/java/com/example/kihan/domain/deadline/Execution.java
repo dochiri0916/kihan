@@ -30,7 +30,7 @@ public class Execution extends BaseEntity {
 
     private LocalDateTime completedAt;
 
-    static Execution create(final Deadline deadline, final LocalDate scheduledDate) {
+    public static Execution create(final Deadline deadline, final LocalDate scheduledDate) {
         Execution execution = new Execution();
         execution.deadline = requireNonNull(deadline);
         execution.scheduledDate = requireNonNull(scheduledDate);
