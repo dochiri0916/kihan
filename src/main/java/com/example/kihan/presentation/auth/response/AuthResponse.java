@@ -1,5 +1,6 @@
 package com.example.kihan.presentation.auth.response;
 
+import com.example.kihan.application.auth.dto.AuthResult;
 import com.example.kihan.domain.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -14,14 +15,19 @@ public record AuthResponse(
         @Schema(description = "Access Token (Bearer)", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
         String accessToken
 ) {
-    public static AuthResponse from(
-            final User user,
-            final String accessToken
-    ) {
+    public static AuthResponse from(User user, String accessToken) {
         return new AuthResponse(
                 user.getId(),
                 user.getRole().name(),
                 accessToken
+        );
+    }
+
+    public static AuthResponse from(AuthResult result) {
+        return new AuthResponse(
+                result.userId(),
+                result.role(),
+                result.accessToken()
         );
     }
 }

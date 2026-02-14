@@ -4,7 +4,6 @@ import com.example.kihan.application.user.query.UserLoader;
 import com.example.kihan.domain.auth.InvalidCredentialsException;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.domain.user.InactiveUserException;
-import com.example.kihan.presentation.auth.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,14 +15,14 @@ public class UserAuthenticationService {
     private final UserLoader userLoader;
     private final PasswordEncoder passwordEncoder;
 
-    public User authenticate(final LoginRequest request) {
-        User user = userLoader.loadByEmail(request.email());
+    public User authenticate(final LoginCommand command) {
+        User user = userLoader.loadByEmail(command.email());
 
         if (user.isDeleted()) {
             throw new InactiveUserException();
         }
 
-        validatePassword(request.password(), user.getPassword());
+        validatePassword(command.password(), user.getPassword());
 
         return user;
     }

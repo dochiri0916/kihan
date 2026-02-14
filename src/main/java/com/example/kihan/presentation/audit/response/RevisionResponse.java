@@ -1,6 +1,6 @@
 package com.example.kihan.presentation.audit.response;
 
-import com.example.kihan.infrastructure.audit.CustomRevisionEntity;
+import com.example.kihan.infrastructure.audit.CustomRevision;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.RevisionMetadata;
 
@@ -14,7 +14,7 @@ public record RevisionResponse<T>(
         T entity
 ) {
     public static <T> RevisionResponse<T> from(Revision<Long, T> revision) {
-        CustomRevisionEntity customRevision = revision.getMetadata().getDelegate();
+        CustomRevision customRevision = revision.getMetadata().getDelegate();
         return new RevisionResponse<>(
                 revision.getRevisionNumber().orElse(null),
                 revision.getRevisionInstant().orElse(null),

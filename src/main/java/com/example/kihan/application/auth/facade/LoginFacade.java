@@ -1,12 +1,12 @@
 package com.example.kihan.application.auth.facade;
 
+import com.example.kihan.application.auth.command.LoginCommand;
 import com.example.kihan.application.auth.command.RefreshTokenIssueService;
 import com.example.kihan.application.auth.command.UserAuthenticationService;
 import com.example.kihan.application.auth.dto.LoginResult;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.infrastructure.security.jwt.JwtTokenGenerator;
 import com.example.kihan.infrastructure.security.jwt.JwtTokenResult;
-import com.example.kihan.presentation.auth.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +20,8 @@ public class LoginFacade {
     private final RefreshTokenIssueService refreshTokenIssueService;
 
     @Transactional
-    public LoginResult login(final LoginRequest request) {
-        User user = userAuthenticationService.authenticate(request);
+    public LoginResult login(final LoginCommand command) {
+        User user = userAuthenticationService.authenticate(command);
 
         user.updateLastLoginAt();
 

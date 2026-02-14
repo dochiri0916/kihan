@@ -1,5 +1,7 @@
 package com.example.kihan.presentation.auth;
 
+import com.example.kihan.application.auth.command.LoginCommand;
+import com.example.kihan.application.auth.dto.AuthResult;
 import com.example.kihan.application.auth.dto.LoginResult;
 import com.example.kihan.application.auth.facade.LoginFacade;
 import com.example.kihan.application.auth.facade.ReissueTokenFacade;
@@ -33,7 +35,8 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             @Parameter(hidden = true) HttpServletResponse response
     ) {
-        LoginResult loginResult = loginFacade.login(request);
+        LoginCommand command = new LoginCommand(request.email(), request.password());
+        LoginResult loginResult = loginFacade.login(command);
 
         cookieProvider.addRefreshToken(response, loginResult.refreshToken());
 
@@ -48,8 +51,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> reissue(
             @Parameter(description = "Refresh Token (쿠키)") @CookieValue(name = "refreshToken") String refreshToken
     ) {
-        return ResponseEntity.ok(
-                reissueTokenFacade.reissue(refreshToken));
+        AuthResult result = reissueTokenFacade.reissue(refreshToken);
+        return ResponseEntity.ok(AuthResponse.from(result));
     }
 
     @Operation(summary = "로그아웃", description = "Refresh Token 쿠키를 삭제합니다.")

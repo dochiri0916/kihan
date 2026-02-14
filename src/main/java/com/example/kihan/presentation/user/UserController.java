@@ -1,5 +1,6 @@
 package com.example.kihan.presentation.user;
 
+import com.example.kihan.application.user.command.RegisterCommand;
 import com.example.kihan.application.user.command.RegisterService;
 import com.example.kihan.application.user.query.UserQueryService;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
@@ -28,8 +29,13 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "등록 성공")
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+        RegisterCommand command = new RegisterCommand(
+                request.email(),
+                request.password(),
+                request.name()
+        );
         return ResponseEntity.ok(
-                UserResponse.from(registerService.register(request))
+                UserResponse.from(registerService.register(command))
         );
     }
 

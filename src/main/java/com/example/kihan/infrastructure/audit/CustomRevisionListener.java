@@ -8,14 +8,15 @@ public class CustomRevisionListener implements RevisionListener {
 
     @Override
     public void newRevision(Object revisionEntity) {
-        CustomRevisionEntity revision = (CustomRevisionEntity) revisionEntity;
+        CustomRevision revision = (CustomRevision) revisionEntity;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
-            revision.setUsername(authentication.getName());
+            revision.updateUsername(authentication.getName());
         } else {
-            revision.setUsername("system");
+            revision.updateUsername("system");
         }
     }
+
 }

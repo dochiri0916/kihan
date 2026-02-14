@@ -4,7 +4,6 @@ import com.example.kihan.application.user.dto.UserDetail;
 import com.example.kihan.domain.user.DuplicateEmailException;
 import com.example.kihan.domain.user.User;
 import com.example.kihan.infrastructure.persistence.UserRepository;
-import com.example.kihan.presentation.user.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,14 +17,14 @@ public class RegisterService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDetail register(final RegisterRequest request) {
-        checkDuplicateEmail(request.email());
+    public UserDetail register(final RegisterCommand command) {
+        checkDuplicateEmail(command.email());
 
         User user = userRepository.save(
                 User.register(
-                        request.email(),
-                        passwordEncoder.encode(request.password()),
-                        request.name()
+                        command.email(),
+                        passwordEncoder.encode(command.password()),
+                        command.name()
                 )
         );
         return UserDetail.from(user);
