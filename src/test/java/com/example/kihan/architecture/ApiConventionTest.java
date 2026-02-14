@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 
 class ApiConventionTest {
