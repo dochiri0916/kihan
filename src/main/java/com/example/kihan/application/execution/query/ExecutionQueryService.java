@@ -3,6 +3,7 @@ package com.example.kihan.application.execution.query;
 import com.example.kihan.application.execution.dto.ExecutionDetail;
 import com.example.kihan.domain.deadline.Execution;
 import com.example.kihan.domain.deadline.ExecutionNotFoundException;
+import com.example.kihan.infrastructure.persistence.DeadlineRepository;
 import com.example.kihan.infrastructure.persistence.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,23 +18,43 @@ import java.util.List;
 public class ExecutionQueryService {
 
     private final ExecutionRepository executionRepository;
+    private final DeadlineRepository deadlineRepository;
 
-    public List<ExecutionDetail> findByDeadlineId(final Long deadlineId) {
+    public List<ExecutionDetail> findByDeadlineId(final Long userId, final Long deadlineId) {
+        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
+                .map(deadline -> deadline.getId())
+                .toList();
+
+        if (!userDeadlineIds.contains(deadlineId)) {
+            return List.of();
+        }
+
         return executionRepository.findByDeadlineIdAndDeletedAtIsNull(deadlineId).stream()
                 .map(ExecutionDetail::from)
                 .toList();
     }
 
-    public List<ExecutionDetail> findByDateRange(final LocalDate startDate, final LocalDate endDate) {
-        return executionRepository.findByScheduledDateBetweenAndDeletedAtIsNull(startDate, endDate).stream()
+    public List<ExecutionDetail> findByDateRange(final Long userId, final LocalDate startDate, final LocalDate endDate) {
+        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
+                .map(deadline -> deadline.getId())
+                .toList();
+
+        if (userDeadlineIds.isEmpty()) {
+            return List.of();
+        }
+
+        return executionRepository.findByDeadlineIdInAndDeletedAtIsNull(userDeadlineIds).stream()
+                .filter(execution -> !execution.getScheduledDate().isBefore(startDate)
+                        && !execution.getScheduledDate().isAfter(endDate))
                 .map(ExecutionDetail::from)
                 .toList();
     }
 
-    public ExecutionDetail findById(final Long executionId) {
+    public ExecutionDetail findById(final Long userId, final Long executionId) {
         Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId)
                 .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
 
+        execution.getDeadline().verifyOwnership(userId);
         return ExecutionDetail.from(execution);
     }
 

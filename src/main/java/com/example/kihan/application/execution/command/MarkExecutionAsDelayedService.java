@@ -14,10 +14,11 @@ public class MarkExecutionAsDelayedService {
     private final ExecutionRepository executionRepository;
 
     @Transactional
-    public void execute(final Long executionId) {
+    public void execute(final Long userId, final Long executionId) {
         Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId)
                 .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
 
+        execution.getDeadline().verifyOwnership(userId);
         execution.markAsDelayed();
     }
 
