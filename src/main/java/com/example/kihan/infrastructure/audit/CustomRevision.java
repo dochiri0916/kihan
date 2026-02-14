@@ -20,8 +20,10 @@ public class CustomRevision implements Serializable {
     private Long id;
 
     @RevisionTimestamp
+    @Column(nullable = false)
     private Long timestamp;
 
+    @Column(nullable = false)
     private String username;
 
     void updateUsername(String username) {

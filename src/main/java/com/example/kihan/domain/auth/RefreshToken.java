@@ -16,10 +16,13 @@ import static java.util.Objects.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken extends BaseEntity {
 
+    @Column(nullable = false, unique = true)
     private String token;
 
+    @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
     public static RefreshToken issue(

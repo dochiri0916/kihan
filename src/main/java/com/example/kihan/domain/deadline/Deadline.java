@@ -18,14 +18,17 @@ import static java.util.Objects.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deadline extends BaseEntity {
 
+    @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DeadlineType type;
 
     private LocalDateTime dueDate;
