@@ -2,7 +2,7 @@ package com.example.kihan.domain.deadline;
 
 import java.time.LocalDate;
 
-public class ExecutionAlreadyCompletedException extends DeadlineException {
+public class ExecutionAlreadyCompletedException extends ExecutionException {
 
     private ExecutionAlreadyCompletedException(final String message) {
         super(message);
