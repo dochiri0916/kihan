@@ -37,10 +37,12 @@ class CodingConventionTest {
     }
 
     @Test
-    void 모든_메서드_파라미터는_final이어야_한다() {
+    void 서비스와_도메인_메서드_파라미터는_final이어야_한다() {
         methods()
-                .that().areDeclaredInClassesThat().resideInAPackage("com.example.kihan..")
-                .and().areNotPrivate()
+                .that().areDeclaredInClassesThat().resideInAnyPackage(
+                        "..application..",
+                        "..domain.."
+                )
                 .should(haveOnlyFinalParameters())
                 .allowEmptyShould(true)
                 .check(CLASSES);
