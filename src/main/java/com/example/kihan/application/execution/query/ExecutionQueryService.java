@@ -12,8 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ExecutionQueryService {
 
     private final ExecutionRepository executionRepository;
