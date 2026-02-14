@@ -3,6 +3,7 @@ package com.example.kihan.presentation.execution;
 import com.example.kihan.application.execution.command.MarkExecutionAsDelayedService;
 import com.example.kihan.application.execution.command.MarkExecutionAsDoneService;
 import com.example.kihan.application.execution.dto.ExecutionDetail;
+import com.example.kihan.application.execution.query.DateRangeQuery;
 import com.example.kihan.application.execution.query.ExecutionQueryService;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.example.kihan.presentation.execution.response.ExecutionResponse;
@@ -62,7 +63,8 @@ public class ExecutionController {
             @Parameter(description = "종료일", example = "2026-02-28")
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        List<ExecutionDetail> details = executionQueryService.findByDateRange(principal.userId(), startDate, endDate);
+        DateRangeQuery query = new DateRangeQuery(principal.userId(), startDate, endDate);
+        List<ExecutionDetail> details = executionQueryService.findByDateRange(query);
         return ResponseEntity.ok(details.stream()
                 .map(ExecutionResponse::from)
                 .toList());

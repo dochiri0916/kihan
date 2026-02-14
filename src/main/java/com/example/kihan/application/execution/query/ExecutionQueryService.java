@@ -34,8 +34,8 @@ public class ExecutionQueryService {
                 .toList();
     }
 
-    public List<ExecutionDetail> findByDateRange(final Long userId, final LocalDate startDate, final LocalDate endDate) {
-        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
+    public List<ExecutionDetail> findByDateRange(final DateRangeQuery query) {
+        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(query.userId()).stream()
                 .map(deadline -> deadline.getId())
                 .toList();
 
@@ -44,8 +44,8 @@ public class ExecutionQueryService {
         }
 
         return executionRepository.findByDeadlineIdInAndDeletedAtIsNull(userDeadlineIds).stream()
-                .filter(execution -> !execution.getScheduledDate().isBefore(startDate)
-                        && !execution.getScheduledDate().isAfter(endDate))
+                .filter(execution -> !execution.getScheduledDate().isBefore(query.startDate())
+                        && !execution.getScheduledDate().isAfter(query.endDate()))
                 .map(ExecutionDetail::from)
                 .toList();
     }

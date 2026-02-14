@@ -1,7 +1,9 @@
 package com.example.kihan.presentation.deadline;
 
 import com.example.kihan.application.deadline.command.DeleteDeadlineService;
+import com.example.kihan.application.deadline.command.RegisterDeadlineCommand;
 import com.example.kihan.application.deadline.command.RegisterDeadlineService;
+import com.example.kihan.application.deadline.command.UpdateDeadlineCommand;
 import com.example.kihan.application.deadline.command.UpdateDeadlineService;
 import com.example.kihan.application.deadline.query.DeadlineQueryService;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
@@ -80,7 +82,7 @@ public class DeadlineController {
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody DeadlineRegisterRequest request
     ) {
-        Long deadlineId = registerDeadlineService.register(
+        RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 principal.userId(),
                 request.title(),
                 request.description(),
@@ -88,6 +90,7 @@ public class DeadlineController {
                 request.dueDate(),
                 request.toRecurrenceRule()
         );
+        Long deadlineId = registerDeadlineService.register(command);
         return ResponseEntity.created(URI.create("/api/deadlines/" + deadlineId)).build();
     }
 
@@ -118,7 +121,13 @@ public class DeadlineController {
             @Parameter(description = "기한 ID") @PathVariable Long id,
             @RequestBody DeadlineUpdateRequest request
     ) {
-        updateDeadlineService.update(principal.userId(), id, request.title(), request.description());
+        UpdateDeadlineCommand command = new UpdateDeadlineCommand(
+                principal.userId(),
+                id,
+                request.title(),
+                request.description()
+        );
+        updateDeadlineService.update(command);
         return ResponseEntity.noContent().build();
     }
 
