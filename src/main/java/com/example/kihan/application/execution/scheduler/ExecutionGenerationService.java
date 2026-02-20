@@ -1,17 +1,18 @@
 package com.example.kihan.application.execution.scheduler;
 
 import com.example.kihan.application.execution.command.CreateExecutionService;
+import com.example.kihan.application.deadline.query.DeadlineQueryService;
 import com.example.kihan.domain.deadline.Deadline;
 import com.example.kihan.domain.deadline.DeadlineType;
 import com.example.kihan.domain.deadline.RecurrencePattern;
 import com.example.kihan.domain.deadline.RecurrenceRule;
-import com.example.kihan.infrastructure.persistence.DeadlineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -20,18 +21,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExecutionGenerationService {
 
-    private final DeadlineRepository deadlineRepository;
+    private final DeadlineQueryService deadlineQueryService;
     private final CreateExecutionService createExecutionService;
 
     @Transactional
     public void generateExecutionsForToday() {
         LocalDate today = LocalDate.now();
-        List<Deadline> deadlines = deadlineRepository.findAllByDeletedAtIsNull();
+        List<Deadline> deadlines = deadlineQueryService.findAllActive();
 
         for (Deadline deadline : deadlines) {
             if (shouldCreateExecution(deadline, today)) {
-                createExecutionService.execute(deadline, today);
-                log.debug("Created execution for deadline {} on {}", deadline.getId(), today);
+                createExecutionService.execute(deadline, today)
+                        .ifPresentOrElse(
+                                executionId -> log.debug(
+                                        "Created execution {} for deadline {} on {}",
+                                        executionId,
+                                        deadline.getId(),
+                                        today
+                                ),
+                                () -> log.debug(
+                                        "Skip execution creation for deadline {} on {} (already exists)",
+                                        deadline.getId(),
+                                        today
+                                )
+                        );
             }
         }
     }
@@ -83,10 +96,18 @@ public class ExecutionGenerationService {
     }
 
     private boolean shouldCreateMonthlyExecution(final RecurrenceRule rule, final LocalDate date) {
-        long monthsBetween = ChronoUnit.MONTHS.between(rule.getStartDate(), date);
+        long monthsBetween = ChronoUnit.MONTHS.between(
+                YearMonth.from(rule.getStartDate()),
+                YearMonth.from(date)
+        );
+        int targetDay = Math.min(
+                rule.getStartDate().getDayOfMonth(),
+                date.lengthOfMonth()
+        );
+
         return monthsBetween >= 0
                 && monthsBetween % rule.getInterval() == 0
-                && date.getDayOfMonth() == rule.getStartDate().getDayOfMonth();
+                && date.getDayOfMonth() == targetDay;
     }
 
     private boolean shouldCreateYearlyExecution(final RecurrenceRule rule, final LocalDate date) {

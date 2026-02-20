@@ -7,11 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class MarkExecutionAsDoneService {
 
     private final ExecutionRepository executionRepository;
+    private final Clock clock;
 
     @Transactional
     public void execute(final Long userId, final Long executionId) {
@@ -19,7 +23,7 @@ public class MarkExecutionAsDoneService {
                 .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
 
         execution.getDeadline().verifyOwnership(userId);
-        execution.markAsDone();
+        execution.markAsDone(LocalDateTime.now(clock));
     }
 
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface DeadlineRepository extends JpaRepository<Deadline, Long> {
     Optional<Deadline> findByIdAndDeletedAtIsNull(Long id);
+    Optional<Deadline> findByIdAndUserIdAndDeletedAtIsNull(Long id, Long userId);
     List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId);
     List<Deadline> findAllByDeletedAtIsNull();
 }

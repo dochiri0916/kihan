@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+import static java.util.Objects.requireNonNull;
+
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -35,8 +37,8 @@ public abstract class BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
+    public void delete(final LocalDateTime deletedAt) {
+        this.deletedAt = requireNonNull(deletedAt);
     }
 
     public void restore() {

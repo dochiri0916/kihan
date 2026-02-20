@@ -2,6 +2,7 @@ package com.example.kihan.presentation.user;
 
 import com.example.kihan.application.user.command.RegisterUserService;
 import com.example.kihan.application.user.query.UserQueryService;
+import com.example.kihan.domain.user.UserAccessDeniedException;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.example.kihan.presentation.user.request.RegisterUserRequest;
 import com.example.kihan.presentation.user.response.UserResponse;
@@ -46,11 +47,24 @@ public class UserController {
 
     @Operation(summary = "사용자 조회", description = "ID로 사용자를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getActiveUser(@Parameter(description = "사용자 ID") @PathVariable Long id) {
+    @GetMapping("/{id}")    
+    public ResponseEntity<UserResponse> getActiveUser(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @Parameter(description = "사용자 ID") @PathVariable Long id
+    ) {
+        verifyUserAccess(principal, id);
         return ResponseEntity.ok(
                 UserResponse.from(userQueryService.getActiveUser(id))
         );
+    }
+
+    private void verifyUserAccess(final JwtPrincipal principal, final Long userId) {
+        boolean owner = principal.userId().equals(userId);
+        boolean admin = "ADMIN".equals(principal.role());
+
+        if (!owner && !admin) {
+            throw UserAccessDeniedException.forUser(userId);
+        }
     }
 
 }

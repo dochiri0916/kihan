@@ -24,8 +24,8 @@ Out of Scope:
 Domain Decisions:
 - Deadline = Aggregate Root
 - RecurrenceRule = Value Object (immutable)
-- Execution = Entity within Deadline aggregate
-- Execution created only via Deadline behavior
+- Execution = Independent aggregate entity (references Deadline)
+- Execution created via scheduler/service workflows
 
 Tech & Style:
 - Java 25

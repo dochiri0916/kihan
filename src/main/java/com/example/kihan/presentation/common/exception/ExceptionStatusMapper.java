@@ -19,7 +19,7 @@ public class ExceptionStatusMapper {
                 return mapper.map(exception);
             }
         }
-        return HttpStatus.BAD_REQUEST;
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
 }

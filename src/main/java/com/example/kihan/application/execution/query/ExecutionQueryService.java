@@ -32,11 +32,7 @@ public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
     }
 
     public List<ExecutionDetail> findByDeadlineId(final Long userId, final Long deadlineId) {
-        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
-                .map(deadline -> deadline.getId())
-                .toList();
-
-        if (!userDeadlineIds.contains(deadlineId)) {
+        if (deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId).isEmpty()) {
             return List.of();
         }
 
@@ -54,9 +50,11 @@ public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
             return List.of();
         }
 
-        return executionRepository.findByDeadlineIdInAndDeletedAtIsNull(userDeadlineIds).stream()
-                .filter(execution -> !execution.getScheduledDate().isBefore(query.startDate())
-                        && !execution.getScheduledDate().isAfter(query.endDate()))
+        return executionRepository.findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(
+                        userDeadlineIds,
+                        query.startDate(),
+                        query.endDate()
+                ).stream()
                 .map(ExecutionDetail::from)
                 .toList();
     }

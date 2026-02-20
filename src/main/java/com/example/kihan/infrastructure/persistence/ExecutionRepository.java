@@ -12,6 +12,11 @@ public interface ExecutionRepository extends JpaRepository<Execution, Long> {
     List<Execution> findByDeadlineIdAndDeletedAtIsNull(Long deadlineId);
 
     List<Execution> findByDeadlineIdInAndDeletedAtIsNull(List<Long> deadlineIds);
+    List<Execution> findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(
+            List<Long> deadlineIds,
+            LocalDate startDate,
+            LocalDate endDate
+    );
 
     List<Execution> findByScheduledDateBetweenAndDeletedAtIsNull(LocalDate startDate, LocalDate endDate);
 

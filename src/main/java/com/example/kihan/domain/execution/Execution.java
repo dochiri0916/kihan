@@ -39,12 +39,12 @@ public class Execution extends BaseEntity {
         return execution;
     }
 
-    public void markAsDone() {
+    public void markAsDone(final LocalDateTime completedAt) {
         if (this.status == ExecutionStatus.DONE) {
             throw ExecutionAlreadyCompletedException.withDate(this.scheduledDate);
         }
         this.status = ExecutionStatus.DONE;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = requireNonNull(completedAt);
     }
 
     public void markAsDelayed() {

@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class LoginFacade {
@@ -19,12 +22,13 @@ public class LoginFacade {
     private final UserAuthenticationService userAuthenticationService;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final IssueRefreshTokenService issueRefreshTokenService;
+    private final Clock clock;
 
     @Transactional
     public LoginResult login(LoginCommand command) {
         User user = userAuthenticationService.execute(command);
 
-        user.updateLastLoginAt();
+        user.updateLastLoginAt(LocalDateTime.now(clock));
 
         JwtTokenResult tokenResult = jwtTokenGenerator.generateToken(user.getId(), user.getRole().name());
 

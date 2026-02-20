@@ -1,5 +1,7 @@
 package com.example.kihan.infrastructure.scheduler;
 
+import com.example.kihan.application.auth.command.RevokeTokenCommand;
+import com.example.kihan.application.auth.command.RevokeTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +18,7 @@ public class RefreshTokenCleanupScheduler {
 
     @Scheduled(cron = "0 0 3 * * *")
     public void cleanupExpiredRefreshTokens() {
-        long deletedCount = revokeTokenService.revokeExpiredTokens(LocalDateTime.now());
+        long deletedCount = revokeTokenService.execute(new RevokeTokenCommand(LocalDateTime.now()));
         log.info("Expired refresh tokens revoked. count={}", deletedCount);
     }
 

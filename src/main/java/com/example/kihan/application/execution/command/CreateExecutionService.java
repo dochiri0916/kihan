@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,14 +17,14 @@ public class CreateExecutionService {
     private final ExecutionRepository executionRepository;
 
     @Transactional
-    public Long execute(final Deadline deadline, final LocalDate scheduledDate) {
+    public Optional<Long> execute(final Deadline deadline, final LocalDate scheduledDate) {
         if (executionRepository.existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(
                 deadline.getId(), scheduledDate)) {
-            return null;
+            return Optional.empty();
         }
 
         Execution execution = Execution.create(deadline, scheduledDate);
-        return executionRepository.save(execution).getId();
+        return Optional.of(executionRepository.save(execution).getId());
     }
 
 }

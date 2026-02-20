@@ -43,4 +43,8 @@ public class DeadlineQueryService implements DeadlineFinder, DeadlineLoader {
                 .toList();
     }
 
+    public List<Deadline> findAllActive() {
+        return deadlineRepository.findAllByDeletedAtIsNull();
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.kihan.infrastructure.security.cookie;
 import com.example.kihan.infrastructure.config.properties.CookieProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,31 +36,22 @@ public class CookieProvider {
             String value,
             long maxAge
     ) {
-        StringBuilder cookie = new StringBuilder();
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie
+                .from(name, value)
+                .path(cookieProperties.path())
+                .maxAge(maxAge)
+                .httpOnly(cookieProperties.httpOnly())
+                .secure(cookieProperties.secure());
 
-        cookie.append(name).append('=').append(value).append("; ");
-        cookie.append("Path=").append(cookieProperties.path()).append("; ");
-        cookie.append("Max-Age=").append(maxAge).append("; ");
-
-        appendIfPresent(cookie, "Domain", cookieProperties.domain());
-
-        if (cookieProperties.httpOnly()) {
-            cookie.append("HttpOnly; ");
+        if (cookieProperties.domain() != null && !cookieProperties.domain().isBlank()) {
+            cookieBuilder.domain(cookieProperties.domain());
         }
 
-        if (cookieProperties.secure()) {
-            cookie.append("Secure; ");
+        if (cookieProperties.sameSite() != null && !cookieProperties.sameSite().isBlank()) {
+            cookieBuilder.sameSite(cookieProperties.sameSite());
         }
 
-        appendIfPresent(cookie, "SameSite", cookieProperties.sameSite());
-
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    private void appendIfPresent(StringBuilder cookie, String key, String value) {
-        if (value != null && !value.isBlank()) {
-            cookie.append(key).append('=').append(value).append("; ");
-        }
+        response.addHeader("Set-Cookie", cookieBuilder.build().toString());
     }
 
 }

@@ -1,6 +1,8 @@
 package com.example.kihan.infrastructure.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.parseAndValidate(token);
 
             if (!jwtProvider.isAccessToken(claims)) {
-                filterChain.doFilter(request, response);
+                handleUnauthorized(response, "유효하지 않은 액세스 토큰입니다.");
                 return;
             }
 
@@ -58,8 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             SecurityContextHolder.clearContext();
+            handleUnauthorized(response, "만료된 액세스 토큰입니다.");
+            return;
+        } catch (JwtException | IllegalArgumentException e) {
+            SecurityContextHolder.clearContext();
+            handleUnauthorized(response, "변조되었거나 유효하지 않은 액세스 토큰입니다.");
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -73,5 +81,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return bearerToken.substring(7);
+    }
+
+    private void handleUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
     }
 }

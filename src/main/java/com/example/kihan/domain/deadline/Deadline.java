@@ -70,8 +70,8 @@ public class Deadline extends BaseEntity {
         this.description = newDescription;
     }
 
-    public void markAsCompleted() {
-        this.delete();
+    public void markAsCompleted(final LocalDateTime now) {
+        this.delete(requireNonNull(now));
     }
 
     public void verifyOwnership(final Long requestUserId) {

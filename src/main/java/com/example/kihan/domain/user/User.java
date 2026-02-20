@@ -40,8 +40,8 @@ public class User extends BaseEntity {
         return user;
     }
 
-    public void updateLastLoginAt() {
-        this.lastLoginAt = LocalDateTime.now();
+    public void updateLastLoginAt(final LocalDateTime now) {
+        this.lastLoginAt = requireNonNull(now);
     }
 
 }
