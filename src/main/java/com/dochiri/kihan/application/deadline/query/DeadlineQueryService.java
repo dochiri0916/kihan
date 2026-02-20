@@ -3,7 +3,7 @@ package com.dochiri.kihan.application.deadline.query;
 import com.dochiri.kihan.application.deadline.dto.DeadlineDetail;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
-import com.dochiri.kihan.infrastructure.persistence.DeadlineRepository;
+import com.dochiri.kihan.infrastructure.persistence.deadline.DeadlineJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,17 +16,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DeadlineQueryService implements DeadlineFinder, DeadlineLoader {
 
-    private  DeadlineRepository deadlineRepository;
+    private DeadlineJpaRepository deadlineJpaRepository;
 
     @Override
     public Optional<Deadline> findByIdAndUserId(Long deadlineId, Long userId) {
-        return deadlineRepository.findByIdAndDeletedAtIsNull(deadlineId)
+        return deadlineJpaRepository.findByIdAndDeletedAtIsNull(deadlineId)
                 .filter(deadline -> deadline.getUserId().equals(userId));
     }
 
     @Override
     public Deadline loadByIdAndUserId(Long deadlineId, Long userId) {
-        Deadline deadline = deadlineRepository.findByIdAndDeletedAtIsNull(deadlineId)
+        Deadline deadline = deadlineJpaRepository.findByIdAndDeletedAtIsNull(deadlineId)
                 .orElseThrow(() -> new DeadlineNotFoundException(deadlineId));
         deadline.verifyOwnership(userId);
         return deadline;
@@ -38,13 +38,13 @@ public class DeadlineQueryService implements DeadlineFinder, DeadlineLoader {
     }
 
     public List<DeadlineDetail> getAllByUserId(Long userId) {
-        return deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
+        return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
                 .map(DeadlineDetail::from)
                 .toList();
     }
 
     public List<Deadline> findAllActive() {
-        return deadlineRepository.findAllByDeletedAtIsNull();
+        return deadlineJpaRepository.findAllByDeletedAtIsNull();
     }
 
 }

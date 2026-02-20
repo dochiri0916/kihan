@@ -3,7 +3,7 @@ package com.dochiri.kihan.application.execution.query;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.domain.execution.Execution;
 import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
-import com.dochiri.kihan.infrastructure.persistence.DeadlineRepository;
+import com.dochiri.kihan.infrastructure.persistence.deadline.DeadlineJpaRepository;
 import com.dochiri.kihan.infrastructure.persistence.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
 
     private final ExecutionRepository executionRepository;
-    private final DeadlineRepository deadlineRepository;
+    private final DeadlineJpaRepository deadlineJpaRepository;
 
     @Override
     public Optional<Execution> findActiveById(final Long executionId) {
@@ -32,7 +32,7 @@ public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
     }
 
     public List<ExecutionDetail> findByDeadlineId(final Long userId, final Long deadlineId) {
-        if (deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId).isEmpty()) {
+        if (deadlineJpaRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId).isEmpty()) {
             return List.of();
         }
 
@@ -42,7 +42,7 @@ public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
     }
 
     public List<ExecutionDetail> findByDateRange(final DateRangeQuery query) {
-        List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(query.userId()).stream()
+        List<Long> userDeadlineIds = deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(query.userId()).stream()
                 .map(deadline -> deadline.getId())
                 .toList();
 
