@@ -12,7 +12,7 @@
 ## 2. 패키지 구조
 
 ```
-com.example.kihan/
+com.dochiri.kihan/
 ├── domain/                          # 순수 도메인 (프레임워크 무관)
 │   ├── BaseEntity.java              # 공통 엔티티 (audit, soft delete)
 │   ├── auth/                        # RefreshToken 엔티티, 예외

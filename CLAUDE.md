@@ -49,7 +49,7 @@ Tech & Style:
 ./gradlew test
 
 # Run a single test class
-./gradlew test --tests "com.example.kihan.KihanApplicationTests"
+./gradlew test --tests "com.dochiri.kihan.KihanApplicationTests"
 
 # Clean build
 ./gradlew clean build
@@ -67,7 +67,7 @@ Tech & Style:
 
 Pragmatic layered architecture — selectively applies DDD/Hexagonal concepts only where justified. Core principle: **defer abstraction until actual change pressure appears**.
 
-### Layer Structure (`com.example.kihan`)
+### Layer Structure (`com.dochiri.kihan`)
 
 ```
 presentation/  → Controllers, request/response DTOs, exception handling
