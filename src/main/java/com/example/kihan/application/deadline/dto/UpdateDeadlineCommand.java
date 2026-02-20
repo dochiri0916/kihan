@@ -1,4 +1,4 @@
-package com.example.kihan.application.deadline.command;
+package com.example.kihan.application.deadline.dto;
 
 public record UpdateDeadlineCommand(
         Long userId,

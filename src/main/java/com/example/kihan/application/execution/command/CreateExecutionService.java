@@ -1,7 +1,7 @@
 package com.example.kihan.application.execution.command;
 
 import com.example.kihan.domain.deadline.Deadline;
-import com.example.kihan.domain.deadline.Execution;
+import com.example.kihan.domain.execution.Execution;
 import com.example.kihan.infrastructure.persistence.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

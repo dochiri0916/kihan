@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +12,6 @@ import static java.util.Objects.*;
 
 @Entity
 @Table(name = "users")
-@Audited
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -33,11 +31,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime lastLoginAt;
 
-    public static User register(
-            final String email,
-            final String password,
-            final String name
-    ) {
+    public static User register(String email, String password, String name) {
         User user = new User();
         user.email = requireNonNull(email);
         user.password = requireNonNull(password);

@@ -1,5 +1,6 @@
 package com.example.kihan.application.deadline.command;
 
+import com.example.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.example.kihan.application.deadline.query.DeadlineLoader;
 import com.example.kihan.domain.deadline.Deadline;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.example.kihan.application.execution.dto;
 
-import com.example.kihan.domain.deadline.Execution;
-import com.example.kihan.domain.deadline.ExecutionStatus;
+import com.example.kihan.domain.execution.Execution;
+import com.example.kihan.domain.execution.ExecutionStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

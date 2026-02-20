@@ -1,6 +1,6 @@
 package com.example.kihan.infrastructure.persistence;
 
-import com.example.kihan.domain.deadline.Execution;
+import com.example.kihan.domain.execution.Execution;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

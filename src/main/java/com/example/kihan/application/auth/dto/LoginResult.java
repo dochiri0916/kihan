@@ -7,4 +7,7 @@ public record LoginResult(
         String accessToken,
         String refreshToken
 ) {
+    public static LoginResult from(User user, String accessToken, String refreshToken) {
+        return new LoginResult(user, accessToken, refreshToken);
+    }
 }

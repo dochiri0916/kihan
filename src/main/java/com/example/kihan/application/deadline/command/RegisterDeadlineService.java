@@ -1,5 +1,6 @@
 package com.example.kihan.application.deadline.command;
 
+import com.example.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.example.kihan.domain.deadline.Deadline;
 import com.example.kihan.infrastructure.persistence.DeadlineRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class RegisterDeadlineService {
     private final DeadlineRepository deadlineRepository;
 
     @Transactional
-    public Long register(final RegisterDeadlineCommand command) {
+    public Long execute(final RegisterDeadlineCommand command) {
         Deadline deadline = Deadline.register(
                 command.userId(),
                 command.title(),
@@ -22,6 +23,7 @@ public class RegisterDeadlineService {
                 command.dueDate(),
                 command.recurrenceRule()
         );
+
         return deadlineRepository.save(deadline).getId();
     }
 

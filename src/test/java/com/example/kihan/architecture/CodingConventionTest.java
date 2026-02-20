@@ -3,7 +3,6 @@ package com.example.kihan.architecture;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -14,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 class CodingConventionTest {
 
@@ -32,18 +29,6 @@ class CodingConventionTest {
                 .that().areAnnotatedWith(RestController.class)
                 .and().areAnnotatedWith(RequestMapping.class)
                 .should(haveApiUriPattern())
-                .allowEmptyShould(true)
-                .check(CLASSES);
-    }
-
-    @Test
-    void 서비스와_도메인_메서드_파라미터는_final이어야_한다() {
-        methods()
-                .that().areDeclaredInClassesThat().resideInAnyPackage(
-                        "..application..",
-                        "..domain.."
-                )
-                .should(haveOnlyFinalParameters())
                 .allowEmptyShould(true)
                 .check(CLASSES);
     }

@@ -40,6 +40,6 @@ public record DeadlineRegisterRequest(
         if (pattern == null) {
             return null;
         }
-        return RecurrenceRule.of(pattern, interval, startDate, endDate);
+        return RecurrenceRule.create(pattern, interval, startDate, endDate);
     }
 }

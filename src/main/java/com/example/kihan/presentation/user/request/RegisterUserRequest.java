@@ -1,12 +1,13 @@
 package com.example.kihan.presentation.user.request;
 
+import com.example.kihan.application.user.command.RegisterUserCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "회원가입 요청")
-public record RegisterRequest(
+public record RegisterUserRequest(
         @Schema(description = "이메일", example = "user@example.com")
         @Email
         @NotBlank
@@ -22,4 +23,7 @@ public record RegisterRequest(
         @NotBlank
         String name
 ) {
+    public RegisterUserCommand toCommand() {
+        return new RegisterUserCommand(email, password, name);
+    }
 }

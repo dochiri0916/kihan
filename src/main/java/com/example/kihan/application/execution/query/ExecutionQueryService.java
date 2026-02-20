@@ -1,24 +1,35 @@
 package com.example.kihan.application.execution.query;
 
 import com.example.kihan.application.execution.dto.ExecutionDetail;
-import com.example.kihan.domain.deadline.Execution;
-import com.example.kihan.domain.deadline.ExecutionNotFoundException;
+import com.example.kihan.domain.execution.Execution;
+import com.example.kihan.domain.execution.ExecutionNotFoundException;
 import com.example.kihan.infrastructure.persistence.DeadlineRepository;
 import com.example.kihan.infrastructure.persistence.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ExecutionQueryService {
+public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
 
     private final ExecutionRepository executionRepository;
     private final DeadlineRepository deadlineRepository;
+
+    @Override
+    public Optional<Execution> findActiveById(final Long executionId) {
+        return executionRepository.findByIdAndDeletedAtIsNull(executionId);
+    }
+
+    @Override
+    public Execution loadActiveById(final Long executionId) {
+        return findActiveById(executionId)
+                .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
+    }
 
     public List<ExecutionDetail> findByDeadlineId(final Long userId, final Long deadlineId) {
         List<Long> userDeadlineIds = deadlineRepository.findByUserIdAndDeletedAtIsNull(userId).stream()
@@ -57,5 +68,7 @@ public class ExecutionQueryService {
         execution.getDeadline().verifyOwnership(userId);
         return ExecutionDetail.from(execution);
     }
+
+
 
 }

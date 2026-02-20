@@ -1,9 +1,9 @@
 package com.example.kihan.presentation.deadline;
 
 import com.example.kihan.application.deadline.command.DeleteDeadlineService;
-import com.example.kihan.application.deadline.command.RegisterDeadlineCommand;
+import com.example.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.example.kihan.application.deadline.command.RegisterDeadlineService;
-import com.example.kihan.application.deadline.command.UpdateDeadlineCommand;
+import com.example.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.example.kihan.application.deadline.command.UpdateDeadlineService;
 import com.example.kihan.application.deadline.query.DeadlineQueryService;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
@@ -90,7 +90,7 @@ public class DeadlineController {
                 request.dueDate(),
                 request.toRecurrenceRule()
         );
-        Long deadlineId = registerDeadlineService.register(command);
+        Long deadlineId = registerDeadlineService.execute(command);
         return ResponseEntity.created(URI.create("/api/deadlines/" + deadlineId)).build();
     }
 
@@ -138,7 +138,7 @@ public class DeadlineController {
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
             @Parameter(description = "기한 ID") @PathVariable Long id
     ) {
-        deleteDeadlineService.delete(principal.userId(), id);
+        deleteDeadlineService.execute(principal.userId(), id);
         return ResponseEntity.noContent().build();
     }
 }

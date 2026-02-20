@@ -1,10 +1,9 @@
 package com.example.kihan.presentation.user;
 
-import com.example.kihan.application.user.command.RegisterCommand;
-import com.example.kihan.application.user.command.RegisterService;
+import com.example.kihan.application.user.command.RegisterUserService;
 import com.example.kihan.application.user.query.UserQueryService;
 import com.example.kihan.infrastructure.security.jwt.JwtPrincipal;
-import com.example.kihan.presentation.user.request.RegisterRequest;
+import com.example.kihan.presentation.user.request.RegisterUserRequest;
 import com.example.kihan.presentation.user.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,20 +21,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final RegisterService registerService;
+    private final RegisterUserService registerUserService;
     private final UserQueryService userQueryService;
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @ApiResponse(responseCode = "200", description = "등록 성공")
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        RegisterCommand command = new RegisterCommand(
-                request.email(),
-                request.password(),
-                request.name()
-        );
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
         return ResponseEntity.ok(
-                UserResponse.from(registerService.register(command))
+                UserResponse.from(registerUserService.execute(request.toCommand()))
         );
     }
 

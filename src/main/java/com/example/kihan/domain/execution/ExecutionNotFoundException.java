@@ -1,4 +1,4 @@
-package com.example.kihan.domain.deadline;
+package com.example.kihan.domain.execution;
 
 public class ExecutionNotFoundException extends ExecutionException {
 

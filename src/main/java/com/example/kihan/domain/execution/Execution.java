@@ -1,6 +1,7 @@
-package com.example.kihan.domain.deadline;
+package com.example.kihan.domain.execution;
 
 import com.example.kihan.domain.BaseEntity;
+import com.example.kihan.domain.deadline.Deadline;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.example.kihan.presentation.common.exception.mapper;
 
-import com.example.kihan.domain.deadline.ExecutionAlreadyCompletedException;
-import com.example.kihan.domain.deadline.ExecutionException;
-import com.example.kihan.domain.deadline.ExecutionNotFoundException;
+import com.example.kihan.domain.execution.ExecutionAlreadyCompletedException;
+import com.example.kihan.domain.execution.ExecutionException;
+import com.example.kihan.domain.execution.ExecutionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

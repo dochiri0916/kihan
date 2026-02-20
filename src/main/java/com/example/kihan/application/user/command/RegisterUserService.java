@@ -3,7 +3,7 @@ package com.example.kihan.application.user.command;
 import com.example.kihan.application.user.dto.UserDetail;
 import com.example.kihan.domain.user.DuplicateEmailException;
 import com.example.kihan.domain.user.User;
-import com.example.kihan.infrastructure.persistence.UserRepository;
+import com.example.kihan.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RegisterService {
+public class RegisterUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDetail register(final RegisterCommand command) {
+    public UserDetail execute(RegisterUserCommand command) {
         checkDuplicateEmail(command.email());
 
         User user = userRepository.save(
@@ -31,7 +31,7 @@ public class RegisterService {
     }
 
     private void checkDuplicateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new DuplicateEmailException(email);
         }
     }

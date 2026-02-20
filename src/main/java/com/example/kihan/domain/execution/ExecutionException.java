@@ -1,4 +1,4 @@
-package com.example.kihan.domain.deadline;
+package com.example.kihan.domain.execution;
 
 public abstract class ExecutionException extends RuntimeException {
 

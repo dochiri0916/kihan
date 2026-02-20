@@ -19,17 +19,13 @@ public class RefreshToken extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String token;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Long userId;
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    public static RefreshToken issue(
-            final String token,
-            final Long userId,
-            final LocalDateTime expiresAt
-    ) {
+    public static RefreshToken issue(String token, Long userId, LocalDateTime expiresAt) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.token = requireNonNull(token);
         refreshToken.userId = requireNonNull(userId);
@@ -37,17 +33,21 @@ public class RefreshToken extends BaseEntity {
         return refreshToken;
     }
 
-    public void update(final String token, final LocalDateTime expiresAt) {
-        this.token = token;
-        this.expiresAt = expiresAt;
+    public void verifyNotExpired(LocalDateTime now) {
+        if (now.isAfter(expiresAt)) {
+            throw new ExpiredRefreshTokenException();
+        }
     }
 
-    public boolean isExpired(final LocalDateTime now) {
-        return now.isAfter(expiresAt);
+    public void verifyOwnership(Long userId) {
+        if (!this.userId.equals(userId)) {
+            throw InvalidRefreshTokenException.ownerMismatch();
+        }
     }
 
-    public boolean isOwnedBy(final Long userId) {
-        return this.userId.equals(userId);
+    public void rotate(String newToken, LocalDateTime newExpiresAt) {
+        this.token = requireNonNull(newToken);
+        this.expiresAt = requireNonNull(newExpiresAt);
     }
 
 }

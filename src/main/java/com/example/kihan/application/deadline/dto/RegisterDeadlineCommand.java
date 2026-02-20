@@ -1,4 +1,4 @@
-package com.example.kihan.application.deadline.command;
+package com.example.kihan.application.deadline.dto;
 
 import com.example.kihan.domain.deadline.DeadlineType;
 import com.example.kihan.domain.deadline.RecurrenceRule;

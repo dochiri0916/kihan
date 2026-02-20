@@ -1,7 +1,6 @@
 package com.example.kihan.presentation.auth;
 
-import com.example.kihan.application.auth.command.LoginCommand;
-import com.example.kihan.application.auth.dto.AuthResult;
+import com.example.kihan.application.auth.command.RevokeTokenService;
 import com.example.kihan.application.auth.dto.LoginResult;
 import com.example.kihan.application.auth.facade.LoginFacade;
 import com.example.kihan.application.auth.facade.ReissueTokenFacade;
@@ -16,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 API")
@@ -27,6 +27,7 @@ public class AuthController {
     private final LoginFacade loginFacade;
     private final CookieProvider cookieProvider;
     private final ReissueTokenFacade reissueTokenFacade;
+    private final RevokeTokenService revokeTokenService;
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다. Refresh Token은 HttpOnly 쿠키로 반환됩니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공")
@@ -35,8 +36,7 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             @Parameter(hidden = true) HttpServletResponse response
     ) {
-        LoginCommand command = new LoginCommand(request.email(), request.password());
-        LoginResult loginResult = loginFacade.login(command);
+        LoginResult loginResult = loginFacade.login(request.toCommand());
 
         cookieProvider.addRefreshToken(response, loginResult.refreshToken());
 
@@ -49,16 +49,29 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "재발급 성공")
     @PostMapping("/reissue")
     public ResponseEntity<AuthResponse> reissue(
-            @Parameter(description = "Refresh Token (쿠키)") @CookieValue(name = "refreshToken") String refreshToken
+            @Parameter(description = "Refresh Token (쿠키)") @CookieValue(name = "refreshToken") String refreshToken,
+            HttpServletResponse response
     ) {
-        AuthResult result = reissueTokenFacade.reissue(refreshToken);
-        return ResponseEntity.ok(AuthResponse.from(result));
+        LoginResult loginResult = reissueTokenFacade.reissue(refreshToken);
+
+        cookieProvider.addRefreshToken(response, loginResult.refreshToken());
+
+        return ResponseEntity.ok(
+                AuthResponse.from(loginResult.user(), loginResult.accessToken())
+        );
     }
 
     @Operation(summary = "로그아웃", description = "Refresh Token 쿠키를 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "로그아웃 성공")
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Parameter(hidden = true) HttpServletResponse response) {
+    public ResponseEntity<Void> logout(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            @Parameter(hidden = true) HttpServletResponse response
+    ) {
+        if (StringUtils.hasText(refreshToken)) {
+            revokeTokenService.revokeByToken(refreshToken);
+        }
+
         cookieProvider.deleteRefreshToken(response);
         return ResponseEntity.noContent().build();
     }

@@ -21,7 +21,7 @@ public class RecurrenceRule {
     @Column(nullable = false)
     private RecurrencePattern pattern;
 
-    @Column(name = "recurrence_interval", nullable = false)
+    @Column(nullable = false, name = "recurrence_interval")
     private int interval;
 
     @Column(nullable = false)
@@ -29,16 +29,14 @@ public class RecurrenceRule {
 
     private LocalDate endDate;
 
-    private RecurrenceRule(final RecurrencePattern pattern, final int interval, final LocalDate startDate, final LocalDate endDate) {
-        this.pattern = requireNonNull(pattern);
-        this.interval = interval;
-        this.startDate = requireNonNull(startDate);
-        this.endDate = endDate;
-        validate(interval, startDate, endDate);
-    }
-
-    public static RecurrenceRule of(final RecurrencePattern pattern, final int interval, final LocalDate startDate, final LocalDate endDate) {
-        return new RecurrenceRule(pattern, interval, startDate, endDate);
+    public static RecurrenceRule create(final RecurrencePattern pattern, final int interval, final LocalDate startDate, final LocalDate endDate) {
+        RecurrenceRule rule = new RecurrenceRule();
+        rule.pattern = requireNonNull(pattern);
+        rule.interval = interval;
+        rule.startDate = requireNonNull(startDate);
+        rule.endDate = endDate;
+        rule.validate(interval, startDate, endDate);
+        return rule;
     }
 
     private void validate(final int interval, final LocalDate startDate, final LocalDate endDate) {
@@ -49,4 +47,5 @@ public class RecurrenceRule {
             throw InvalidDeadlineRuleException.endDateAfterStart();
         }
     }
+
 }

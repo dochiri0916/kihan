@@ -5,11 +5,11 @@ public class UserNotFoundException extends UserException {
         super(message);
     }
 
-    public static UserNotFoundException withId(Long userId) {
+    public static UserNotFoundException byId(Long userId) {
         return new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId);
     }
 
-    public static UserNotFoundException withEmail(String email) {
+    public static UserNotFoundException byEmail(String email) {
         return new UserNotFoundException("사용자를 찾을 수 없습니다: " + email);
     }
 }

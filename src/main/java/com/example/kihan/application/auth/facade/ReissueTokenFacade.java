@@ -1,15 +1,16 @@
 package com.example.kihan.application.auth.facade;
 
-import com.example.kihan.application.auth.dto.AuthResult;
-import com.example.kihan.application.auth.query.RefreshTokenLoader;
-import com.example.kihan.application.user.query.UserLoader;
-import com.example.kihan.domain.auth.InvalidRefreshTokenException;
+import com.example.kihan.application.auth.dto.LoginResult;
 import com.example.kihan.domain.auth.RefreshToken;
+import com.example.kihan.domain.auth.RefreshTokenRepository;
 import com.example.kihan.domain.user.User;
+import com.example.kihan.domain.user.UserRepository;
 import com.example.kihan.infrastructure.security.jwt.JwtTokenGenerator;
+import com.example.kihan.infrastructure.security.jwt.JwtTokenResult;
 import com.example.kihan.infrastructure.security.jwt.RefreshTokenVerifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -18,34 +19,27 @@ import java.time.LocalDateTime;
 public class ReissueTokenFacade {
 
     private final RefreshTokenVerifier refreshTokenVerifier;
-    private final RefreshTokenLoader refreshTokenLoader;
-    private final UserLoader userLoader;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
     private final JwtTokenGenerator jwtTokenGenerator;
 
-    public AuthResult reissue(final String refreshTokenValue) {
+    @Transactional
+    public LoginResult reissue(String refreshTokenValue) {
         Long userId = refreshTokenVerifier.verifyAndExtractUserId(refreshTokenValue);
 
-        RefreshToken refreshToken = refreshTokenLoader.loadValidToken(
-                refreshTokenValue,
-                LocalDateTime.now()
-        );
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue);
 
-        if (!refreshToken.isOwnedBy(userId)) {
-            throw InvalidRefreshTokenException.ownerMismatch();
-        }
+        refreshToken.verifyNotExpired(LocalDateTime.now());
+        refreshToken.verifyOwnership(userId);
 
-        User user = userLoader.loadActiveUserById(userId);
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId);
 
-        String newAccessToken = jwtTokenGenerator.generateAccessToken(
-                user.getId(),
-                user.getRole().name()
-        );
+        JwtTokenResult tokenResult = jwtTokenGenerator.generateToken(user.getId(), user.getRole().name());
 
-        return new AuthResult(
-                user.getId(),
-                user.getRole().name(),
-                newAccessToken
-        );
+        refreshToken.rotate(tokenResult.refreshToken(), tokenResult.refreshTokenExpiresAt());
+        refreshTokenRepository.save(refreshToken);
+
+        return LoginResult.from(user, tokenResult.accessToken(), tokenResult.refreshToken());
     }
 
 }

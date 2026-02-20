@@ -13,7 +13,7 @@ public class DeleteDeadlineService {
     private final DeadlineLoader deadlineLoader;
 
     @Transactional
-    public void delete(final Long userId, final Long deadlineId) {
+    public void execute(final Long userId, final Long deadlineId) {
         Deadline deadline = deadlineLoader.loadByIdAndUserId(deadlineId, userId);
         deadline.delete();
     }
