@@ -70,7 +70,6 @@ public class SecurityConfig {
         config.setAllowedOrigins(corsProperties.allowedOrigins());
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
-        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
