@@ -166,9 +166,8 @@ class ExecutionTest {
         return Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 20, 10, 0),
+                LocalDate.of(2026, 2, 20),
                 null
         );
     }

@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,9 +34,8 @@ class MarkExecutionAsInProgressServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
@@ -55,9 +53,8 @@ class MarkExecutionAsInProgressServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));

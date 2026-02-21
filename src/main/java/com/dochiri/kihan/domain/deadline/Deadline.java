@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,23 +22,19 @@ public class Deadline extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DeadlineType type;
 
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
 
     @Embedded
     private RecurrenceRule recurrenceRule;
 
-    public static Deadline register(Long userId, String title, String description, DeadlineType type, LocalDateTime dueDate, RecurrenceRule recurrenceRule) {
+    public static Deadline register(Long userId, String title, DeadlineType type, LocalDate dueDate, RecurrenceRule recurrenceRule) {
         Deadline deadline = new Deadline();
         deadline.userId = requireNonNull(userId);
         deadline.title = requireNonNull(title);
-        deadline.description = description;
         deadline.type = requireNonNull(type);
         deadline.dueDate = dueDate;
         deadline.recurrenceRule = recurrenceRule;
@@ -46,13 +42,9 @@ public class Deadline extends BaseEntity {
         return deadline;
     }
 
-    public void update(String newTitle, String newDescription) {
+    public void update(String newTitle) {
         if (newTitle != null) {
             changeTitle(newTitle);
-        }
-
-        if (newDescription != null) {
-            changeDescription(newDescription);
         }
     }
 
@@ -74,17 +66,13 @@ public class Deadline extends BaseEntity {
         this.title = newTitle;
     }
 
-    private void changeDescription(String newDescription) {
-        this.description = newDescription;
-    }
-
     public void verifyOwnership(Long requestUserId) {
         if (!this.userId.equals(requestUserId)) {
             throw new DeadlineAccessDeniedException(this.getId(), requestUserId);
         }
     }
 
-    private void validate(DeadlineType type, LocalDateTime dueDate, RecurrenceRule recurrenceRule) {
+    private void validate(DeadlineType type, LocalDate dueDate, RecurrenceRule recurrenceRule) {
         if (type == DeadlineType.ONE_TIME) {
             if (dueDate == null) {
                 throw InvalidDeadlineRuleException.oneTimeDueDateRequired();

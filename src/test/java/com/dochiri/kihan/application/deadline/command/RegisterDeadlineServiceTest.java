@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,9 +38,8 @@ class RegisterDeadlineServiceTest {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 1L,
                 "운동",
-                "아침 러닝",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         when(deadlineRepository.save(any(Deadline.class))).thenAnswer(invocation -> {
@@ -61,7 +60,6 @@ class RegisterDeadlineServiceTest {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 1L,
                 "운동",
-                "아침 러닝",
                 DeadlineType.ONE_TIME,
                 null,
                 null

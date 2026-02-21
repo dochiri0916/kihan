@@ -1,7 +1,6 @@
 package com.dochiri.kihan.domain.execution;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExecutionRepository {
@@ -18,7 +17,7 @@ public interface ExecutionRepository {
             LocalDate endDate
     );
 
-    List<Execution> findOverdueOneTimeAndNotDone(LocalDateTime now);
+    List<Execution> findOverdueOneTimeAndNotDone(LocalDate today);
 
     boolean existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate);
 

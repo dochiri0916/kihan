@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -39,9 +40,8 @@ class DeleteDeadlineServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "제목",
-                "설명",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         when(deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(10L, 1L)).thenReturn(deadline);

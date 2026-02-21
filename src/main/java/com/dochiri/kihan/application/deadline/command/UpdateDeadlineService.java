@@ -17,7 +17,7 @@ public class UpdateDeadlineService {
     @Transactional
     public void update(UpdateDeadlineCommand command) {
         Deadline deadline = deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(command.deadlineId(), command.userId());
-        deadline.update(command.title(), command.description());
+        deadline.update(command.title());
     }
 
     @Transactional

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,8 +20,9 @@ public class OverdueExecutionCompletionService {
 
     @Transactional
     public int completeOverdueOneTimeExecutions() {
+        LocalDate today = LocalDate.now(clock);
         LocalDateTime now = LocalDateTime.now(clock);
-        List<Execution> executions = executionRepository.findOverdueOneTimeAndNotDone(now);
+        List<Execution> executions = executionRepository.findOverdueOneTimeAndNotDone(today);
 
         for (Execution execution : executions) {
             execution.markAsDone(now);

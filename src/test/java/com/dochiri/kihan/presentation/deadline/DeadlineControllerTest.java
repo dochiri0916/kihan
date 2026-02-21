@@ -86,7 +86,8 @@ class DeadlineControllerTest {
                         registerDeadlineService,
                         updateDeadlineService,
                         deleteDeadlineService,
-                        deadlineQueryService
+                        deadlineQueryService,
+                        Clock.systemUTC()
                 ))
                 .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
@@ -110,9 +111,8 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "프로젝트 제출",
-                                  "description": "최종 보고서 제출",
                                   "type": "ONE_TIME",
-                                  "dueDate": "2026-03-01T09:00:00",
+                                  "dueDate": "2026-03-01",
                                   "pattern": null,
                                   "startDate": null,
                                   "endDate": null
@@ -137,7 +137,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "주간 회의",
-                                  "description": "팀 회의",
                                   "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
@@ -167,7 +166,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "주간 회의",
-                                  "description": "팀 회의",
                                   "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
@@ -194,7 +192,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "",
-                                  "description": "설명",
                                   "type": null,
                                   "dueDate": null,
                                   "pattern": null,
@@ -216,9 +213,8 @@ class DeadlineControllerTest {
                 .thenReturn(new DeadlineDetail(
                         10L,
                         "프로젝트 제출",
-                        "설명",
                         DeadlineType.ONE_TIME,
-                        LocalDateTime.of(2026, 3, 1, 9, 0),
+                        LocalDate.of(2026, 3, 1),
                         null,
                         LocalDateTime.of(2026, 2, 1, 10, 0)
                 ));
@@ -235,8 +231,8 @@ class DeadlineControllerTest {
     void shouldGetAllDeadlines() throws Exception {
         authenticate(1L);
         when(deadlineQueryService.getAllByUserId(1L, DeadlineSortBy.CREATED_AT, Sort.Direction.DESC)).thenReturn(List.of(
-                new DeadlineDetail(10L, "운동", "설명", DeadlineType.ONE_TIME, LocalDateTime.of(2026, 2, 21, 9, 0), null, null),
-                new DeadlineDetail(11L, "독서", "설명", DeadlineType.ONE_TIME, LocalDateTime.of(2026, 2, 22, 9, 0), null, null)
+                new DeadlineDetail(10L, "운동", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 21), null, null),
+                new DeadlineDetail(11L, "독서", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 22), null, null)
         ));
 
         mockMvc.perform(get("/api/deadlines"))
@@ -255,8 +251,7 @@ class DeadlineControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "title": "새 제목",
-                                  "description": "새 설명"
+                                  "title": "새 제목"
                                 }
                                 """))
                 .andExpect(status().isNoContent());
@@ -266,7 +261,6 @@ class DeadlineControllerTest {
         assertEquals(1L, captor.getValue().userId());
         assertEquals(10L, captor.getValue().deadlineId());
         assertEquals("새 제목", captor.getValue().title());
-        assertEquals("새 설명", captor.getValue().description());
     }
 
     @Test

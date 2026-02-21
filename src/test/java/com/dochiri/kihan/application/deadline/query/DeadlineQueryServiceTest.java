@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,9 +76,8 @@ class DeadlineQueryServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 title,
-                "설명",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         setId(deadline, id);

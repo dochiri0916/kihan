@@ -18,7 +18,6 @@ public class RegisterDeadlineService {
         Deadline deadline = Deadline.register(
                 command.userId(),
                 command.title(),
-                command.description(),
                 command.type(),
                 command.dueDate(),
                 command.recurrenceRule()

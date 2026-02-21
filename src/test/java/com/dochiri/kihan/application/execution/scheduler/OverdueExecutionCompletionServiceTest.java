@@ -41,17 +41,17 @@ class OverdueExecutionCompletionServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                null,
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
+        LocalDate today = LocalDate.of(2026, 2, 21);
         LocalDateTime now = LocalDateTime.of(2026, 2, 21, 10, 0);
 
         when(clock.instant()).thenReturn(Instant.parse("2026-02-21T10:00:00Z"));
         when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
-        when(executionRepository.findOverdueOneTimeAndNotDone(now)).thenReturn(List.of(execution));
+        when(executionRepository.findOverdueOneTimeAndNotDone(today)).thenReturn(List.of(execution));
 
         int completedCount = overdueExecutionCompletionService.completeOverdueOneTimeExecutions();
 

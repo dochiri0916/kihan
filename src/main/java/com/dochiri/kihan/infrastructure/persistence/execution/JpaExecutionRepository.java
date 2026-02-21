@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -39,8 +38,8 @@ public class JpaExecutionRepository implements ExecutionRepository {
     }
 
     @Override
-    public List<Execution> findOverdueOneTimeAndNotDone(LocalDateTime now) {
-        return executionJpaRepository.findOverdueOneTimeAndNotDone(now, ExecutionStatus.DONE);
+    public List<Execution> findOverdueOneTimeAndNotDone(LocalDate today) {
+        return executionJpaRepository.findOverdueOneTimeAndNotDone(today, ExecutionStatus.DONE);
     }
 
     @Override

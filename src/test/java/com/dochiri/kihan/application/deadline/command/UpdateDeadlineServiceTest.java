@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,15 +30,14 @@ class UpdateDeadlineServiceTest {
     private UpdateDeadlineService updateDeadlineService;
 
     @Test
-    @DisplayName("update 호출 시 기한의 제목과 설명을 변경한다")
-    void shouldUpdateTitleAndDescription() {
-        UpdateDeadlineCommand command = new UpdateDeadlineCommand(1L, 10L, "새 제목", "새 설명");
+    @DisplayName("update 호출 시 기한의 제목을 변경한다")
+    void shouldUpdateTitle() {
+        UpdateDeadlineCommand command = new UpdateDeadlineCommand(1L, 10L, "새 제목");
         Deadline deadline = Deadline.register(
                 1L,
                 "기존 제목",
-                "기존 설명",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         when(deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(10L, 1L)).thenReturn(deadline);
@@ -47,7 +45,6 @@ class UpdateDeadlineServiceTest {
         updateDeadlineService.update(command);
 
         assertEquals("새 제목", deadline.getTitle());
-        assertEquals("새 설명", deadline.getDescription());
         verify(deadlineRepository).findByIdAndUserIdAndDeletedAtIsNull(10L, 1L);
     }
 
@@ -57,7 +54,6 @@ class UpdateDeadlineServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "제목",
-                "설명",
                 DeadlineType.RECURRING,
                 null,
                 RecurrenceRule.create(

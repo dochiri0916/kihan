@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +39,7 @@ public interface ExecutionJpaRepository extends JpaRepository<Execution, Long> {
               and e.status <> :doneStatus
             """)
     List<Execution> findOverdueOneTimeAndNotDone(
-            @Param("now") LocalDateTime now,
+            @Param("now") LocalDate now,
             @Param("doneStatus") ExecutionStatus doneStatus
     );
 

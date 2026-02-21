@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,9 +67,8 @@ class CreateExecutionServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         setId(deadline, id);

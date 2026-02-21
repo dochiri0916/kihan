@@ -26,6 +26,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.Clock;
 import java.util.List;
 
 @Tag(name = "Deadline", description = "기한 관리 API")
@@ -38,6 +39,7 @@ public class DeadlineController {
     private final UpdateDeadlineService updateDeadlineService;
     private final DeleteDeadlineService deleteDeadlineService;
     private final DeadlineQueryService deadlineQueryService;
+    private final Clock clock;
 
     @Operation(
             summary = "기한 등록",
@@ -50,9 +52,8 @@ public class DeadlineController {
                                             value = """
                                                     {
                                                       "title": "프로젝트 제출",
-                                                      "description": "최종 보고서 제출",
                                                       "type": "ONE_TIME",
-                                                      "dueDate": "2027-12-31T23:59:59",
+                                                      "dueDate": "2027-12-31",
                                                       "pattern": null,
                                                       "startDate": null,
                                                       "endDate": null
@@ -64,7 +65,6 @@ public class DeadlineController {
                                             value = """
                                                     {
                                                       "title": "주간 회의",
-                                                      "description": "팀 주간 회의",
                                                       "type": "RECURRING",
                                                       "dueDate": null,
                                                       "pattern": "WEEKLY",
@@ -86,10 +86,9 @@ public class DeadlineController {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 principal.userId(),
                 request.title(),
-                request.description(),
                 request.type(),
                 request.dueDate(),
-                request.toRecurrenceRule()
+                request.toRecurrenceRule(clock)
         );
         Long deadlineId = registerDeadlineService.execute(command);
         return ResponseEntity.created(URI.create("/api/deadlines/" + deadlineId)).build();
@@ -118,7 +117,7 @@ public class DeadlineController {
                 .toList());
     }
 
-    @Operation(summary = "기한 수정", description = "기한의 제목과 설명을 수정합니다.")
+    @Operation(summary = "기한 수정", description = "기한의 제목을 수정합니다.")
     @ApiResponse(responseCode = "204", description = "수정 성공")
     @PatchMapping("/{id}")
     public ResponseEntity<Void> update(
@@ -129,8 +128,7 @@ public class DeadlineController {
         UpdateDeadlineCommand command = new UpdateDeadlineCommand(
                 principal.userId(),
                 id,
-                request.title(),
-                request.description()
+                request.title()
         );
         updateDeadlineService.update(command);
         return ResponseEntity.noContent().build();

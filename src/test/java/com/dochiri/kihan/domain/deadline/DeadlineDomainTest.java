@@ -14,12 +14,11 @@ class DeadlineDomainTest {
     @Test
     @DisplayName("ONE_TIME 마감은 dueDate가 있으면 정상 등록된다")
     void should_register_one_time_deadline_with_due_date() {
-        LocalDateTime dueDate = LocalDateTime.of(2026, 2, 21, 9, 0);
+        LocalDate dueDate = LocalDate.of(2026, 2, 21);
 
         Deadline deadline = Deadline.register(
                 1L,
                 "운동",
-                "아침 러닝",
                 DeadlineType.ONE_TIME,
                 dueDate,
                 null
@@ -27,26 +26,23 @@ class DeadlineDomainTest {
 
         assertEquals(1L, deadline.getUserId());
         assertEquals("운동", deadline.getTitle());
-        assertEquals("아침 러닝", deadline.getDescription());
         assertEquals(DeadlineType.ONE_TIME, deadline.getType());
         assertEquals(dueDate, deadline.getDueDate());
         assertNull(deadline.getRecurrenceRule());
     }
 
     @Test
-    @DisplayName("설명이 null이어도 ONE_TIME 마감 등록이 가능하다")
-    void should_allow_null_description_for_one_time_deadline() {
+    @DisplayName("제목만으로 ONE_TIME 마감 등록이 가능하다")
+    void should_allow_one_time_deadline_registration_with_title_only() {
         Deadline deadline = Deadline.register(
                 1L,
                 "운동",
-                null,
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
 
         assertEquals("운동", deadline.getTitle());
-        assertTrue(deadline.getDescription() == null);
     }
 
     @Test
@@ -61,7 +57,6 @@ class DeadlineDomainTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "정기 점검",
-                "주간 점검",
                 DeadlineType.RECURRING,
                 null,
                 rule
@@ -80,7 +75,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        "description",
                         DeadlineType.ONE_TIME,
                         null,
                         null
@@ -102,9 +96,8 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        "description",
                         DeadlineType.ONE_TIME,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         rule
                 )
         );
@@ -118,9 +111,8 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        "description",
                         DeadlineType.RECURRING,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         null
                 )
         );
@@ -140,9 +132,8 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        "description",
                         DeadlineType.RECURRING,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         rule
                 )
         );
@@ -156,9 +147,8 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         null,
                         "title",
-                        "description",
                         DeadlineType.ONE_TIME,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         null
                 )
         );
@@ -172,9 +162,8 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         null,
-                        "description",
                         DeadlineType.ONE_TIME,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         null
                 )
         );
@@ -188,34 +177,31 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        "description",
                         null,
-                        LocalDateTime.of(2026, 2, 20, 10, 0),
+                        LocalDate.of(2026, 2, 20),
                         null
                 )
         );
     }
 
     @Test
-    @DisplayName("제목과 설명을 업데이트할 수 있다")
-    void should_update_title_and_description() {
+    @DisplayName("제목을 업데이트할 수 있다")
+    void should_update_title() {
         Deadline deadline = oneTimeDeadline();
 
-        deadline.update("새 제목", "새 설명");
+        deadline.update("새 제목");
 
         assertEquals("새 제목", deadline.getTitle());
-        assertEquals("새 설명", deadline.getDescription());
     }
 
     @Test
-    @DisplayName("제목이 null이면 제목은 유지되고 설명만 변경된다")
+    @DisplayName("제목이 null이면 기존 제목을 유지한다")
     void should_keep_title_when_new_title_is_null() {
         Deadline deadline = oneTimeDeadline();
 
-        deadline.update(null, "설명만 변경");
+        deadline.update(null);
 
         assertEquals("title", deadline.getTitle());
-        assertEquals("설명만 변경", deadline.getDescription());
     }
 
     @Test
@@ -223,18 +209,7 @@ class DeadlineDomainTest {
     void should_throw_when_updating_with_blank_title() {
         Deadline deadline = oneTimeDeadline();
 
-        assertThrows(InvalidDeadlineTitleException.class, () -> deadline.update("   ", null));
-    }
-
-    @Test
-    @DisplayName("update에서 설명이 null이면 기존 설명을 유지한다")
-    void should_keep_description_when_new_description_is_null() {
-        Deadline deadline = oneTimeDeadline();
-
-        deadline.update("새 제목", null);
-
-        assertEquals("새 제목", deadline.getTitle());
-        assertEquals("description", deadline.getDescription());
+        assertThrows(InvalidDeadlineTitleException.class, () -> deadline.update("   "));
     }
 
     @Test
@@ -242,7 +217,7 @@ class DeadlineDomainTest {
     void should_keep_original_title_when_blank_title_update_fails() {
         Deadline deadline = oneTimeDeadline();
 
-        assertThrows(InvalidDeadlineTitleException.class, () -> deadline.update(" ", "새 설명"));
+        assertThrows(InvalidDeadlineTitleException.class, () -> deadline.update(" "));
 
         assertEquals("title", deadline.getTitle());
     }
@@ -321,9 +296,8 @@ class DeadlineDomainTest {
         return Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 20, 10, 0),
+                LocalDate.of(2026, 2, 20),
                 null
         );
     }

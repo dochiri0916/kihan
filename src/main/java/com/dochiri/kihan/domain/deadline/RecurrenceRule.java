@@ -1,6 +1,5 @@
 package com.dochiri.kihan.domain.deadline;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,10 +17,8 @@ import static java.util.Objects.requireNonNull;
 public class RecurrenceRule {
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RecurrencePattern pattern;
 
-    @Column(nullable = false)
     private LocalDate startDate;
 
     private LocalDate endDate;

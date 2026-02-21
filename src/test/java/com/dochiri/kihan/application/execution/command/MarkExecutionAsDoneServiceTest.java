@@ -41,9 +41,8 @@ class MarkExecutionAsDoneServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                "description",
                 DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
+                LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));

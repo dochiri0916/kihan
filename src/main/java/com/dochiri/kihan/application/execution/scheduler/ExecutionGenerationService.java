@@ -68,7 +68,7 @@ public class ExecutionGenerationService {
 
     private boolean shouldCreateOneTimeExecution(Deadline deadline, LocalDate date) {
         return deadline.getDueDate() != null
-                && deadline.getDueDate().toLocalDate().equals(date);
+                && deadline.getDueDate().equals(date);
     }
 
     private boolean shouldCreateRecurringExecution(Deadline deadline, LocalDate date) {
