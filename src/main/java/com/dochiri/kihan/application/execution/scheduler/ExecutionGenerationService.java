@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -95,41 +94,31 @@ public class ExecutionGenerationService {
     }
 
     private boolean shouldCreateDailyExecution(RecurrenceRule rule, LocalDate date) {
-        long daysBetween = ChronoUnit.DAYS.between(rule.getStartDate(), date);
-        return daysBetween >= 0 && daysBetween % rule.getInterval() == 0;
+        return !date.isBefore(rule.getStartDate());
     }
 
     private boolean shouldCreateWeeklyExecution(RecurrenceRule rule, LocalDate date) {
-        long weeksBetween = ChronoUnit.WEEKS.between(rule.getStartDate(), date);
-        return weeksBetween >= 0
-                && weeksBetween % rule.getInterval() == 0
+        return !date.isBefore(rule.getStartDate())
                 && date.getDayOfWeek() == rule.getStartDate().getDayOfWeek();
     }
 
     private boolean shouldCreateMonthlyExecution(RecurrenceRule rule, LocalDate date) {
-        long monthsBetween = ChronoUnit.MONTHS.between(
-                YearMonth.from(rule.getStartDate()),
-                YearMonth.from(date)
-        );
         int targetDay = Math.min(
                 rule.getStartDate().getDayOfMonth(),
                 date.lengthOfMonth()
         );
 
-        return monthsBetween >= 0
-                && monthsBetween % rule.getInterval() == 0
+        return !date.isBefore(rule.getStartDate())
                 && date.getDayOfMonth() == targetDay;
     }
 
     private boolean shouldCreateYearlyExecution(RecurrenceRule rule, LocalDate date) {
-        long yearsBetween = ChronoUnit.YEARS.between(rule.getStartDate(), date);
         int targetDay = Math.min(
                 rule.getStartDate().getDayOfMonth(),
                 YearMonth.of(date.getYear(), rule.getStartDate().getMonth()).lengthOfMonth()
         );
 
-        return yearsBetween >= 0
-                && yearsBetween % rule.getInterval() == 0
+        return !date.isBefore(rule.getStartDate())
                 && date.getMonthValue() == rule.getStartDate().getMonthValue()
                 && date.getDayOfMonth() == targetDay;
     }

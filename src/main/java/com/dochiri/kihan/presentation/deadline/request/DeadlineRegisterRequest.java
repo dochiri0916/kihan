@@ -27,9 +27,6 @@ public record DeadlineRegisterRequest(
         @Schema(description = "반복 패턴 (type=RECURRING일 때만 사용, ONE_TIME일 때는 null)", example = "WEEKLY", nullable = true)
         RecurrencePattern pattern,
 
-        @Schema(description = "반복 간격 (type=RECURRING일 때만 사용)", example = "1", nullable = true)
-        Integer interval,
-
         @Schema(description = "반복 시작일 (type=RECURRING일 때만 사용)", example = "2027-01-01", nullable = true)
         LocalDate startDate,
 
@@ -40,7 +37,6 @@ public record DeadlineRegisterRequest(
         if (pattern == null) {
             return null;
         }
-        int recurrenceInterval = interval == null ? 1 : interval;
-        return RecurrenceRule.create(pattern, recurrenceInterval, startDate, endDate);
+        return RecurrenceRule.create(pattern, startDate, endDate);
     }
 }

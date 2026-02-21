@@ -176,7 +176,6 @@
   "type": "ONE_TIME",
   "dueDate": "2027-12-31T23:59:59",
   "pattern": null,
-  "interval": null,
   "startDate": null,
   "endDate": null
 }
@@ -191,7 +190,6 @@
   "type": "RECURRING",
   "dueDate": null,
   "pattern": "WEEKLY",
-  "interval": null,
   "startDate": "2027-01-01",
   "endDate": null
 }
@@ -200,8 +198,6 @@
 유효성:
 
 - `type=RECURRING`인 경우 `pattern`, `startDate`는 필수
-- `interval`은 선택값이며, 누락 시 기본 `1`로 처리
-- `interval`이 주어졌다면 `1` 이상이어야 함
 - `endDate`는 선택값이며, 누락 시 무기한 반복
 
 응답:
@@ -353,7 +349,6 @@
   "dueDate": null,
   "recurrenceRule": {
     "pattern": "WEEKLY",
-    "interval": 1,
     "startDate": "2027-01-01",
     "endDate": "2027-12-31"
   },

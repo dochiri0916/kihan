@@ -51,7 +51,6 @@ public class DeadlineController {
                                                       "type": "ONE_TIME",
                                                       "dueDate": "2027-12-31T23:59:59",
                                                       "pattern": null,
-                                                      "interval": null,
                                                       "startDate": null,
                                                       "endDate": null
                                                     }
@@ -66,7 +65,6 @@ public class DeadlineController {
                                                       "type": "RECURRING",
                                                       "dueDate": null,
                                                       "pattern": "WEEKLY",
-                                                      "interval": 1,
                                                       "startDate": "2027-01-01",
                                                       "endDate": "2027-12-31"
                                                     }

@@ -21,28 +21,21 @@ public class RecurrenceRule {
     @Column(nullable = false)
     private RecurrencePattern pattern;
 
-    @Column(nullable = false, name = "recurrence_interval")
-    private int interval;
-
     @Column(nullable = false)
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    public static RecurrenceRule create(RecurrencePattern pattern, int interval, LocalDate startDate, LocalDate endDate) {
+    public static RecurrenceRule create(RecurrencePattern pattern, LocalDate startDate, LocalDate endDate) {
         RecurrenceRule rule = new RecurrenceRule();
         rule.pattern = requireNonNull(pattern);
-        rule.interval = interval;
         rule.startDate = requireNonNull(startDate);
         rule.endDate = endDate;
-        rule.validate(interval, startDate, endDate);
+        rule.validate(startDate, endDate);
         return rule;
     }
 
-    private void validate(int interval, LocalDate startDate, LocalDate endDate) {
-        if (interval < 1) {
-            throw InvalidDeadlineRuleException.intervalMustBePositive();
-        }
+    private void validate(LocalDate startDate, LocalDate endDate) {
         if (endDate != null && endDate.isBefore(startDate)) {
             throw InvalidDeadlineRuleException.endDateAfterStart();
         }

@@ -111,7 +111,6 @@ class DeadlineControllerTest {
                                   "type": "ONE_TIME",
                                   "dueDate": "2026-03-01T09:00:00",
                                   "pattern": null,
-                                  "interval": null,
                                   "startDate": null,
                                   "endDate": null
                                 }
@@ -139,7 +138,6 @@ class DeadlineControllerTest {
                                   "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
-                                  "interval": 1,
                                   "startDate": "2026-02-01",
                                   "endDate": "2026-12-31"
                                 }
@@ -151,14 +149,13 @@ class DeadlineControllerTest {
         RecurrenceRule rule = captor.getValue().recurrenceRule();
         assertEquals(1L, captor.getValue().userId());
         assertEquals(RecurrencePattern.WEEKLY, rule.getPattern());
-        assertEquals(1, rule.getInterval());
         assertEquals(LocalDate.of(2026, 2, 1), rule.getStartDate());
         assertEquals(LocalDate.of(2026, 12, 31), rule.getEndDate());
     }
 
     @Test
-    @DisplayName("RECURRING 등록에서 interval이 누락되면 기본값 1로 처리한다")
-    void shouldUseDefaultIntervalWhenRecurringIntervalIsMissing() throws Exception {
+    @DisplayName("RECURRING 등록에서 endDate가 누락되면 무기한 반복으로 처리한다")
+    void shouldAllowRecurringDeadlineWithoutEndDate() throws Exception {
         authenticate(1L);
         when(registerDeadlineService.execute(any())).thenReturn(103L);
 
@@ -171,7 +168,6 @@ class DeadlineControllerTest {
                                   "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
-                                  "interval": null,
                                   "startDate": "2026-02-01",
                                   "endDate": null
                                 }
@@ -181,7 +177,6 @@ class DeadlineControllerTest {
         ArgumentCaptor<RegisterDeadlineCommand> captor = ArgumentCaptor.forClass(RegisterDeadlineCommand.class);
         verify(registerDeadlineService).execute(captor.capture());
         RecurrenceRule rule = captor.getValue().recurrenceRule();
-        assertEquals(1, rule.getInterval());
         assertEquals(LocalDate.of(2026, 2, 1), rule.getStartDate());
         assertNull(rule.getEndDate());
     }
@@ -200,7 +195,6 @@ class DeadlineControllerTest {
                                   "type": null,
                                   "dueDate": null,
                                   "pattern": null,
-                                  "interval": null,
                                   "startDate": null,
                                   "endDate": null
                                 }

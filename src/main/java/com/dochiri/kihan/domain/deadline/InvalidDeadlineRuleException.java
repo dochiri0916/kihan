@@ -6,7 +6,6 @@ public class InvalidDeadlineRuleException extends DeadlineException {
     private static final String ONE_TIME_NO_RECURRENCE = "ONE_TIME 마감은 recurrenceRule을 가질 수 없습니다.";
     private static final String RECURRING_RULE_REQUIRED = "RECURRING 마감은 recurrenceRule이 필수입니다.";
     private static final String RECURRING_NO_DUE_DATE = "RECURRING 마감은 dueDate를 가질 수 없습니다.";
-    private static final String INTERVAL_MUST_BE_POSITIVE = "interval은 1 이상이어야 합니다.";
     private static final String END_DATE_AFTER_START = "endDate는 startDate 이후여야 합니다.";
 
     private InvalidDeadlineRuleException(String message) {
@@ -31,10 +30,6 @@ public class InvalidDeadlineRuleException extends DeadlineException {
 
     public static InvalidDeadlineRuleException recurringNoDueDate() {
         return new InvalidDeadlineRuleException(RECURRING_NO_DUE_DATE);
-    }
-
-    public static InvalidDeadlineRuleException intervalMustBePositive() {
-        return new InvalidDeadlineRuleException(INTERVAL_MUST_BE_POSITIVE);
     }
 
     public static InvalidDeadlineRuleException endDateAfterStart() {
