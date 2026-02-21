@@ -172,9 +172,8 @@
 ```json
 {
   "title": "프로젝트 제출",
-  "description": "최종 보고서 제출",
   "type": "ONE_TIME",
-  "dueDate": "2027-12-31T23:59:59",
+  "dueDate": "2027-12-31",
   "pattern": null,
   "startDate": null,
   "endDate": null
@@ -186,7 +185,6 @@
 ```json
 {
   "title": "주간 회의",
-  "description": "팀 주간 회의",
   "type": "RECURRING",
   "dueDate": null,
   "pattern": "WEEKLY",
@@ -197,9 +195,9 @@
 
 유효성:
 
-- `description`: 선택값
 - `type=ONE_TIME`인 경우 `dueDate`는 필수
-- `type=RECURRING`인 경우 `pattern`, `startDate`는 필수
+- `type=RECURRING`인 경우 `pattern`은 필수
+- `type=RECURRING`에서 `startDate` 누락 시 서버가 현재 날짜(`LocalDate.now(clock)`)로 대체
 - `endDate`는 선택값이며, 누락 시 무기한 반복
 
 응답:
@@ -218,9 +216,8 @@
 {
   "id": 1,
   "title": "프로젝트 제출",
-  "description": "최종 보고서 제출",
   "type": "ONE_TIME",
-  "dueDate": "2027-12-31T23:59:59",
+  "dueDate": "2027-12-31",
   "recurrenceRule": null,
   "createdAt": "2026-02-21T15:00:00"
 }
@@ -230,6 +227,11 @@
 
 - `GET /api/deadlines`
 - Auth: 필요
+
+쿼리 파라미터:
+
+- `sortBy`: `CREATED_AT`(기본값), `DUE_DATE`, `TITLE`
+- `direction`: `DESC`(기본값), `ASC`
 
 응답 `200`: `DeadlineResponse[]`
 
@@ -242,8 +244,7 @@
 
 ```json
 {
-  "title": "프로젝트 최종 제출",
-  "description": "보고서와 코드 제출"
+  "title": "프로젝트 최종 제출"
 }
 ```
 
@@ -251,7 +252,32 @@
 
 - `204 No Content`
 
-### 4.5 기한 삭제
+### 4.5 반복 규칙 수정
+
+- `PATCH /api/deadlines/{id}/recurrence`
+- Auth: 필요
+
+요청:
+
+```json
+{
+  "pattern": "WEEKLY",
+  "startDate": "2027-01-01",
+  "endDate": "2027-12-31"
+}
+```
+
+유효성:
+
+- `pattern`: 필수
+- `startDate`: 필수
+- `endDate`: 선택값, 지정 시 `startDate` 이상
+
+응답:
+
+- `204 No Content`
+
+### 4.6 기한 삭제
 
 - `DELETE /api/deadlines/{id}`
 - Auth: 필요
@@ -270,7 +296,7 @@
 - `재개`는 `PAUSED` 상태에서만 가능
 - `중지`는 `IN_PROGRESS` 상태에서만 가능
 - `DONE`은 종료 상태
-- `ONE_TIME` 실행은 연결된 마감의 `dueDate`가 지나면 스케줄러가 자동으로 `DONE` 처리
+- `ONE_TIME` 실행은 연결된 마감의 `dueDate`가 오늘보다 이전이면 스케줄러가 자동으로 `DONE` 처리
 
 ### 5.1 실행 단건 조회
 
@@ -365,7 +391,6 @@
 {
   "id": 1,
   "title": "주간 회의",
-  "description": "팀 주간 회의",
   "type": "RECURRING",
   "dueDate": null,
   "recurrenceRule": {
