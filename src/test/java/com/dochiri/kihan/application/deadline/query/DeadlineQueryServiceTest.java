@@ -10,12 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +74,19 @@ class DeadlineQueryServiceTest {
         assertEquals("운동", result.get(0).getTitle());
         assertEquals("독서", result.get(1).getTitle());
         verify(deadlineRepository).findAllByDeletedAtIsNull();
+    }
+
+    @Test
+    @DisplayName("페이지 조회 시 정렬 + ID tie-breaker를 적용한다")
+    void shouldReturnPageWithStableSort() {
+        Deadline first = oneTimeDeadline(1L, "운동");
+        when(deadlineRepository.findByUserIdAndDeletedAtIsNull(any(Long.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(first)));
+
+        var result = deadlineQueryService.getPageByUserId(1L, 0, 20, DeadlineSortBy.CREATED_AT, Sort.Direction.DESC);
+
+        assertEquals(1, result.getContent().size());
+        verify(deadlineRepository).findByUserIdAndDeletedAtIsNull(any(Long.class), any(Pageable.class));
     }
 
     private Deadline oneTimeDeadline(Long id, String title) {

@@ -230,12 +230,65 @@
 
 쿼리 파라미터:
 
+- `page`: 페이지 번호(0-base, 기본값 `0`)
+- `size`: 페이지 크기(기본값 `20`)
 - `sortBy`: `CREATED_AT`(기본값), `DUE_DATE`, `TITLE`
 - `direction`: `DESC`(기본값), `ASC`
 
-응답 `200`: `DeadlineResponse[]`
+요청 헤더(선택):
 
-### 4.4 기한 수정
+- `If-Modified-Since: <RFC_1123_DATE_TIME>`
+
+응답:
+
+- `200 OK` + `Last-Modified` 헤더 + `DeadlinePageResponse`
+- `304 Not Modified` (변경 없음)
+
+응답 `200` 예시:
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "프로젝트 제출",
+      "type": "ONE_TIME",
+      "dueDate": "2027-12-31",
+      "recurrenceRule": null,
+      "createdAt": "2026-02-21T15:00:00"
+    }
+  ],
+  "pageInfo": {
+    "page": 0,
+    "size": 20,
+    "totalElements": 183,
+    "totalPages": 10,
+    "hasNext": true,
+    "hasPrevious": false
+  }
+}
+```
+
+### 4.4 기한/실행 변경 이벤트 구독 (SSE)
+
+- `GET /api/deadlines/stream`
+- Auth: 필요
+- `Accept: text/event-stream`
+
+요청 헤더(선택):
+
+- `Last-Event-ID: <event-id>`
+
+이벤트 타입:
+
+- `deadline.created`
+- `deadline.updated`
+- `deadline.deleted`
+- `execution.updated`
+- `resync_required`
+- `keepalive`
+
+### 4.5 기한 수정
 
 - `PATCH /api/deadlines/{id}`
 - Auth: 필요
@@ -252,7 +305,7 @@
 
 - `204 No Content`
 
-### 4.5 반복 규칙 수정
+### 4.6 반복 규칙 수정
 
 - `PATCH /api/deadlines/{id}/recurrence`
 - Auth: 필요
@@ -277,7 +330,7 @@
 
 - `204 No Content`
 
-### 4.6 기한 삭제
+### 4.7 기한 삭제
 
 - `DELETE /api/deadlines/{id}`
 - Auth: 필요
@@ -402,7 +455,36 @@
 }
 ```
 
-### 6.4 ExecutionResponse
+### 6.4 DeadlinePageResponse
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "주간 회의",
+      "type": "RECURRING",
+      "dueDate": null,
+      "recurrenceRule": {
+        "pattern": "WEEKLY",
+        "startDate": "2027-01-01",
+        "endDate": "2027-12-31"
+      },
+      "createdAt": "2026-02-21T15:00:00"
+    }
+  ],
+  "pageInfo": {
+    "page": 0,
+    "size": 20,
+    "totalElements": 183,
+    "totalPages": 10,
+    "hasNext": true,
+    "hasPrevious": false
+  }
+}
+```
+
+### 6.5 ExecutionResponse
 
 ```json
 {

@@ -1,6 +1,7 @@
 package com.dochiri.kihan.application.deadline.command;
 
 import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
+import com.dochiri.kihan.application.realtime.event.DeadlineChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +31,9 @@ class RegisterDeadlineServiceTest {
 
     @Mock
     private DeadlineRepository deadlineRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private RegisterDeadlineService registerDeadlineService;
@@ -52,6 +58,7 @@ class RegisterDeadlineServiceTest {
 
         assertEquals(100L, id);
         verify(deadlineRepository).save(any(Deadline.class));
+        verify(eventPublisher).publishEvent(eq(new DeadlineChangedEvent(1L, "deadline.created", 100L)));
     }
 
     @Test

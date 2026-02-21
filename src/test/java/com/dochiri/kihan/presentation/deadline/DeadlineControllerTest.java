@@ -13,6 +13,7 @@ import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.deadline.RecurrencePattern;
 import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import com.dochiri.kihan.domain.user.UserRole;
+import com.dochiri.kihan.infrastructure.realtime.DeadlineStreamBroker;
 import com.dochiri.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.dochiri.kihan.presentation.common.exception.ExceptionStatusMapper;
 import com.dochiri.kihan.presentation.common.exception.GlobalExceptionHandler;
@@ -26,6 +27,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,6 +42,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,6 +77,9 @@ class DeadlineControllerTest {
     @Mock
     private DeadlineQueryService deadlineQueryService;
 
+    @Mock
+    private DeadlineStreamBroker deadlineStreamBroker;
+
     @BeforeEach
     void setUp() {
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
@@ -87,6 +94,7 @@ class DeadlineControllerTest {
                         updateDeadlineService,
                         deleteDeadlineService,
                         deadlineQueryService,
+                        deadlineStreamBroker,
                         Clock.systemUTC()
                 ))
                 .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
@@ -227,19 +235,24 @@ class DeadlineControllerTest {
     }
 
     @Test
-    @DisplayName("기한 목록 조회 성공 시 배열 응답을 반환한다")
+    @DisplayName("기한 목록 조회 성공 시 페이지 응답을 반환한다")
     void shouldGetAllDeadlines() throws Exception {
         authenticate(1L);
-        when(deadlineQueryService.getAllByUserId(1L, DeadlineSortBy.CREATED_AT, Sort.Direction.DESC)).thenReturn(List.of(
-                new DeadlineDetail(10L, "운동", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 21), null, null),
-                new DeadlineDetail(11L, "독서", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 22), null, null)
-        ));
+        when(deadlineQueryService.getLastModifiedAt(1L))
+                .thenReturn(LocalDateTime.of(2026, 2, 21, 12, 0));
+        when(deadlineQueryService.getPageByUserId(1L, 0, 20, DeadlineSortBy.CREATED_AT, Sort.Direction.DESC))
+                .thenReturn(new PageImpl<>(List.of(
+                        new DeadlineDetail(10L, "운동", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 21), null, null),
+                        new DeadlineDetail(11L, "독서", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 22), null, null)
+                ), PageRequest.of(0, 20), 2));
 
         mockMvc.perform(get("/api/deadlines"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].title").value("운동"))
-                .andExpect(jsonPath("$[1].title").value("독서"));
+                .andExpect(jsonPath("$.items.length()").value(2))
+                .andExpect(jsonPath("$.items[0].title").value("운동"))
+                .andExpect(jsonPath("$.items[1].title").value("독서"))
+                .andExpect(jsonPath("$.pageInfo.page").value(0))
+                .andExpect(jsonPath("$.pageInfo.size").value(20));
     }
 
     @Test

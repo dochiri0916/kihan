@@ -1,22 +1,30 @@
 package com.dochiri.kihan.application.execution.command;
 
+import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.execution.Execution;
 import com.dochiri.kihan.domain.execution.InvalidExecutionStatusTransitionException;
 import com.dochiri.kihan.domain.execution.ExecutionRepository;
+import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +33,9 @@ class MarkExecutionAsPausedServiceTest {
 
     @Mock
     private ExecutionRepository executionRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private MarkExecutionAsPausedService markExecutionAsPausedService;
@@ -46,6 +57,13 @@ class MarkExecutionAsPausedServiceTest {
 
         assertTrue(execution.isPaused());
         assertNull(execution.getCompletedAt());
+        ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+
+        ExecutionChangedEvent event = assertInstanceOf(ExecutionChangedEvent.class, eventCaptor.getValue());
+        assertEquals(1L, event.userId());
+        assertTrue(Objects.equals(event.deadlineId(), deadline.getId()));
+        assertEquals(ExecutionStatus.PAUSED, event.status());
     }
 
     @Test

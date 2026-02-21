@@ -7,9 +7,12 @@ import com.dochiri.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.dochiri.kihan.application.deadline.command.UpdateDeadlineService;
 import com.dochiri.kihan.application.deadline.query.DeadlineSortBy;
 import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
+import com.dochiri.kihan.infrastructure.realtime.DeadlineStreamBroker;
 import com.dochiri.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.dochiri.kihan.presentation.deadline.request.DeadlineRecurrenceUpdateRequest;
 import com.dochiri.kihan.presentation.deadline.request.DeadlineRegisterRequest;
+import com.dochiri.kihan.presentation.deadline.response.DeadlinePageInfoResponse;
+import com.dochiri.kihan.presentation.deadline.response.DeadlinePageResponse;
 import com.dochiri.kihan.presentation.deadline.request.DeadlineUpdateRequest;
 import com.dochiri.kihan.presentation.deadline.response.DeadlineResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,14 +23,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Clock;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Tag(name = "Deadline", description = "기한 관리 API")
 @RestController
@@ -39,6 +47,7 @@ public class DeadlineController {
     private final UpdateDeadlineService updateDeadlineService;
     private final DeleteDeadlineService deleteDeadlineService;
     private final DeadlineQueryService deadlineQueryService;
+    private final DeadlineStreamBroker deadlineStreamBroker;
     private final Clock clock;
 
     @Operation(
@@ -104,17 +113,55 @@ public class DeadlineController {
         return ResponseEntity.ok(DeadlineResponse.from(deadlineQueryService.getById(principal.userId(), id)));
     }
 
-    @Operation(summary = "기한 목록 조회", description = "사용자의 모든 기한을 조회합니다.")
+    @Operation(summary = "기한 목록 조회", description = "사용자의 기한을 페이지 단위로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
+    @ApiResponse(responseCode = "304", description = "변경 없음")
     @GetMapping
-    public ResponseEntity<List<DeadlineResponse>> findAll(
+    public ResponseEntity<DeadlinePageResponse> findAll(
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestHeader(value = HttpHeaders.IF_MODIFIED_SINCE, required = false) String ifModifiedSince,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "CREATED_AT") DeadlineSortBy sortBy,
             @RequestParam(defaultValue = "DESC") Sort.Direction direction
     ) {
-        return ResponseEntity.ok(deadlineQueryService.getAllByUserId(principal.userId(), sortBy, direction).stream()
-                .map(DeadlineResponse::from)
-                .toList());
+        LocalDateTime lastModifiedAt = deadlineQueryService.getLastModifiedAt(principal.userId());
+        long lastModifiedMillis = toEpochMillis(lastModifiedAt);
+        if (hasNotBeenModified(ifModifiedSince, lastModifiedMillis)) {
+            return ResponseEntity.status(304)
+                    .lastModified(lastModifiedMillis)
+                    .build();
+        }
+
+        Page<DeadlineResponse> responsePage = deadlineQueryService
+                .getPageByUserId(principal.userId(), page, size, sortBy, direction)
+                .map(DeadlineResponse::from);
+
+        DeadlinePageResponse response = new DeadlinePageResponse(
+                responsePage.getContent(),
+                new DeadlinePageInfoResponse(
+                        responsePage.getNumber(),
+                        responsePage.getSize(),
+                        responsePage.getTotalElements(),
+                        responsePage.getTotalPages(),
+                        responsePage.hasNext(),
+                        responsePage.hasPrevious()
+                )
+        );
+
+        return ResponseEntity.ok()
+                .lastModified(lastModifiedMillis)
+                .body(response);
+    }
+
+    @Operation(summary = "기한/실행 변경 이벤트 구독", description = "SSE 스트림으로 기한/실행 변경 이벤트를 구독합니다.")
+    @ApiResponse(responseCode = "200", description = "구독 성공")
+    @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId
+    ) {
+        return deadlineStreamBroker.subscribe(principal.userId(), lastEventId);
     }
 
     @Operation(summary = "기한 수정", description = "기한의 제목을 수정합니다.")
@@ -155,5 +202,29 @@ public class DeadlineController {
     ) {
         deleteDeadlineService.execute(principal.userId(), id);
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean hasNotBeenModified(String ifModifiedSince, long lastModifiedMillis) {
+        if (ifModifiedSince == null || ifModifiedSince.isBlank()) {
+            return false;
+        }
+        try {
+            long ifModifiedSinceMillis = DateTimeFormatter.RFC_1123_DATE_TIME
+                    .parse(ifModifiedSince, java.time.Instant::from)
+                    .toEpochMilli();
+            return ifModifiedSinceMillis >= lastModifiedMillis;
+        } catch (RuntimeException exception) {
+            return false;
+        }
+    }
+
+    private long toEpochMillis(LocalDateTime lastModifiedAt) {
+        if (lastModifiedAt == null) {
+            return 0L;
+        }
+        return lastModifiedAt.atZone(clock.getZone())
+                .toInstant()
+                .truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+                .toEpochMilli();
     }
 }
