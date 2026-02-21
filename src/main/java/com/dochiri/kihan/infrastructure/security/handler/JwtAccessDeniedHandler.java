@@ -13,6 +13,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.net.URI;
 
@@ -21,6 +22,7 @@ import java.net.URI;
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Override
     public void handle(
@@ -36,7 +38,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         problemDetail.setDetail("접근 권한이 없습니다.");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("path", request.getRequestURI());
-        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        problemDetail.setProperty("timestamp", LocalDateTime.now(clock));
 
         writeResponse(response, problemDetail);
     }

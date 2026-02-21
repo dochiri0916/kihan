@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -23,6 +24,7 @@ public class JwtProvider {
     private static final String CATEGORY_REFRESH = "refresh";
 
     private final JwtProperties jwtProperties;
+    private final Clock clock;
 
     public String generateAccessToken(Long userId, String role) {
         return generateToken(
@@ -43,13 +45,14 @@ public class JwtProvider {
     }
 
     public LocalDateTime refreshTokenExpiresAt() {
-        return LocalDateTime.now()
+        return LocalDateTime.now(clock)
                 .plus(jwtProperties.refreshExpiration(), ChronoUnit.MILLIS);
     }
 
     public Claims parseAndValidate(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey())
+                .clock(() -> new Date(clock.millis()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -81,7 +84,7 @@ public class JwtProvider {
             String category,
             long expirationMillis
     ) {
-        long now = System.currentTimeMillis();
+        long now = clock.millis();
 
         return Jwts.builder()
                 .subject(userId.toString())

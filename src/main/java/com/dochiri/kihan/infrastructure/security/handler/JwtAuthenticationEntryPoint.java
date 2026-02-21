@@ -15,6 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.net.URI;
 
@@ -23,6 +24,7 @@ import java.net.URI;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Override
     public void commence(
@@ -38,7 +40,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         problemDetail.setDetail(resolveDetail(exception));
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("path", request.getRequestURI());
-        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        problemDetail.setProperty("timestamp", LocalDateTime.now(clock));
 
         writeResponse(response, problemDetail);
     }

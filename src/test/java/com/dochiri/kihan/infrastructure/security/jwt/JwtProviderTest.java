@@ -5,7 +5,10 @@ import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,12 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("JwtProvider 테스트")
 class JwtProviderTest {
 
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            Instant.parse("2026-02-21T10:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
+
     private final JwtProvider jwtProvider = new JwtProvider(
             new JwtProperties(
                     "0123456789012345678901234567890123456789012345678901234567890123",
                     60_000,
                     120_000
-            )
+            ),
+            FIXED_CLOCK
     );
 
     @Test
@@ -50,10 +59,8 @@ class JwtProviderTest {
     @Test
     @DisplayName("refreshTokenExpiresAt은 현재 시각 이후를 반환한다")
     void shouldReturnFutureTimeForRefreshTokenExpiresAt() {
-        LocalDateTime before = LocalDateTime.now();
-
         LocalDateTime expiresAt = jwtProvider.refreshTokenExpiresAt();
 
-        assertTrue(expiresAt.isAfter(before));
+        assertEquals(LocalDateTime.of(2026, 2, 21, 19, 2), expiresAt);
     }
 }

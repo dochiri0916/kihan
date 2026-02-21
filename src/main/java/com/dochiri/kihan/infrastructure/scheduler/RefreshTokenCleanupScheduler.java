@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -15,10 +16,11 @@ import java.time.LocalDateTime;
 public class RefreshTokenCleanupScheduler {
 
     private final RevokeTokenService revokeTokenService;
+    private final Clock clock;
 
     @Scheduled(cron = "0 0 3 * * *")
     public void cleanupExpiredRefreshTokens() {
-        long deletedCount = revokeTokenService.execute(new RevokeTokenCommand(LocalDateTime.now()));
+        long deletedCount = revokeTokenService.execute(new RevokeTokenCommand(LocalDateTime.now(clock)));
         log.info("Expired refresh tokens revoked. count={}", deletedCount);
     }
 
