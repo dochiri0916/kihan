@@ -18,17 +18,19 @@ class ExecutionTest {
 
     @Test
     @DisplayName("생성 시 기본 상태는 PENDING이다")
-    void create시_기본_상태는_pending이다() {
+    void shouldCreateExecutionWithPendingStatus() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
         assertEquals(ExecutionStatus.PENDING, execution.getStatus());
         assertTrue(execution.isPending());
+        assertTrue(!execution.isDone());
+        assertTrue(!execution.isDelayed());
         assertEquals(LocalDate.of(2026, 2, 20), execution.getScheduledDate());
     }
 
     @Test
     @DisplayName("생성 시 deadline이 null이면 예외가 발생한다")
-    void create에서_deadline이_null이면_예외() {
+    void shouldThrowWhenCreatingExecutionWithNullDeadline() {
         assertThrows(
                 NullPointerException.class,
                 () -> Execution.create(null, LocalDate.of(2026, 2, 20))
@@ -37,7 +39,7 @@ class ExecutionTest {
 
     @Test
     @DisplayName("생성 시 scheduledDate가 null이면 예외가 발생한다")
-    void create에서_scheduled_date가_null이면_예외() {
+    void shouldThrowWhenCreatingExecutionWithNullScheduledDate() {
         assertThrows(
                 NullPointerException.class,
                 () -> Execution.create(oneTimeDeadline(), null)
@@ -46,7 +48,7 @@ class ExecutionTest {
 
     @Test
     @DisplayName("markAsDone은 상태와 완료 시각을 설정한다")
-    void mark_as_done은_완료_상태와_완료시각을_설정한다() {
+    void shouldMarkExecutionAsDoneWithCompletedAt() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
         LocalDateTime completedAt = LocalDateTime.of(2026, 2, 20, 12, 0);
 
@@ -59,7 +61,7 @@ class ExecutionTest {
 
     @Test
     @DisplayName("markAsDone에서 completedAt이 null이면 예외가 발생한다")
-    void mark_as_done에서_completed_at_null이면_예외() {
+    void shouldThrowWhenMarkingDoneWithNullCompletedAt() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
         assertThrows(NullPointerException.class, () -> execution.markAsDone(null));
@@ -67,20 +69,22 @@ class ExecutionTest {
 
     @Test
     @DisplayName("DONE 상태에서 markAsDone을 다시 호출하면 예외가 발생한다")
-    void 이미_done이면_mark_as_done에서_예외가_발생한다() {
+    void shouldThrowWhenMarkingDoneAgainAfterDone() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
         execution.markAsDone(LocalDateTime.of(2026, 2, 20, 12, 0));
 
-        assertThrows(
+        ExecutionAlreadyCompletedException exception = assertThrows(
                 ExecutionAlreadyCompletedException.class,
                 () -> execution.markAsDone(LocalDateTime.of(2026, 2, 20, 13, 0))
         );
+
+        assertTrue(exception.getMessage().contains("2026-02-20"));
     }
 
     @Test
     @DisplayName("markAsDelayed는 상태를 DELAYED로 바꾸고 완료 시각을 제거한다")
-    void mark_as_delayed는_상태와_완료시각을_갱신한다() {
+    void shouldMarkExecutionAsDelayedAndClearCompletedAt() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
         execution.markAsDelayed();
@@ -92,11 +96,32 @@ class ExecutionTest {
 
     @Test
     @DisplayName("DONE 상태에서 markAsDelayed를 호출하면 예외가 발생한다")
-    void done_상태에서_mark_as_delayed면_예외() {
+    void shouldThrowWhenMarkingDelayedAfterDone() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
         execution.markAsDone(LocalDateTime.of(2026, 2, 20, 12, 0));
 
         assertThrows(ExecutionAlreadyCompletedException.class, execution::markAsDelayed);
+    }
+
+    @Test
+    @DisplayName("DELAYED 상태에서 markAsDone을 호출하면 DONE으로 변경된다")
+    void shouldAllowMarkingDoneAfterDelayed() {
+        Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
+        LocalDateTime completedAt = LocalDateTime.of(2026, 2, 20, 14, 0);
+        execution.markAsDelayed();
+
+        execution.markAsDone(completedAt);
+
+        assertTrue(execution.isDone());
+        assertEquals(completedAt, execution.getCompletedAt());
+    }
+
+    @Test
+    @DisplayName("ExecutionNotFoundException 메시지에 ID가 포함된다")
+    void shouldContainIdInExecutionNotFoundExceptionMessage() {
+        ExecutionNotFoundException exception = new ExecutionNotFoundException(101L);
+
+        assertTrue(exception.getMessage().contains("101"));
     }
 
     private Deadline oneTimeDeadline() {

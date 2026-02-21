@@ -44,4 +44,13 @@ public class User extends BaseEntity {
         this.lastLoginAt = requireNonNull(now);
     }
 
+    public void verifyAccessBy(Long requestUserId, UserRole requestUserRole) {
+        boolean owner = getId().equals(requireNonNull(requestUserId));
+        boolean admin = requireNonNull(requestUserRole) == UserRole.ADMIN;
+
+        if (!owner && !admin) {
+            throw UserAccessDeniedException.forUser(getId());
+        }
+    }
+
 }

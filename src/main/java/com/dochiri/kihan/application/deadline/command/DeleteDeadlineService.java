@@ -1,7 +1,7 @@
 package com.dochiri.kihan.application.deadline.command;
 
-import com.dochiri.kihan.application.deadline.query.DeadlineLoader;
 import com.dochiri.kihan.domain.deadline.Deadline;
+import com.dochiri.kihan.domain.deadline.DeadlineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class DeleteDeadlineService {
 
-    private final DeadlineLoader deadlineLoader;
+    private final DeadlineRepository deadlineRepository;
     private final Clock clock;
 
     @Transactional
-    public void execute(Long userId, Long deadlineId) {
-        Deadline deadline = deadlineLoader.loadByIdAndUserId(deadlineId, userId);
+    public void execute(Long userId, Long id) {
+        Deadline deadline = deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(id, userId);
         deadline.delete(LocalDateTime.now(clock));
     }
 

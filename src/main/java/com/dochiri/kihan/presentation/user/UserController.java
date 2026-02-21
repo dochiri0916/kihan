@@ -2,7 +2,6 @@ package com.dochiri.kihan.presentation.user;
 
 import com.dochiri.kihan.application.user.command.RegisterUserService;
 import com.dochiri.kihan.application.user.query.UserQueryService;
-import com.dochiri.kihan.domain.user.UserAccessDeniedException;
 import com.dochiri.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.dochiri.kihan.presentation.user.request.RegisterUserRequest;
 import com.dochiri.kihan.presentation.user.response.UserResponse;
@@ -52,19 +51,13 @@ public class UserController {
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
             @Parameter(description = "사용자 ID") @PathVariable Long id
     ) {
-        verifyUserAccess(principal, id);
         return ResponseEntity.ok(
-                UserResponse.from(userQueryService.getActiveUser(id))
+                UserResponse.from(userQueryService.getActiveUserWithAccess(
+                        principal.userId(),
+                        principal.role(),
+                        id
+                ))
         );
-    }
-
-    private void verifyUserAccess(final JwtPrincipal principal, final Long userId) {
-        boolean owner = principal.userId().equals(userId);
-        boolean admin = "ADMIN".equals(principal.role());
-
-        if (!owner && !admin) {
-            throw UserAccessDeniedException.forUser(userId);
-        }
     }
 
 }

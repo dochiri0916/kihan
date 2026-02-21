@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -33,7 +35,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
 
         problemDetail.setTitle("UNAUTHORIZED");
-        problemDetail.setDetail("인증이 필요합니다.");
+        problemDetail.setDetail(resolveDetail(exception));
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("path", request.getRequestURI());
         problemDetail.setProperty("timestamp", LocalDateTime.now());
@@ -51,6 +53,16 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         objectMapper.writeValue(response.getWriter(), body);
+    }
+
+    private String resolveDetail(AuthenticationException exception) {
+        if (exception instanceof CredentialsExpiredException) {
+            return "액세스 토큰이 만료되었습니다.";
+        }
+        if (exception instanceof BadCredentialsException) {
+            return exception.getMessage();
+        }
+        return "인증이 필요합니다.";
     }
 
 }

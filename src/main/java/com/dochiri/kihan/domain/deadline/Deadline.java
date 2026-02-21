@@ -5,15 +5,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
 @Entity
 @Table(name = "deadlines")
-@Audited
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deadline extends BaseEntity {

@@ -1,8 +1,7 @@
 package com.dochiri.kihan.application.execution.command;
 
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
-import com.dochiri.kihan.infrastructure.persistence.ExecutionRepository;
+import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +17,8 @@ public class MarkExecutionAsDoneService {
     private final Clock clock;
 
     @Transactional
-    public void execute(Long userId, Long executionId) {
-        Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId)
-                .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
+    public void execute(Long userId, Long id) {
+        Execution execution = executionRepository.findByIdAndDeletedAtIsNull(id);
 
         execution.getDeadline().verifyOwnership(userId);
         execution.markAsDone(LocalDateTime.now(clock));

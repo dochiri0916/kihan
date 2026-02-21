@@ -2,7 +2,7 @@ package com.dochiri.kihan.application.execution.command;
 
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.infrastructure.persistence.ExecutionRepository;
+import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
