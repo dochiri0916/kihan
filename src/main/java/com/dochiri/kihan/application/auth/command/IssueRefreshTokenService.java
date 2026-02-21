@@ -15,6 +15,10 @@ public class IssueRefreshTokenService {
     @Transactional
     public void execute(IssueRefreshTokenCommand command) {
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(command.userId())
+                .map(existing -> {
+                    existing.rotate(command.token(), command.expiresAt());
+                    return existing;
+                })
                 .orElseGet(() ->
                         RefreshToken.issue(
                                 command.token(),
@@ -22,8 +26,6 @@ public class IssueRefreshTokenService {
                                 command.expiresAt()
                         )
                 );
-
-        refreshToken.rotate(command.token(), command.expiresAt());
 
         refreshTokenRepository.save(refreshToken);
     }

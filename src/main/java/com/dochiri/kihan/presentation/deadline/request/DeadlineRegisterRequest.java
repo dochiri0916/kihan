@@ -1,6 +1,7 @@
 package com.dochiri.kihan.presentation.deadline.request;
 
 import com.dochiri.kihan.domain.deadline.DeadlineType;
+import com.dochiri.kihan.domain.deadline.InvalidDeadlineRuleException;
 import com.dochiri.kihan.domain.deadline.RecurrencePattern;
 import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +40,9 @@ public record DeadlineRegisterRequest(
     public RecurrenceRule toRecurrenceRule() {
         if (pattern == null) {
             return null;
+        }
+        if (interval == null) {
+            throw InvalidDeadlineRuleException.intervalMustBePositive();
         }
         return RecurrenceRule.create(pattern, interval, startDate, endDate);
     }

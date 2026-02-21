@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Component
@@ -22,6 +23,7 @@ public class ReissueTokenFacade {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final JwtTokenGenerator jwtTokenGenerator;
+    private final Clock clock;
 
     @Transactional
     public LoginResult reissue(String refreshTokenValue) {
@@ -29,7 +31,7 @@ public class ReissueTokenFacade {
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue);
 
-        refreshToken.verifyNotExpired(LocalDateTime.now());
+        refreshToken.verifyNotExpired(LocalDateTime.now(clock));
         refreshToken.verifyOwnership(userId);
 
         User user = userRepository.findByIdAndDeletedAtIsNull(userId);

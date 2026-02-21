@@ -1,21 +1,21 @@
 package com.dochiri.kihan.presentation.auth.response;
 
-import com.dochiri.kihan.domain.user.User;
+import com.dochiri.kihan.application.user.dto.UserDetail;
 
 public record AuthResponse(
         Long userId,
         String role,
-        String accessToken,
+    String accessToken,
         String refreshToken
 ) {
     public static AuthResponse from(
-            User user,
+            UserDetail user,
             String accessToken,
             String refreshToken
     ) {
         return new AuthResponse(
-                user.getId(),
-                user.getRole().name(),
+                user.id(),
+                user.role(),
                 accessToken,
                 refreshToken
         );

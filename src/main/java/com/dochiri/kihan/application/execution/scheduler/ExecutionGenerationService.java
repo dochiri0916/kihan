@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -22,28 +23,39 @@ public class ExecutionGenerationService {
 
     private final DeadlineQueryService deadlineQueryService;
     private final CreateExecutionService createExecutionService;
+    private final Clock clock;
 
     @Transactional
     public void generateExecutionsForToday() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         List<Deadline> deadlines = deadlineQueryService.findAllActive();
 
         for (Deadline deadline : deadlines) {
-            if (shouldCreateExecution(deadline, today)) {
-                createExecutionService.execute(deadline, today)
-                        .ifPresentOrElse(
-                                executionId -> log.debug(
-                                        "Created execution {} for deadline {} on {}",
-                                        executionId,
-                                        deadline.getId(),
-                                        today
-                                ),
-                                () -> log.debug(
-                                        "Skip execution creation for deadline {} on {} (already exists)",
-                                        deadline.getId(),
-                                        today
-                                )
-                        );
+            try {
+                if (shouldCreateExecution(deadline, today)) {
+                    createExecutionService.execute(deadline, today)
+                            .ifPresentOrElse(
+                                    executionId -> log.debug(
+                                            "Created execution {} for deadline {} on {}",
+                                            executionId,
+                                            deadline.getId(),
+                                            today
+                                    ),
+                                    () -> log.debug(
+                                            "Skip execution creation for deadline {} on {} (already exists)",
+                                            deadline.getId(),
+                                            today
+                                    )
+                            );
+                }
+            } catch (Exception exception) {
+                log.error(
+                        "Failed to create execution for deadline {} on {}: {}",
+                        deadline.getId(),
+                        today,
+                        exception.getMessage(),
+                        exception
+                );
             }
         }
     }
@@ -111,10 +123,15 @@ public class ExecutionGenerationService {
 
     private boolean shouldCreateYearlyExecution(RecurrenceRule rule, LocalDate date) {
         long yearsBetween = ChronoUnit.YEARS.between(rule.getStartDate(), date);
+        int targetDay = Math.min(
+                rule.getStartDate().getDayOfMonth(),
+                YearMonth.of(date.getYear(), rule.getStartDate().getMonth()).lengthOfMonth()
+        );
+
         return yearsBetween >= 0
                 && yearsBetween % rule.getInterval() == 0
                 && date.getMonthValue() == rule.getStartDate().getMonthValue()
-                && date.getDayOfMonth() == rule.getStartDate().getDayOfMonth();
+                && date.getDayOfMonth() == targetDay;
     }
 
 }

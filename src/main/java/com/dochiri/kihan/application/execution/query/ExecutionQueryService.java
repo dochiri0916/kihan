@@ -1,49 +1,34 @@
 package com.dochiri.kihan.application.execution.query;
 
+import com.dochiri.kihan.application.deadline.dto.DeadlineDetail;
+import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
-import com.dochiri.kihan.infrastructure.persistence.deadline.DeadlineJpaRepository;
-import com.dochiri.kihan.infrastructure.persistence.ExecutionRepository;
+import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
+public class ExecutionQueryService {
 
     private final ExecutionRepository executionRepository;
-    private final DeadlineJpaRepository deadlineJpaRepository;
+    private final DeadlineQueryService deadlineQueryService;
 
-    @Override
-    public Optional<Execution> findActiveById(final Long executionId) {
-        return executionRepository.findByIdAndDeletedAtIsNull(executionId);
-    }
-
-    @Override
-    public Execution loadActiveById(final Long executionId) {
-        return findActiveById(executionId)
-                .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
-    }
-
-    public List<ExecutionDetail> findByDeadlineId(final Long userId, final Long deadlineId) {
-        if (deadlineJpaRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId).isEmpty()) {
-            return List.of();
-        }
-
+    public List<ExecutionDetail> findByDeadlineId(Long userId, Long deadlineId) {
+        deadlineQueryService.getById(userId, deadlineId);
         return executionRepository.findByDeadlineIdAndDeletedAtIsNull(deadlineId).stream()
                 .map(ExecutionDetail::from)
                 .toList();
     }
 
-    public List<ExecutionDetail> findByDateRange(final DateRangeQuery query) {
-        List<Long> userDeadlineIds = deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(query.userId()).stream()
-                .map(deadline -> deadline.getId())
+    public List<ExecutionDetail> findByDateRange(DateRangeQuery query) {
+        List<Long> userDeadlineIds = deadlineQueryService.getAllByUserId(query.userId()).stream()
+                .map(DeadlineDetail::id)
                 .toList();
 
         if (userDeadlineIds.isEmpty()) {
@@ -59,14 +44,11 @@ public class ExecutionQueryService implements ExecutionFinder, ExecutionLoader {
                 .toList();
     }
 
-    public ExecutionDetail findById(final Long userId, final Long executionId) {
-        Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId)
-                .orElseThrow(() -> ExecutionNotFoundException.withId(executionId));
+    public ExecutionDetail findById(Long userId, Long executionId) {
+        Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId);
 
         execution.getDeadline().verifyOwnership(userId);
         return ExecutionDetail.from(execution);
     }
-
-
 
 }
