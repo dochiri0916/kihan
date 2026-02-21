@@ -197,6 +197,11 @@
 }
 ```
 
+유효성:
+
+- `type=RECURRING`인 경우 `pattern`, `interval`, `startDate`는 필수
+- `interval` 누락 또는 `interval < 1`이면 `400 Bad Request`
+
 응답:
 
 - `201 Created`
@@ -285,6 +290,11 @@
 
 - `GET /api/executions?startDate=2026-02-01&endDate=2026-02-28`
 - Auth: 필요
+
+유효성:
+
+- `startDate`는 `endDate`보다 늦을 수 없음
+- `startDate > endDate`이면 `400 Bad Request` (`InvalidExecutionDateRangeException`)
 
 응답 `200`: `ExecutionResponse[]`
 
