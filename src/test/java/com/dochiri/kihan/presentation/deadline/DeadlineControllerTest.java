@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -156,9 +157,10 @@ class DeadlineControllerTest {
     }
 
     @Test
-    @DisplayName("RECURRING 등록에서 interval이 누락되면 400을 반환한다")
-    void shouldReturnBadRequestWhenRecurringIntervalIsMissing() throws Exception {
+    @DisplayName("RECURRING 등록에서 interval이 누락되면 기본값 1로 처리한다")
+    void shouldUseDefaultIntervalWhenRecurringIntervalIsMissing() throws Exception {
         authenticate(1L);
+        when(registerDeadlineService.execute(any())).thenReturn(103L);
 
         mockMvc.perform(post("/api/deadlines")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,12 +173,17 @@ class DeadlineControllerTest {
                                   "pattern": "WEEKLY",
                                   "interval": null,
                                   "startDate": "2026-02-01",
-                                  "endDate": "2026-12-31"
+                                  "endDate": null
                                 }
                                 """))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isCreated());
 
-        verify(registerDeadlineService, never()).execute(any());
+        ArgumentCaptor<RegisterDeadlineCommand> captor = ArgumentCaptor.forClass(RegisterDeadlineCommand.class);
+        verify(registerDeadlineService).execute(captor.capture());
+        RecurrenceRule rule = captor.getValue().recurrenceRule();
+        assertEquals(1, rule.getInterval());
+        assertEquals(LocalDate.of(2026, 2, 1), rule.getStartDate());
+        assertNull(rule.getEndDate());
     }
 
     @Test
