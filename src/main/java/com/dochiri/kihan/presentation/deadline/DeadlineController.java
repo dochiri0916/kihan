@@ -5,8 +5,10 @@ import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.dochiri.kihan.application.deadline.command.RegisterDeadlineService;
 import com.dochiri.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.dochiri.kihan.application.deadline.command.UpdateDeadlineService;
+import com.dochiri.kihan.application.deadline.query.DeadlineSortBy;
 import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
 import com.dochiri.kihan.infrastructure.security.jwt.JwtPrincipal;
+import com.dochiri.kihan.presentation.deadline.request.DeadlineRecurrenceUpdateRequest;
 import com.dochiri.kihan.presentation.deadline.request.DeadlineRegisterRequest;
 import com.dochiri.kihan.presentation.deadline.request.DeadlineUpdateRequest;
 import com.dochiri.kihan.presentation.deadline.response.DeadlineResponse;
@@ -19,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,8 +108,12 @@ public class DeadlineController {
     @Operation(summary = "기한 목록 조회", description = "사용자의 모든 기한을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
-    public ResponseEntity<List<DeadlineResponse>> findAll(@Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal) {
-        return ResponseEntity.ok(deadlineQueryService.getAllByUserId(principal.userId()).stream()
+    public ResponseEntity<List<DeadlineResponse>> findAll(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam(defaultValue = "CREATED_AT") DeadlineSortBy sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction
+    ) {
+        return ResponseEntity.ok(deadlineQueryService.getAllByUserId(principal.userId(), sortBy, direction).stream()
                 .map(DeadlineResponse::from)
                 .toList());
     }
@@ -126,6 +133,18 @@ public class DeadlineController {
                 request.description()
         );
         updateDeadlineService.update(command);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "반복 규칙 수정", description = "반복 기한의 반복 규칙을 수정합니다.")
+    @ApiResponse(responseCode = "204", description = "수정 성공")
+    @PatchMapping("/{id}/recurrence")
+    public ResponseEntity<Void> updateRecurrence(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @Parameter(description = "기한 ID") @PathVariable Long id,
+            @Valid @RequestBody DeadlineRecurrenceUpdateRequest request
+    ) {
+        updateDeadlineService.updateRecurrence(principal.userId(), id, request.toRecurrenceRule());
         return ResponseEntity.noContent().build();
     }
 

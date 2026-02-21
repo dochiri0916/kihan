@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import java.time.Clock;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +61,7 @@ class UserControllerTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new UserController(registerUserService, userQueryService))
-                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper))
+                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
                 .setValidator(validator)
                 .build();

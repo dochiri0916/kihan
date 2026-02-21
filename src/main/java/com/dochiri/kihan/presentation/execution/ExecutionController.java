@@ -95,8 +95,8 @@ public class ExecutionController {
     }
 
     @Operation(summary = "실행 재개 처리", description = "중지된 실행을 진행 상태로 변경합니다")
-    @PatchMapping("/{executionId}/in-progress")
-    public ResponseEntity<Void> markAsInProgress(
+    @PatchMapping({"/{executionId}/resume", "/{executionId}/in-progress"})
+    public ResponseEntity<Void> resume(
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
             @Parameter(description = "실행 ID", example = "1")
             @PathVariable Long executionId

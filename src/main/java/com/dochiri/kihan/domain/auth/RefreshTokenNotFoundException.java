@@ -2,6 +2,6 @@ package com.dochiri.kihan.domain.auth;
 
 public class RefreshTokenNotFoundException extends RefreshTokenException {
     public RefreshTokenNotFoundException() {
-        super("만료된 토큰입니다.");
+        super("리프레시 토큰을 찾을 수 없습니다.");
     }
 }

@@ -138,14 +138,6 @@ class UserTest {
         assertTrue(exception.getMessage().contains("dup@example.com"));
     }
 
-    @Test
-    @DisplayName("InactiveUserException 메시지는 비활성화 계정 안내다")
-    void shouldContainInactiveKeywordInInactiveUserExceptionMessage() {
-        InactiveUserException exception = new InactiveUserException();
-
-        assertTrue(exception.getMessage().contains("비활성화"));
-    }
-
     private User registeredUserWithId(Long id) {
         User user = User.register("test@example.com", "password", "홍길동");
         setId(user, id);

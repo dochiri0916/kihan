@@ -197,6 +197,8 @@
 
 유효성:
 
+- `description`: 선택값
+- `type=ONE_TIME`인 경우 `dueDate`는 필수
 - `type=RECURRING`인 경우 `pattern`, `startDate`는 필수
 - `endDate`는 선택값이며, 누락 시 무기한 반복
 
@@ -260,6 +262,16 @@
 
 ## 5) 실행(Executions)
 
+상태 규칙:
+
+- 상태값: `IN_PROGRESS`, `PAUSED`, `DONE`
+- 최초 생성 상태: `IN_PROGRESS`
+- 수동 상태 변경 액션: `중지(paused)`, `재개(resume)`, `완료(done)`
+- `재개`는 `PAUSED` 상태에서만 가능
+- `중지`는 `IN_PROGRESS` 상태에서만 가능
+- `DONE`은 종료 상태
+- `ONE_TIME` 실행은 연결된 마감의 `dueDate`가 지나면 스케줄러가 자동으로 `DONE` 처리
+
 ### 5.1 실행 단건 조회
 
 - `GET /api/executions/{executionId}`
@@ -316,7 +328,7 @@
 
 ### 5.6 실행 재개 처리
 
-- `PATCH /api/executions/{executionId}/in-progress`
+- `PATCH /api/executions/{executionId}/resume`
 - Auth: 필요
 
 응답:

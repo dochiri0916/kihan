@@ -1,5 +1,7 @@
 package com.dochiri.kihan.infrastructure.config;
 
+import com.dochiri.kihan.infrastructure.config.properties.SwaggerAuthProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,7 +16,10 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SwaggerSecurityConfig {
+
+    private final SwaggerAuthProperties swaggerAuthProperties;
 
     @Bean
     @Order(1)
@@ -30,9 +35,9 @@ public class SwaggerSecurityConfig {
     @Bean
     public UserDetailsService swaggerUserDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
+                .username(swaggerAuthProperties.username())
+                .password(passwordEncoder.encode(swaggerAuthProperties.password()))
+                .roles(swaggerAuthProperties.role())
                 .build();
         return new InMemoryUserDetailsManager(admin);
     }

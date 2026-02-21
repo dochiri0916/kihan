@@ -3,7 +3,6 @@ package com.dochiri.kihan.presentation.common.exception.mapper;
 import com.dochiri.kihan.domain.user.DuplicateEmailException;
 import com.dochiri.kihan.domain.user.UserException;
 import com.dochiri.kihan.domain.user.UserAccessDeniedException;
-import com.dochiri.kihan.domain.user.InactiveUserException;
 import com.dochiri.kihan.domain.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,6 @@ public class UserExceptionStatusMapper implements DomainExceptionStatusMapper {
         }
         if (exception instanceof DuplicateEmailException) {
             return HttpStatus.CONFLICT;
-        }
-        if (exception instanceof InactiveUserException) {
-            return HttpStatus.FORBIDDEN;
         }
         if (exception instanceof UserAccessDeniedException) {
             return HttpStatus.FORBIDDEN;

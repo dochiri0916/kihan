@@ -3,6 +3,8 @@ package com.dochiri.kihan.application.deadline.command;
 import com.dochiri.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
+import com.dochiri.kihan.domain.deadline.RecurrencePattern;
+import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,13 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,9 +26,6 @@ class UpdateDeadlineServiceTest {
 
     @Mock
     private DeadlineRepository deadlineRepository;
-
-    @Mock
-    private Clock clock;
 
     @InjectMocks
     private UpdateDeadlineService updateDeadlineService;
@@ -56,26 +52,32 @@ class UpdateDeadlineServiceTest {
     }
 
     @Test
-    @DisplayName("markAsCompleted 호출 시 Clock 기준 시각으로 완료 처리한다")
-    void shouldMarkAsCompletedWithClockTime() {
+    @DisplayName("updateRecurrence 호출 시 반복 규칙을 변경한다")
+    void shouldUpdateRecurrenceRule() {
         Deadline deadline = Deadline.register(
                 1L,
                 "제목",
                 "설명",
-                DeadlineType.ONE_TIME,
-                LocalDateTime.of(2026, 2, 21, 9, 0),
-                null
+                DeadlineType.RECURRING,
+                null,
+                RecurrenceRule.create(
+                        RecurrencePattern.WEEKLY,
+                        LocalDate.of(2026, 2, 1),
+                        null
+                )
         );
         when(deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(10L, 1L)).thenReturn(deadline);
 
-        Instant fixed = Instant.parse("2026-02-21T10:00:00Z");
-        when(clock.instant()).thenReturn(fixed);
-        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
+        RecurrenceRule newRule = RecurrenceRule.create(
+                RecurrencePattern.MONTHLY,
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 12, 31)
+        );
+        updateDeadlineService.updateRecurrence(1L, 10L, newRule);
 
-        updateDeadlineService.markAsCompleted(1L, 10L);
-
-        assertTrue(deadline.isDeleted());
-        assertEquals(LocalDateTime.of(2026, 2, 21, 10, 0), deadline.getDeletedAt());
+        assertEquals(RecurrencePattern.MONTHLY, deadline.getRecurrenceRule().getPattern());
+        assertEquals(LocalDate.of(2026, 3, 1), deadline.getRecurrenceRule().getStartDate());
+        assertEquals(LocalDate.of(2026, 12, 31), deadline.getRecurrenceRule().getEndDate());
         verify(deadlineRepository).findByIdAndUserIdAndDeletedAtIsNull(10L, 1L);
     }
 }

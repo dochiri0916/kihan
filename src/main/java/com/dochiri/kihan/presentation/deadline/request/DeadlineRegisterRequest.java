@@ -4,6 +4,7 @@ import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.deadline.RecurrencePattern;
 import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -38,5 +39,38 @@ public record DeadlineRegisterRequest(
             return null;
         }
         return RecurrenceRule.create(pattern, startDate, endDate);
+    }
+
+    @AssertTrue(message = "ONE_TIME 타입은 dueDate가 필수입니다.")
+    public boolean isOneTimeDueDateValid() {
+        if (type == null) {
+            return true;
+        }
+        if (type == DeadlineType.ONE_TIME) {
+            return dueDate != null;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "RECURRING 타입은 pattern과 startDate가 필수입니다.")
+    public boolean isRecurringFieldsValid() {
+        if (type == null) {
+            return true;
+        }
+        if (type == DeadlineType.RECURRING) {
+            return pattern != null && startDate != null;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "RECURRING 타입은 dueDate를 사용할 수 없습니다.")
+    public boolean isRecurringDueDateValid() {
+        if (type == null) {
+            return true;
+        }
+        if (type == DeadlineType.RECURRING) {
+            return dueDate == null;
+        }
+        return true;
     }
 }

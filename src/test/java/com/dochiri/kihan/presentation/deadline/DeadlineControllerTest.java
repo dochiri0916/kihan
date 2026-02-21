@@ -6,6 +6,7 @@ import com.dochiri.kihan.application.deadline.command.UpdateDeadlineService;
 import com.dochiri.kihan.application.deadline.dto.DeadlineDetail;
 import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.dochiri.kihan.application.deadline.dto.UpdateDeadlineCommand;
+import com.dochiri.kihan.application.deadline.query.DeadlineSortBy;
 import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
 import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
@@ -25,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -36,6 +38,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Clock;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,7 +88,7 @@ class DeadlineControllerTest {
                         deleteDeadlineService,
                         deadlineQueryService
                 ))
-                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper))
+                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
                 .setValidator(validator)
                 .build();
@@ -231,7 +234,7 @@ class DeadlineControllerTest {
     @DisplayName("기한 목록 조회 성공 시 배열 응답을 반환한다")
     void shouldGetAllDeadlines() throws Exception {
         authenticate(1L);
-        when(deadlineQueryService.getAllByUserId(1L)).thenReturn(List.of(
+        when(deadlineQueryService.getAllByUserId(1L, DeadlineSortBy.CREATED_AT, Sort.Direction.DESC)).thenReturn(List.of(
                 new DeadlineDetail(10L, "운동", "설명", DeadlineType.ONE_TIME, LocalDateTime.of(2026, 2, 21, 9, 0), null, null),
                 new DeadlineDetail(11L, "독서", "설명", DeadlineType.ONE_TIME, LocalDateTime.of(2026, 2, 22, 9, 0), null, null)
         ));

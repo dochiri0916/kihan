@@ -200,7 +200,7 @@ class RefreshTokenTest {
     void shouldContainMessageForRefreshTokenNotFound() {
         RefreshTokenNotFoundException exception = new RefreshTokenNotFoundException();
 
-        assertTrue(exception.getMessage().contains("만료된 토큰"));
+        assertTrue(exception.getMessage().contains("리프레시 토큰을 찾을 수 없습니다"));
     }
 
     @Test

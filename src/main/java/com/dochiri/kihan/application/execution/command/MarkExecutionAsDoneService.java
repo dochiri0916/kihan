@@ -1,6 +1,7 @@
 package com.dochiri.kihan.application.execution.command;
 
 import com.dochiri.kihan.domain.execution.Execution;
+import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
 import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class MarkExecutionAsDoneService {
     public void execute(Long userId, Long id) {
         Execution execution = executionRepository.findByIdAndDeletedAtIsNull(id);
 
+        if (execution.getDeadline().isDeleted()) {
+            throw new ExecutionNotFoundException(id);
+        }
         execution.getDeadline().verifyOwnership(userId);
         execution.markAsDone(LocalDateTime.now(clock));
     }

@@ -5,6 +5,7 @@ import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -34,6 +35,11 @@ public class JpaDeadlineRepository implements DeadlineRepository {
     @Override
     public List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId) {
         return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId);
+    }
+
+    @Override
+    public List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId, Sort sort) {
+        return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId, sort);
     }
 
     @Override

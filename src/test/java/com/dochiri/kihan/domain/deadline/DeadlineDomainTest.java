@@ -248,29 +248,29 @@ class DeadlineDomainTest {
     }
 
     @Test
-    @DisplayName("완료 처리하면 삭제 상태가 된다")
-    void should_mark_deadline_as_deleted_when_completed() {
+    @DisplayName("삭제 처리하면 삭제 상태가 된다")
+    void should_mark_deadline_as_deleted_when_deleted() {
         Deadline deadline = oneTimeDeadline();
 
-        deadline.markAsCompleted(LocalDateTime.of(2026, 2, 20, 12, 0));
+        deadline.delete(LocalDateTime.of(2026, 2, 20, 12, 0));
 
         assertTrue(deadline.isDeleted());
         assertNotNull(deadline.getDeletedAt());
     }
 
     @Test
-    @DisplayName("완료 처리 시 now가 null이면 예외가 발생한다")
-    void should_throw_when_completed_at_is_null() {
+    @DisplayName("삭제 처리 시 now가 null이면 예외가 발생한다")
+    void should_throw_when_deleted_at_is_null() {
         Deadline deadline = oneTimeDeadline();
 
-        assertThrows(NullPointerException.class, () -> deadline.markAsCompleted(null));
+        assertThrows(NullPointerException.class, () -> deadline.delete(null));
     }
 
     @Test
     @DisplayName("복구하면 삭제 상태가 해제된다")
     void should_restore_deleted_deadline() {
         Deadline deadline = oneTimeDeadline();
-        deadline.markAsCompleted(LocalDateTime.of(2026, 2, 20, 12, 0));
+        deadline.delete(LocalDateTime.of(2026, 2, 20, 12, 0));
 
         deadline.restore();
 
@@ -312,6 +312,7 @@ class DeadlineDomainTest {
         assertTrue(InvalidDeadlineRuleException.oneTimeDueDateRequired().getMessage().contains("dueDate"));
         assertTrue(InvalidDeadlineRuleException.oneTimeNoRecurrence().getMessage().contains("recurrenceRule"));
         assertTrue(InvalidDeadlineRuleException.recurringRuleRequired().getMessage().contains("recurrenceRule"));
+        assertTrue(InvalidDeadlineRuleException.recurringStartDateRequired().getMessage().contains("startDate"));
         assertTrue(InvalidDeadlineRuleException.recurringNoDueDate().getMessage().contains("dueDate"));
         assertTrue(InvalidDeadlineRuleException.endDateAfterStart().getMessage().contains("startDate"));
     }

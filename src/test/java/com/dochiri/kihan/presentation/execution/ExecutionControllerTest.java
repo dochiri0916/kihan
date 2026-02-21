@@ -29,6 +29,7 @@ import org.springframework.security.web.method.annotation.AuthenticationPrincipa
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -72,7 +73,7 @@ class ExecutionControllerTest {
                         markExecutionAsInProgressService,
                         executionQueryService
                 ))
-                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper))
+                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
                 .build();
     }
@@ -171,7 +172,7 @@ class ExecutionControllerTest {
     void shouldMarkExecutionAsInProgress() throws Exception {
         authenticate(1L);
 
-        mockMvc.perform(patch("/api/executions/10/in-progress"))
+        mockMvc.perform(patch("/api/executions/10/resume"))
                 .andExpect(status().isNoContent());
 
         verify(markExecutionAsInProgressService).execute(1L, 10L);

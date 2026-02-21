@@ -2,6 +2,7 @@ package com.dochiri.kihan.infrastructure.persistence.deadline;
 
 import com.dochiri.kihan.domain.deadline.Deadline;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,8 @@ public interface DeadlineJpaRepository extends JpaRepository<Deadline, Long> {
     Optional<Deadline> findByIdAndUserIdAndDeletedAtIsNull(Long id, Long userId);
 
     List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId);
+
+    List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId, Sort sort);
 
     List<Deadline> findAllByDeletedAtIsNull();
 

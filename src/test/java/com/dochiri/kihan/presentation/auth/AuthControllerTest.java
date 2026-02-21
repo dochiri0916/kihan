@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.lang.reflect.Field;
+import java.time.Clock;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +65,7 @@ class AuthControllerTest {
                         reissueTokenFacade,
                         revokeTokenService
                 ))
-                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper))
+                .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setValidator(validator)
                 .build();
     }

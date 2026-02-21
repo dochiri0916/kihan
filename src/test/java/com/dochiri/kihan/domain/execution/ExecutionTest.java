@@ -104,6 +104,15 @@ class ExecutionTest {
     }
 
     @Test
+    @DisplayName("PAUSED 상태에서 markAsPaused를 다시 호출하면 예외가 발생한다")
+    void shouldThrowWhenMarkingPausedAgain() {
+        Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
+        execution.markAsPaused();
+
+        assertThrows(InvalidExecutionStatusTransitionException.class, execution::markAsPaused);
+    }
+
+    @Test
     @DisplayName("PAUSED 상태에서 markAsDone을 호출하면 DONE으로 변경된다")
     void shouldAllowMarkingDoneAfterPaused() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
@@ -135,6 +144,14 @@ class ExecutionTest {
         execution.markAsDone(LocalDateTime.of(2026, 2, 20, 12, 0));
 
         assertThrows(ExecutionAlreadyCompletedException.class, execution::markAsInProgress);
+    }
+
+    @Test
+    @DisplayName("IN_PROGRESS 상태에서 markAsInProgress를 호출하면 예외가 발생한다")
+    void shouldThrowWhenResumingWithoutPause() {
+        Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
+
+        assertThrows(InvalidExecutionStatusTransitionException.class, execution::markAsInProgress);
     }
 
     @Test

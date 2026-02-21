@@ -27,9 +27,12 @@ public class RecurrenceRule {
     private LocalDate endDate;
 
     public static RecurrenceRule create(RecurrencePattern pattern, LocalDate startDate, LocalDate endDate) {
+        if (startDate == null) {
+            throw InvalidDeadlineRuleException.recurringStartDateRequired();
+        }
         RecurrenceRule rule = new RecurrenceRule();
         rule.pattern = requireNonNull(pattern);
-        rule.startDate = requireNonNull(startDate);
+        rule.startDate = startDate;
         rule.endDate = endDate;
         rule.validate(startDate, endDate);
         return rule;

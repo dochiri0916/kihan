@@ -39,6 +39,12 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
+swagger:
+  auth:
+    username: admin
+    password: admin
+    role: ADMIN
+
 security:
   public-endpoints:
     - /h2-console/**

@@ -47,6 +47,9 @@ public class ExecutionQueryService {
     public ExecutionDetail findById(Long userId, Long executionId) {
         Execution execution = executionRepository.findByIdAndDeletedAtIsNull(executionId);
 
+        if (execution.getDeadline().isDeleted()) {
+            throw new com.dochiri.kihan.domain.execution.ExecutionNotFoundException(executionId);
+        }
         execution.getDeadline().verifyOwnership(userId);
         return ExecutionDetail.from(execution);
     }

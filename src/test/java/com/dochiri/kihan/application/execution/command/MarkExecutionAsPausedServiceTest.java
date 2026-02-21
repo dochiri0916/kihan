@@ -3,6 +3,7 @@ package com.dochiri.kihan.application.execution.command;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.execution.Execution;
+import com.dochiri.kihan.domain.execution.InvalidExecutionStatusTransitionException;
 import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -46,5 +48,24 @@ class MarkExecutionAsPausedServiceTest {
 
         assertTrue(execution.isPaused());
         assertNull(execution.getCompletedAt());
+    }
+
+    @Test
+    @DisplayName("이미 중지된 실행은 다시 중지할 수 없다")
+    void shouldFailWhenPausingAlreadyPausedExecution() {
+        Deadline deadline = Deadline.register(
+                1L,
+                "title",
+                "description",
+                DeadlineType.ONE_TIME,
+                LocalDateTime.of(2026, 2, 21, 9, 0),
+                null
+        );
+        Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
+        execution.markAsPaused();
+        when(executionRepository.findByIdAndDeletedAtIsNull(101L)).thenReturn(execution);
+
+        assertThrows(InvalidExecutionStatusTransitionException.class,
+                () -> markExecutionAsPausedService.execute(1L, 101L));
     }
 }

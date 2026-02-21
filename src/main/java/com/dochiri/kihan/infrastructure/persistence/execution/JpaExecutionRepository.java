@@ -3,10 +3,12 @@ package com.dochiri.kihan.infrastructure.persistence.execution;
 import com.dochiri.kihan.domain.execution.Execution;
 import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
 import com.dochiri.kihan.domain.execution.ExecutionRepository;
+import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -34,6 +36,11 @@ public class JpaExecutionRepository implements ExecutionRepository {
     @Override
     public List<Execution> findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(List<Long> deadlineIds, LocalDate startDate, LocalDate endDate) {
         return executionJpaRepository.findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(deadlineIds, startDate, endDate);
+    }
+
+    @Override
+    public List<Execution> findOverdueOneTimeAndNotDone(LocalDateTime now) {
+        return executionJpaRepository.findOverdueOneTimeAndNotDone(now, ExecutionStatus.DONE);
     }
 
     @Override

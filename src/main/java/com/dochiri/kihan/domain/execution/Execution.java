@@ -51,6 +51,9 @@ public class Execution extends BaseEntity {
         if (this.status == ExecutionStatus.DONE) {
             throw ExecutionAlreadyCompletedException.withDate(this.scheduledDate);
         }
+        if (this.status == ExecutionStatus.PAUSED) {
+            throw InvalidExecutionStatusTransitionException.cannotPauseWhenAlreadyPaused();
+        }
         this.status = ExecutionStatus.PAUSED;
         this.completedAt = null;
     }
@@ -58,6 +61,9 @@ public class Execution extends BaseEntity {
     public void markAsInProgress() {
         if (this.status == ExecutionStatus.DONE) {
             throw ExecutionAlreadyCompletedException.withDate(this.scheduledDate);
+        }
+        if (this.status != ExecutionStatus.PAUSED) {
+            throw InvalidExecutionStatusTransitionException.cannotResumeWhenNotPaused();
         }
         this.status = ExecutionStatus.IN_PROGRESS;
         this.completedAt = null;

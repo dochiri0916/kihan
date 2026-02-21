@@ -56,6 +56,16 @@ public class Deadline extends BaseEntity {
         }
     }
 
+    public void updateRecurrenceRule(RecurrenceRule newRecurrenceRule) {
+        if (this.type != DeadlineType.RECURRING) {
+            throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
+        }
+        if (newRecurrenceRule == null) {
+            throw InvalidDeadlineRuleException.recurringRuleRequired();
+        }
+        this.recurrenceRule = newRecurrenceRule;
+    }
+
     private void changeTitle(String newTitle) {
         requireNonNull(newTitle);
         if (newTitle.isBlank()) {
@@ -66,10 +76,6 @@ public class Deadline extends BaseEntity {
 
     private void changeDescription(String newDescription) {
         this.description = newDescription;
-    }
-
-    public void markAsCompleted(LocalDateTime now) {
-        this.delete(requireNonNull(now));
     }
 
     public void verifyOwnership(Long requestUserId) {

@@ -1,23 +1,26 @@
 package com.dochiri.kihan.presentation.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
+import java.time.Clock;
 import java.util.Map;
 
 import static java.util.Objects.*;
 
 @RestControllerAdvice
-@RequiredArgsConstructor
 public class GlobalExceptionHandler extends BaseExceptionHandler {
 
     private final ExceptionStatusMapper exceptionStatusMapper;
+
+    public GlobalExceptionHandler(ExceptionStatusMapper exceptionStatusMapper, Clock clock) {
+        super(clock);
+        this.exceptionStatusMapper = exceptionStatusMapper;
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleMethodArgumentNotValidException(
@@ -29,7 +32,7 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
         problemDetail.setTitle("VALIDATION_FAILED");
         problemDetail.setDetail("입력값이 올바르지 않습니다.");
         problemDetail.setProperty("path", request.getRequestURI());
-        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        problemDetail.setProperty("timestamp", now());
 
         problemDetail.setProperty(
                 "errors",

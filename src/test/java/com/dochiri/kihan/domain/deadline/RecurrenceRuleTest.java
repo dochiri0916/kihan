@@ -88,7 +88,7 @@ class RecurrenceRuleTest {
     @DisplayName("startDate가 null이면 예외가 발생한다")
     void shouldThrowWhenStartDateIsNull() {
         assertThrows(
-                NullPointerException.class,
+                InvalidDeadlineRuleException.class,
                 () -> RecurrenceRule.create(
                         RecurrencePattern.DAILY,
                         null,
