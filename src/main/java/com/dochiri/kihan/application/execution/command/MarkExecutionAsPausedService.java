@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MarkExecutionAsDelayedService {
+public class MarkExecutionAsPausedService {
 
     private final ExecutionRepository executionRepository;
 
@@ -17,7 +17,7 @@ public class MarkExecutionAsDelayedService {
         Execution execution = executionRepository.findByIdAndDeletedAtIsNull(id);
 
         execution.getDeadline().verifyOwnership(userId);
-        execution.markAsDelayed();
+        execution.markAsPaused();
     }
 
 }

@@ -17,7 +17,7 @@ public record ExecutionResponse(
         @Schema(description = "예정일", example = "2026-02-14")
         LocalDate scheduledDate,
 
-        @Schema(description = "상태", example = "PENDING")
+        @Schema(description = "상태", example = "IN_PROGRESS")
         String status,
 
         @Schema(description = "완료 시각", example = "2026-02-14T10:30:00")

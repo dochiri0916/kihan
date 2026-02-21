@@ -45,3 +45,6 @@ security:
     - /api/users/register
     - /api/auth/login
     - /api/auth/reissue
+
+app:
+  time-zone: Asia/Seoul

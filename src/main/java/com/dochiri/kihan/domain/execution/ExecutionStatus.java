@@ -1,7 +1,7 @@
 package com.dochiri.kihan.domain.execution;
 
 public enum ExecutionStatus {
-    PENDING,
+    IN_PROGRESS,
+    PAUSED,
     DONE,
-    DELAYED
 }

@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MarkExecutionAsDelayedService 테스트")
-class MarkExecutionAsDelayedServiceTest {
+@DisplayName("MarkExecutionAsPausedService 테스트")
+class MarkExecutionAsPausedServiceTest {
 
     @Mock
     private ExecutionRepository executionRepository;
 
     @InjectMocks
-    private MarkExecutionAsDelayedService markExecutionAsDelayedService;
+    private MarkExecutionAsPausedService markExecutionAsPausedService;
 
     @Test
-    @DisplayName("소유자 요청이면 실행을 DELAYED로 변경한다")
-    void shouldMarkExecutionAsDelayedWhenRequestedByOwner() {
+    @DisplayName("소유자 요청이면 실행을 PAUSED로 변경한다")
+    void shouldMarkExecutionAsPausedWhenRequestedByOwner() {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
@@ -42,9 +42,9 @@ class MarkExecutionAsDelayedServiceTest {
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
         when(executionRepository.findByIdAndDeletedAtIsNull(101L)).thenReturn(execution);
 
-        markExecutionAsDelayedService.execute(1L, 101L);
+        markExecutionAsPausedService.execute(1L, 101L);
 
-        assertTrue(execution.isDelayed());
+        assertTrue(execution.isPaused());
         assertNull(execution.getCompletedAt());
     }
 }
