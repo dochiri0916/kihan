@@ -1,7 +1,8 @@
 package com.dochiri.kihan.presentation.execution;
 
-import com.dochiri.kihan.application.execution.command.MarkExecutionAsDelayedService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionAsPausedService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsDoneService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionAsInProgressService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.application.execution.query.DateRangeQuery;
 import com.dochiri.kihan.application.execution.query.ExecutionQueryService;
@@ -26,7 +27,8 @@ import java.util.List;
 public class ExecutionController {
 
     private final MarkExecutionAsDoneService markExecutionAsDoneService;
-    private final MarkExecutionAsDelayedService markExecutionAsDelayedService;
+    private final MarkExecutionAsPausedService markExecutionAsPausedService;
+    private final MarkExecutionAsInProgressService markExecutionAsInProgressService;
     private final ExecutionQueryService executionQueryService;
 
     @Operation(summary = "실행 조회", description = "실행 ID로 실행을 조회합니다")
@@ -81,14 +83,25 @@ public class ExecutionController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "실행 지연 처리", description = "실행을 지연 상태로 변경합니다")
-    @PatchMapping("/{executionId}/delayed")
-    public ResponseEntity<Void> markAsDelayed(
+    @Operation(summary = "실행 중지 처리", description = "실행을 중지 상태로 변경합니다")
+    @PatchMapping("/{executionId}/paused")
+    public ResponseEntity<Void> markAsPaused(
             @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
             @Parameter(description = "실행 ID", example = "1")
             @PathVariable Long executionId
     ) {
-        markExecutionAsDelayedService.execute(principal.userId(), executionId);
+        markExecutionAsPausedService.execute(principal.userId(), executionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "실행 재개 처리", description = "중지된 실행을 진행 상태로 변경합니다")
+    @PatchMapping("/{executionId}/in-progress")
+    public ResponseEntity<Void> markAsInProgress(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @Parameter(description = "실행 ID", example = "1")
+            @PathVariable Long executionId
+    ) {
+        markExecutionAsInProgressService.execute(principal.userId(), executionId);
         return ResponseEntity.noContent().build();
     }
 

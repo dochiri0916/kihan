@@ -35,7 +35,7 @@ public class Execution extends BaseEntity {
         Execution execution = new Execution();
         execution.deadline = requireNonNull(deadline);
         execution.scheduledDate = requireNonNull(scheduledDate);
-        execution.status = ExecutionStatus.PENDING;
+        execution.status = ExecutionStatus.IN_PROGRESS;
         return execution;
     }
 
@@ -47,24 +47,32 @@ public class Execution extends BaseEntity {
         this.completedAt = requireNonNull(completedAt);
     }
 
-    public void markAsDelayed() {
+    public void markAsPaused() {
         if (this.status == ExecutionStatus.DONE) {
             throw ExecutionAlreadyCompletedException.withDate(this.scheduledDate);
         }
-        this.status = ExecutionStatus.DELAYED;
+        this.status = ExecutionStatus.PAUSED;
         this.completedAt = null;
     }
 
-    public boolean isPending() {
-        return this.status == ExecutionStatus.PENDING;
+    public void markAsInProgress() {
+        if (this.status == ExecutionStatus.DONE) {
+            throw ExecutionAlreadyCompletedException.withDate(this.scheduledDate);
+        }
+        this.status = ExecutionStatus.IN_PROGRESS;
+        this.completedAt = null;
+    }
+
+    public boolean isInProgress() {
+        return this.status == ExecutionStatus.IN_PROGRESS;
     }
 
     public boolean isDone() {
         return this.status == ExecutionStatus.DONE;
     }
 
-    public boolean isDelayed() {
-        return this.status == ExecutionStatus.DELAYED;
+    public boolean isPaused() {
+        return this.status == ExecutionStatus.PAUSED;
     }
 
 }

@@ -1,7 +1,8 @@
 package com.dochiri.kihan.presentation.execution;
 
-import com.dochiri.kihan.application.execution.command.MarkExecutionAsDelayedService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionAsPausedService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsDoneService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionAsInProgressService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.application.execution.query.DateRangeQuery;
 import com.dochiri.kihan.application.execution.query.ExecutionQueryService;
@@ -51,7 +52,10 @@ class ExecutionControllerTest {
     private MarkExecutionAsDoneService markExecutionAsDoneService;
 
     @Mock
-    private MarkExecutionAsDelayedService markExecutionAsDelayedService;
+    private MarkExecutionAsPausedService markExecutionAsPausedService;
+
+    @Mock
+    private MarkExecutionAsInProgressService markExecutionAsInProgressService;
 
     @Mock
     private ExecutionQueryService executionQueryService;
@@ -64,7 +68,8 @@ class ExecutionControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new ExecutionController(
                         markExecutionAsDoneService,
-                        markExecutionAsDelayedService,
+                        markExecutionAsPausedService,
+                        markExecutionAsInProgressService,
                         executionQueryService
                 ))
                 .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper))
@@ -86,7 +91,7 @@ class ExecutionControllerTest {
                         10L,
                         3L,
                         LocalDate.of(2026, 2, 21),
-                        ExecutionStatus.PENDING,
+                        ExecutionStatus.IN_PROGRESS,
                         null
                 ));
 
@@ -94,7 +99,7 @@ class ExecutionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.deadlineId").value(3))
-                .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
     }
 
     @Test
@@ -102,7 +107,7 @@ class ExecutionControllerTest {
     void shouldGetExecutionsByDeadline() throws Exception {
         authenticate(1L);
         when(executionQueryService.findByDeadlineId(1L, 3L)).thenReturn(List.of(
-                new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.PENDING, null),
+                new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.IN_PROGRESS, null),
                 new ExecutionDetail(11L, 3L, LocalDate.of(2026, 2, 22), ExecutionStatus.DONE, LocalDateTime.of(2026, 2, 22, 11, 0))
         ));
 
@@ -122,7 +127,7 @@ class ExecutionControllerTest {
                 LocalDate.of(2026, 2, 1),
                 LocalDate.of(2026, 2, 28)
         ))).thenReturn(List.of(
-                new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.PENDING, null)
+                new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.IN_PROGRESS, null)
         ));
 
         mockMvc.perform(get("/api/executions")
@@ -151,14 +156,25 @@ class ExecutionControllerTest {
     }
 
     @Test
-    @DisplayName("실행 지연 처리 성공 시 204를 반환한다")
-    void shouldMarkExecutionAsDelayed() throws Exception {
+    @DisplayName("실행 중지 처리 성공 시 204를 반환한다")
+    void shouldMarkExecutionAsPaused() throws Exception {
         authenticate(1L);
 
-        mockMvc.perform(patch("/api/executions/10/delayed"))
+        mockMvc.perform(patch("/api/executions/10/paused"))
                 .andExpect(status().isNoContent());
 
-        verify(markExecutionAsDelayedService).execute(1L, 10L);
+        verify(markExecutionAsPausedService).execute(1L, 10L);
+    }
+
+    @Test
+    @DisplayName("실행 재개 처리 성공 시 204를 반환한다")
+    void shouldMarkExecutionAsInProgress() throws Exception {
+        authenticate(1L);
+
+        mockMvc.perform(patch("/api/executions/10/in-progress"))
+                .andExpect(status().isNoContent());
+
+        verify(markExecutionAsInProgressService).execute(1L, 10L);
     }
 
     @Test

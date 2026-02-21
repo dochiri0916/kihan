@@ -272,7 +272,7 @@
   "id": 1,
   "deadlineId": 1,
   "scheduledDate": "2026-02-14",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "completedAt": null
 }
 ```
@@ -305,9 +305,18 @@
 
 - `204 No Content`
 
-### 5.5 실행 지연 처리
+### 5.5 실행 중지 처리
 
-- `PATCH /api/executions/{executionId}/delayed`
+- `PATCH /api/executions/{executionId}/paused`
+- Auth: 필요
+
+응답:
+
+- `204 No Content`
+
+### 5.6 실행 재개 처리
+
+- `PATCH /api/executions/{executionId}/in-progress`
 - Auth: 필요
 
 응답:
@@ -405,7 +414,7 @@
 - `role`: `USER`, `ADMIN`
 - `deadline.type`: `ONE_TIME`, `RECURRING`
 - `recurrenceRule.pattern`: `DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`
-- `execution.status`: `PENDING`, `DONE`, `DELAYED`
+- `execution.status`: `IN_PROGRESS`, `PAUSED`, `DONE`
 
 ## 9) 프론트 토큰 처리 가이드
 

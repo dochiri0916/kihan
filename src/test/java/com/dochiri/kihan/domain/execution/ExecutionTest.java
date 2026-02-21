@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ExecutionTest {
 
     @Test
-    @DisplayName("생성 시 기본 상태는 PENDING이다")
-    void shouldCreateExecutionWithPendingStatus() {
+    @DisplayName("생성 시 기본 상태는 IN_PROGRESS이다")
+    void shouldCreateExecutionWithInProgressStatus() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
-        assertEquals(ExecutionStatus.PENDING, execution.getStatus());
-        assertTrue(execution.isPending());
+        assertEquals(ExecutionStatus.IN_PROGRESS, execution.getStatus());
+        assertTrue(execution.isInProgress());
         assertTrue(!execution.isDone());
-        assertTrue(!execution.isDelayed());
+        assertTrue(!execution.isPaused());
         assertEquals(LocalDate.of(2026, 2, 20), execution.getScheduledDate());
     }
 
@@ -83,37 +83,58 @@ class ExecutionTest {
     }
 
     @Test
-    @DisplayName("markAsDelayed는 상태를 DELAYED로 바꾸고 완료 시각을 제거한다")
-    void shouldMarkExecutionAsDelayedAndClearCompletedAt() {
+    @DisplayName("markAsPaused는 상태를 PAUSED로 바꾸고 완료 시각을 제거한다")
+    void shouldMarkExecutionAsPausedAndClearCompletedAt() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
 
-        execution.markAsDelayed();
+        execution.markAsPaused();
 
-        assertEquals(ExecutionStatus.DELAYED, execution.getStatus());
+        assertEquals(ExecutionStatus.PAUSED, execution.getStatus());
         assertNull(execution.getCompletedAt());
-        assertTrue(execution.isDelayed());
+        assertTrue(execution.isPaused());
     }
 
     @Test
-    @DisplayName("DONE 상태에서 markAsDelayed를 호출하면 예외가 발생한다")
-    void shouldThrowWhenMarkingDelayedAfterDone() {
+    @DisplayName("DONE 상태에서 markAsPaused를 호출하면 예외가 발생한다")
+    void shouldThrowWhenMarkingPausedAfterDone() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
         execution.markAsDone(LocalDateTime.of(2026, 2, 20, 12, 0));
 
-        assertThrows(ExecutionAlreadyCompletedException.class, execution::markAsDelayed);
+        assertThrows(ExecutionAlreadyCompletedException.class, execution::markAsPaused);
     }
 
     @Test
-    @DisplayName("DELAYED 상태에서 markAsDone을 호출하면 DONE으로 변경된다")
-    void shouldAllowMarkingDoneAfterDelayed() {
+    @DisplayName("PAUSED 상태에서 markAsDone을 호출하면 DONE으로 변경된다")
+    void shouldAllowMarkingDoneAfterPaused() {
         Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
         LocalDateTime completedAt = LocalDateTime.of(2026, 2, 20, 14, 0);
-        execution.markAsDelayed();
+        execution.markAsPaused();
 
         execution.markAsDone(completedAt);
 
         assertTrue(execution.isDone());
         assertEquals(completedAt, execution.getCompletedAt());
+    }
+
+    @Test
+    @DisplayName("PAUSED 상태에서 markAsInProgress를 호출하면 IN_PROGRESS로 변경된다")
+    void shouldAllowResumingFromPausedToInProgress() {
+        Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
+        execution.markAsPaused();
+
+        execution.markAsInProgress();
+
+        assertTrue(execution.isInProgress());
+        assertNull(execution.getCompletedAt());
+    }
+
+    @Test
+    @DisplayName("DONE 상태에서 markAsInProgress를 호출하면 예외가 발생한다")
+    void shouldThrowWhenResumingAfterDone() {
+        Execution execution = Execution.create(oneTimeDeadline(), LocalDate.of(2026, 2, 20));
+        execution.markAsDone(LocalDateTime.of(2026, 2, 20, 12, 0));
+
+        assertThrows(ExecutionAlreadyCompletedException.class, execution::markAsInProgress);
     }
 
     @Test
