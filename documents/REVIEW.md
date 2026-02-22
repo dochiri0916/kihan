@@ -212,8 +212,9 @@ data: {"deadlineId":1842,"updatedAt":"2026-02-21T13:04:11Z","version":7}
 - 단건/반복 판별 단순화
 - 비즈니스 로직에서 `ONE_TIME` 값 의존을 줄이고, `recurrenceRule` 유무(반복 여부)와 `dueDate` 유무(단건 여부)로 처리하도록 정리했다.
 - 등록 요청에서 `type`은 선택값으로 완화했다. `pattern`이 있으면 반복, 없으면 단건으로 자동 판별한다.
-- 하위 호환으로 `ONT_TIME` 입력도 허용하되 내부 처리 결과는 단건(`ONE_TIME`)으로 통일한다.
 - 마감 지난 단건 자동 완료 누락 보정
 - 단건 실행 생성 조건을 `dueDate == today`에서 `dueDate <= today`로 확장해, 서버 중단 등으로 생성이 누락된 단건 실행도 이후 스케줄에서 보정 생성한다.
 - 보정 생성 시 `scheduledDate`는 현재 날짜가 아니라 실제 `dueDate`를 사용한다.
 - 연체 자동 완료 쿼리는 `type == ONE_TIME` 조건 대신 `dueDate is not null` 조건으로 변경해 단건 판별 누락을 줄였다.
+- 실행 생성 스케줄은 일 1회에서 매 분으로 변경해 누락 실행 보정을 빠르게 반영한다.
+- 수동 완료 안정성을 위해 `PATCH /api/executions/deadline/{deadlineId}/done`를 추가했다. 실행이 없으면 생성 후 즉시 완료 처리한다.

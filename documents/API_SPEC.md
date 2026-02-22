@@ -201,7 +201,6 @@
 - 반복인 경우 `pattern`은 필수
 - `type=RECURRING`에서 `startDate` 누락 시 서버가 현재 날짜(`LocalDate.now(clock)`)로 대체
 - `endDate`는 선택값이며, 누락 시 무기한 반복
-- 하위 호환: 기존 `ONT_TIME`도 단건으로 허용
 
 응답:
 
@@ -353,7 +352,7 @@
 - `중지`는 `IN_PROGRESS` 상태에서만 가능
 - `DONE`은 종료 상태
 - 단건(비반복) 실행은 연결된 마감의 `dueDate`가 오늘보다 이전이면 스케줄러가 자동으로 `DONE` 처리
-- 단건 실행이 마감일 당일 생성되지 못한 경우(서버 다운 등), 다음 스케줄 실행에서 `dueDate` 기준으로 보정 생성
+- 실행 생성 스케줄은 매 분 실행되며, 단건 실행이 마감일 당일 생성되지 못한 경우(서버 다운 등) `dueDate` 기준으로 보정 생성
 
 ### 5.1 실행 단건 조회
 
@@ -400,7 +399,21 @@
 
 - `204 No Content`
 
-### 5.5 실행 중지 처리
+### 5.5 기한 기준 실행 완료 처리
+
+- `PATCH /api/executions/deadline/{deadlineId}/done`
+- Auth: 필요
+
+동작:
+
+- 해당 기한의 실행이 없으면 생성 후 즉시 `DONE` 처리
+- 단건 기한은 `scheduledDate=dueDate`, 반복 기한은 `scheduledDate=today` 기준으로 처리
+
+응답:
+
+- `204 No Content`
+
+### 5.6 실행 중지 처리
 
 - `PATCH /api/executions/{executionId}/paused`
 - Auth: 필요
@@ -409,7 +422,7 @@
 
 - `204 No Content`
 
-### 5.6 실행 재개 처리
+### 5.7 실행 재개 처리
 
 - `PATCH /api/executions/{executionId}/resume`
 - Auth: 필요
