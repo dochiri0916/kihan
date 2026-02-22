@@ -57,11 +57,10 @@ public class DeadlineController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "ONE_TIME 기한",
+                                            name = "단건 기한",
                                             value = """
                                                     {
                                                       "title": "프로젝트 제출",
-                                                      "type": "ONE_TIME",
                                                       "dueDate": "2027-12-31",
                                                       "pattern": null,
                                                       "startDate": null,
@@ -74,7 +73,6 @@ public class DeadlineController {
                                             value = """
                                                     {
                                                       "title": "주간 회의",
-                                                      "type": "RECURRING",
                                                       "dueDate": null,
                                                       "pattern": "WEEKLY",
                                                       "startDate": "2027-01-01",
@@ -95,7 +93,6 @@ public class DeadlineController {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 principal.userId(),
                 request.title(),
-                request.resolveType(),
                 request.dueDate(),
                 request.toRecurrenceRule(clock)
         );

@@ -4,7 +4,6 @@ import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.dochiri.kihan.application.realtime.event.DeadlineChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
-import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.deadline.InvalidDeadlineRuleException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,6 @@ class RegisterDeadlineServiceTest {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 1L,
                 "운동",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
@@ -67,7 +65,6 @@ class RegisterDeadlineServiceTest {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 1L,
                 "운동",
-                DeadlineType.ONE_TIME,
                 null,
                 null
         );

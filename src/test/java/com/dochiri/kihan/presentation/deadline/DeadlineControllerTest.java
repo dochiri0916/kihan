@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -109,8 +108,8 @@ class DeadlineControllerTest {
     }
 
     @Test
-    @DisplayName("ONE_TIME 등록 성공 시 201과 Location 헤더를 반환한다")
-    void shouldRegisterOneTimeDeadlineAndReturnCreatedLocation() throws Exception {
+    @DisplayName("pattern이 없으면 단건 등록 성공 시 201과 Location 헤더를 반환한다")
+    void shouldRegisterSingleDeadlineAndReturnCreatedLocation() throws Exception {
         authenticate(1L);
         when(registerDeadlineService.execute(any())).thenReturn(101L);
 
@@ -119,7 +118,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "프로젝트 제출",
-                                  "type": "ONE_TIME",
                                   "dueDate": "2026-03-01",
                                   "pattern": null,
                                   "startDate": null,
@@ -135,8 +133,8 @@ class DeadlineControllerTest {
     }
 
     @Test
-    @DisplayName("type 생략 + pattern 없음이면 단건(ONE_TIME)으로 처리한다")
-    void shouldResolveSingleTypeWhenTypeIsMissing() throws Exception {
+    @DisplayName("pattern 없음이면 단건으로 처리한다")
+    void shouldResolveSingleTypeWhenPatternMissing() throws Exception {
         authenticate(1L);
         when(registerDeadlineService.execute(any())).thenReturn(104L);
 
@@ -155,7 +153,6 @@ class DeadlineControllerTest {
 
         ArgumentCaptor<RegisterDeadlineCommand> captor = ArgumentCaptor.forClass(RegisterDeadlineCommand.class);
         verify(registerDeadlineService).execute(captor.capture());
-        assertEquals(DeadlineType.ONE_TIME, captor.getValue().type());
         assertEquals(LocalDate.of(2026, 3, 1), captor.getValue().dueDate());
     }
 
@@ -170,7 +167,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "주간 회의",
-                                  "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
                                   "startDate": "2026-02-01",
@@ -199,7 +195,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "주간 회의",
-                                  "type": "RECURRING",
                                   "dueDate": null,
                                   "pattern": "WEEKLY",
                                   "startDate": "2026-02-01",
@@ -225,7 +220,6 @@ class DeadlineControllerTest {
                         .content("""
                                 {
                                   "title": "",
-                                  "type": null,
                                   "dueDate": null,
                                   "pattern": null,
                                   "startDate": null,

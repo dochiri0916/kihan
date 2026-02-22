@@ -36,6 +36,7 @@ jwt:
 cors:
   allowed-origins:
     - "http://localhost:3000"
+    - "http://localhost:5173"
 
 springdoc:
   swagger-ui:
@@ -55,6 +56,7 @@ security:
     - /api/users/register
     - /api/auth/login
     - /api/auth/reissue
+    - /api/auth/logout
 
 app:
   time-zone: Asia/Seoul

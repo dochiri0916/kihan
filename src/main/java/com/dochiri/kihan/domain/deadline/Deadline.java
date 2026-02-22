@@ -22,24 +22,36 @@ public class Deadline extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DeadlineType type;
-
     private LocalDate dueDate;
 
     @Embedded
     private RecurrenceRule recurrenceRule;
 
-    public static Deadline register(Long userId, String title, DeadlineType type, LocalDate dueDate, RecurrenceRule recurrenceRule) {
+    public static Deadline register(Long userId, String title, LocalDate dueDate, RecurrenceRule recurrenceRule) {
         Deadline deadline = new Deadline();
         deadline.userId = requireNonNull(userId);
         deadline.title = requireNonNull(title);
-        deadline.type = requireNonNull(type);
         deadline.dueDate = dueDate;
         deadline.recurrenceRule = recurrenceRule;
-        deadline.validate(type, dueDate, recurrenceRule);
+        deadline.validate(dueDate, recurrenceRule);
         return deadline;
+    }
+
+    public static Deadline register(
+            Long userId,
+            String title,
+            DeadlineType type,
+            LocalDate dueDate,
+            RecurrenceRule recurrenceRule
+    ) {
+        requireNonNull(type);
+        if (type.isSingle() && recurrenceRule != null) {
+            throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
+        }
+        if (type.isRecurring() && recurrenceRule == null) {
+            throw InvalidDeadlineRuleException.recurringRuleRequired();
+        }
+        return register(userId, title, dueDate, recurrenceRule);
     }
 
     public void update(String newTitle) {
@@ -49,7 +61,7 @@ public class Deadline extends BaseEntity {
     }
 
     public void updateRecurrenceRule(RecurrenceRule newRecurrenceRule) {
-        if (!this.type.isRecurring()) {
+        if (this.recurrenceRule == null) {
             throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
         }
         if (newRecurrenceRule == null) {
@@ -72,23 +84,22 @@ public class Deadline extends BaseEntity {
         }
     }
 
-    private void validate(DeadlineType type, LocalDate dueDate, RecurrenceRule recurrenceRule) {
-        if (type.isSingle()) {
+    public DeadlineType getType() {
+        return this.recurrenceRule == null
+                ? DeadlineType.ONE_TIME
+                : DeadlineType.RECURRING;
+    }
+
+    private void validate(LocalDate dueDate, RecurrenceRule recurrenceRule) {
+        if (recurrenceRule == null) {
             if (dueDate == null) {
                 throw InvalidDeadlineRuleException.oneTimeDueDateRequired();
             }
-            if (recurrenceRule != null) {
-                throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
-            }
+            return;
         }
 
-        if (type.isRecurring()) {
-            if (recurrenceRule == null) {
-                throw InvalidDeadlineRuleException.recurringRuleRequired();
-            }
-            if (dueDate != null) {
-                throw InvalidDeadlineRuleException.recurringNoDueDate();
-            }
+        if (dueDate != null) {
+            throw InvalidDeadlineRuleException.recurringNoDueDate();
         }
     }
 
