@@ -34,7 +34,7 @@ public interface ExecutionJpaRepository extends JpaRepository<Execution, Long> {
             join fetch e.deadline d
             where e.deletedAt is null
               and d.deletedAt is null
-              and d.type = com.dochiri.kihan.domain.deadline.DeadlineType.ONE_TIME
+              and d.dueDate is not null
               and d.dueDate < :now
               and e.status <> :doneStatus
             """)

@@ -95,7 +95,7 @@ public class DeadlineController {
         RegisterDeadlineCommand command = new RegisterDeadlineCommand(
                 principal.userId(),
                 request.title(),
-                request.type(),
+                request.resolveType(),
                 request.dueDate(),
                 request.toRecurrenceRule(clock)
         );

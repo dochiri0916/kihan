@@ -49,7 +49,7 @@ public class Deadline extends BaseEntity {
     }
 
     public void updateRecurrenceRule(RecurrenceRule newRecurrenceRule) {
-        if (this.type != DeadlineType.RECURRING) {
+        if (!this.type.isRecurring()) {
             throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
         }
         if (newRecurrenceRule == null) {
@@ -73,7 +73,7 @@ public class Deadline extends BaseEntity {
     }
 
     private void validate(DeadlineType type, LocalDate dueDate, RecurrenceRule recurrenceRule) {
-        if (type == DeadlineType.ONE_TIME) {
+        if (type.isSingle()) {
             if (dueDate == null) {
                 throw InvalidDeadlineRuleException.oneTimeDueDateRequired();
             }
@@ -82,7 +82,7 @@ public class Deadline extends BaseEntity {
             }
         }
 
-        if (type == DeadlineType.RECURRING) {
+        if (type.isRecurring()) {
             if (recurrenceRule == null) {
                 throw InvalidDeadlineRuleException.recurringRuleRequired();
             }

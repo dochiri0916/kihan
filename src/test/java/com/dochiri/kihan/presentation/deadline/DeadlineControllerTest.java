@@ -135,6 +135,56 @@ class DeadlineControllerTest {
     }
 
     @Test
+    @DisplayName("type 생략 + pattern 없음이면 단건(ONE_TIME)으로 처리한다")
+    void shouldResolveSingleTypeWhenTypeIsMissing() throws Exception {
+        authenticate(1L);
+        when(registerDeadlineService.execute(any())).thenReturn(104L);
+
+        mockMvc.perform(post("/api/deadlines")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "프로젝트 제출",
+                                  "dueDate": "2026-03-01",
+                                  "pattern": null,
+                                  "startDate": null,
+                                  "endDate": null
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<RegisterDeadlineCommand> captor = ArgumentCaptor.forClass(RegisterDeadlineCommand.class);
+        verify(registerDeadlineService).execute(captor.capture());
+        assertEquals(DeadlineType.ONE_TIME, captor.getValue().type());
+        assertEquals(LocalDate.of(2026, 3, 1), captor.getValue().dueDate());
+    }
+
+    @Test
+    @DisplayName("기존 ONT_TIME 값도 단건으로 호환 처리한다")
+    void shouldAcceptOntTimeAsSingleType() throws Exception {
+        authenticate(1L);
+        when(registerDeadlineService.execute(any())).thenReturn(105L);
+
+        mockMvc.perform(post("/api/deadlines")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "기존 데이터 호환",
+                                  "type": "ONT_TIME",
+                                  "dueDate": "2026-03-02",
+                                  "pattern": null,
+                                  "startDate": null,
+                                  "endDate": null
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<RegisterDeadlineCommand> captor = ArgumentCaptor.forClass(RegisterDeadlineCommand.class);
+        verify(registerDeadlineService).execute(captor.capture());
+        assertEquals(DeadlineType.ONE_TIME, captor.getValue().type());
+    }
+
+    @Test
     @DisplayName("RECURRING 등록 시 recurrenceRule을 생성해 서비스에 전달한다")
     void shouldRegisterRecurringDeadlineWithRecurrenceRule() throws Exception {
         authenticate(1L);

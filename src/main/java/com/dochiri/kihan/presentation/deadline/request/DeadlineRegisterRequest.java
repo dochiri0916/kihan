@@ -6,7 +6,6 @@ import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -16,8 +15,8 @@ public record DeadlineRegisterRequest(
         @Schema(description = "기한 제목", example = "프로젝트 제출")
         @NotBlank String title,
 
-        @Schema(description = "기한 타입", example = "ONE_TIME", allowableValues = {"ONE_TIME", "RECURRING"})
-        @NotNull DeadlineType type,
+        @Schema(description = "기한 타입(선택). 생략 시 pattern 유무로 자동 판별", example = "ONE_TIME", allowableValues = {"ONT_TIME", "ONE_TIME", "RECURRING"}, nullable = true)
+        DeadlineType type,
 
         @Schema(description = "마감일 (type=ONE_TIME일 때만 사용, RECURRING일 때는 null)", example = "2027-12-31", nullable = true)
         LocalDate dueDate,
@@ -31,6 +30,13 @@ public record DeadlineRegisterRequest(
         @Schema(description = "반복 종료일 (type=RECURRING일 때만 사용, 선택)", example = "2027-12-31", nullable = true)
         LocalDate endDate
 ) {
+    public DeadlineType resolveType() {
+        if (pattern != null) {
+            return DeadlineType.RECURRING;
+        }
+        return DeadlineType.ONE_TIME;
+    }
+
     public RecurrenceRule toRecurrenceRule(Clock clock) {
         if (pattern == null) {
             return null;
@@ -41,10 +47,7 @@ public record DeadlineRegisterRequest(
 
     @AssertTrue(message = "ONE_TIME 타입은 dueDate가 필수입니다.")
     public boolean isOneTimeDueDateValid() {
-        if (type == null) {
-            return true;
-        }
-        if (type == DeadlineType.ONE_TIME) {
+        if (resolveType().isSingle()) {
             return dueDate != null;
         }
         return true;
@@ -52,10 +55,7 @@ public record DeadlineRegisterRequest(
 
     @AssertTrue(message = "RECURRING 타입은 pattern이 필수입니다.")
     public boolean isRecurringFieldsValid() {
-        if (type == null) {
-            return true;
-        }
-        if (type == DeadlineType.RECURRING) {
+        if (resolveType().isRecurring()) {
             return pattern != null;
         }
         return true;
@@ -63,12 +63,17 @@ public record DeadlineRegisterRequest(
 
     @AssertTrue(message = "RECURRING 타입은 dueDate를 사용할 수 없습니다.")
     public boolean isRecurringDueDateValid() {
-        if (type == null) {
-            return true;
-        }
-        if (type == DeadlineType.RECURRING) {
+        if (resolveType().isRecurring()) {
             return dueDate == null;
         }
         return true;
+    }
+
+    @AssertTrue(message = "type이 지정되면 pattern 기반 판별 결과와 일치해야 합니다.")
+    public boolean isTypeConsistentWhenProvided() {
+        if (type == null) {
+            return true;
+        }
+        return type.isRecurring() == resolveType().isRecurring();
     }
 }

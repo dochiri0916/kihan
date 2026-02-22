@@ -204,5 +204,16 @@ data: {"deadlineId":1842,"updatedAt":"2026-02-21T13:04:11Z","version":7}
 2. 이벤트 ID 발급/보관 정책 확정(메모리 또는 Redis) 및 `Last-Event-ID` 복구 구현
 3. 프론트 SSE 구독 훅/서비스 구현 + 페이지 0 patch 반영
 4. SSE 실패 누적 시 폴링 전환 로직 및 백오프 적용
-5. `ETag` 기반 조건부 폴링 적용
+5. `Last-Modified` / `If-Modified-Since` 기반 조건부 폴링 적용
 6. 모니터링 대시보드/알람(폴백 급증, 지연 증가) 설정
+
+## 10. 후속 수정 사항 (2026-02-22)
+
+- 단건/반복 판별 단순화
+- 비즈니스 로직에서 `ONE_TIME` 값 의존을 줄이고, `recurrenceRule` 유무(반복 여부)와 `dueDate` 유무(단건 여부)로 처리하도록 정리했다.
+- 등록 요청에서 `type`은 선택값으로 완화했다. `pattern`이 있으면 반복, 없으면 단건으로 자동 판별한다.
+- 하위 호환으로 `ONT_TIME` 입력도 허용하되 내부 처리 결과는 단건(`ONE_TIME`)으로 통일한다.
+- 마감 지난 단건 자동 완료 누락 보정
+- 단건 실행 생성 조건을 `dueDate == today`에서 `dueDate <= today`로 확장해, 서버 중단 등으로 생성이 누락된 단건 실행도 이후 스케줄에서 보정 생성한다.
+- 보정 생성 시 `scheduledDate`는 현재 날짜가 아니라 실제 `dueDate`를 사용한다.
+- 연체 자동 완료 쿼리는 `type == ONE_TIME` 조건 대신 `dueDate is not null` 조건으로 변경해 단건 판별 누락을 줄였다.

@@ -195,10 +195,13 @@
 
 유효성:
 
-- `type=ONE_TIME`인 경우 `dueDate`는 필수
-- `type=RECURRING`인 경우 `pattern`은 필수
+- `pattern`이 있으면 `RECURRING`, 없으면 단건(`ONE_TIME`)으로 자동 판별
+- `type`은 선택값이며, 보내는 경우 자동 판별 결과와 일치해야 함
+- 단건(비반복)인 경우 `dueDate`는 필수
+- 반복인 경우 `pattern`은 필수
 - `type=RECURRING`에서 `startDate` 누락 시 서버가 현재 날짜(`LocalDate.now(clock)`)로 대체
 - `endDate`는 선택값이며, 누락 시 무기한 반복
+- 하위 호환: 기존 `ONT_TIME`도 단건으로 허용
 
 응답:
 
@@ -349,7 +352,8 @@
 - `재개`는 `PAUSED` 상태에서만 가능
 - `중지`는 `IN_PROGRESS` 상태에서만 가능
 - `DONE`은 종료 상태
-- `ONE_TIME` 실행은 연결된 마감의 `dueDate`가 오늘보다 이전이면 스케줄러가 자동으로 `DONE` 처리
+- 단건(비반복) 실행은 연결된 마감의 `dueDate`가 오늘보다 이전이면 스케줄러가 자동으로 `DONE` 처리
+- 단건 실행이 마감일 당일 생성되지 못한 경우(서버 다운 등), 다음 스케줄 실행에서 `dueDate` 기준으로 보정 생성
 
 ### 5.1 실행 단건 조회
 

@@ -3,7 +3,6 @@ package com.dochiri.kihan.application.execution.scheduler;
 import com.dochiri.kihan.application.execution.command.CreateExecutionService;
 import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
 import com.dochiri.kihan.domain.deadline.Deadline;
-import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.deadline.RecurrenceRule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,8 @@ public class ExecutionGenerationService {
         for (Deadline deadline : deadlines) {
             try {
                 if (shouldCreateExecution(deadline, today)) {
-                    createExecutionService.execute(deadline, today)
+                    LocalDate scheduledDate = resolveScheduledDate(deadline, today);
+                    createExecutionService.execute(deadline, scheduledDate)
                             .ifPresentOrElse(
                                     executionId -> log.debug(
                                             "Created execution {} for deadline {} on {}",
@@ -60,7 +60,7 @@ public class ExecutionGenerationService {
     }
 
     private boolean shouldCreateExecution(Deadline deadline, LocalDate date) {
-        if (deadline.getType() == DeadlineType.ONE_TIME) {
+        if (deadline.getDueDate() != null) {
             return shouldCreateOneTimeExecution(deadline, date);
         }
         return shouldCreateRecurringExecution(deadline, date);
@@ -68,7 +68,7 @@ public class ExecutionGenerationService {
 
     private boolean shouldCreateOneTimeExecution(Deadline deadline, LocalDate date) {
         return deadline.getDueDate() != null
-                && deadline.getDueDate().equals(date);
+                && !deadline.getDueDate().isAfter(date);
     }
 
     private boolean shouldCreateRecurringExecution(Deadline deadline, LocalDate date) {
@@ -91,6 +91,13 @@ public class ExecutionGenerationService {
             case MONTHLY -> shouldCreateMonthlyExecution(rule, date);
             case YEARLY -> shouldCreateYearlyExecution(rule, date);
         };
+    }
+
+    private LocalDate resolveScheduledDate(Deadline deadline, LocalDate today) {
+        if (deadline.getDueDate() != null) {
+            return deadline.getDueDate();
+        }
+        return today;
     }
 
     private boolean shouldCreateDailyExecution(RecurrenceRule rule, LocalDate date) {
