@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,6 +26,11 @@ public class JpaExecutionRepository implements ExecutionRepository {
     public Execution findByIdAndDeletedAtIsNull(Long id) {
         return executionJpaRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ExecutionNotFoundException(id));
+    }
+
+    @Override
+    public Optional<Execution> findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate) {
+        return executionJpaRepository.findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
     }
 
     @Override

@@ -15,7 +15,7 @@ public record DeadlineRegisterRequest(
         @Schema(description = "기한 제목", example = "프로젝트 제출")
         @NotBlank String title,
 
-        @Schema(description = "기한 타입(선택). 생략 시 pattern 유무로 자동 판별", example = "ONE_TIME", allowableValues = {"ONT_TIME", "ONE_TIME", "RECURRING"}, nullable = true)
+        @Schema(description = "기한 타입(선택). 생략 시 pattern 유무로 자동 판별", example = "ONE_TIME", allowableValues = {"ONE_TIME", "RECURRING"}, nullable = true)
         DeadlineType type,
 
         @Schema(description = "마감일 (type=ONE_TIME일 때만 사용, RECURRING일 때는 null)", example = "2027-12-31", nullable = true)

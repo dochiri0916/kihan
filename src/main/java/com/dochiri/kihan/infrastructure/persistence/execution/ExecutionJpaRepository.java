@@ -26,6 +26,8 @@ public interface ExecutionJpaRepository extends JpaRepository<Execution, Long> {
 
     Optional<Execution> findByIdAndDeletedAtIsNull(Long id);
 
+    Optional<Execution> findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate);
+
     boolean existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate);
 
     @Query("""

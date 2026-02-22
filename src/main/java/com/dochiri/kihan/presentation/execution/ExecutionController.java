@@ -3,6 +3,7 @@ package com.dochiri.kihan.presentation.execution;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsPausedService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsDoneService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsInProgressService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionByDeadlineAsDoneService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.application.execution.query.DateRangeQuery;
 import com.dochiri.kihan.application.execution.query.ExecutionQueryService;
@@ -27,6 +28,7 @@ import java.util.List;
 public class ExecutionController {
 
     private final MarkExecutionAsDoneService markExecutionAsDoneService;
+    private final MarkExecutionByDeadlineAsDoneService markExecutionByDeadlineAsDoneService;
     private final MarkExecutionAsPausedService markExecutionAsPausedService;
     private final MarkExecutionAsInProgressService markExecutionAsInProgressService;
     private final ExecutionQueryService executionQueryService;
@@ -80,6 +82,17 @@ public class ExecutionController {
             @PathVariable Long executionId
     ) {
         markExecutionAsDoneService.execute(principal.userId(), executionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "기한 기준 실행 완료 처리", description = "해당 기한의 실행을 완료 상태로 변경합니다. 실행이 없으면 생성 후 완료 처리합니다")
+    @PatchMapping("/deadline/{deadlineId}/done")
+    public ResponseEntity<Void> markByDeadlineAsDone(
+            @Parameter(hidden = true) @AuthenticationPrincipal JwtPrincipal principal,
+            @Parameter(description = "기한 ID", example = "1")
+            @PathVariable Long deadlineId
+    ) {
+        markExecutionByDeadlineAsDoneService.execute(principal.userId(), deadlineId);
         return ResponseEntity.noContent().build();
     }
 

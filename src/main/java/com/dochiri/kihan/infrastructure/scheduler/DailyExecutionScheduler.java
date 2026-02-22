@@ -13,11 +13,11 @@ public class DailyExecutionScheduler {
 
     private final ExecutionGenerationService executionGenerationService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void generateDailyExecutions() {
-        log.info("Starting daily execution generation");
+        log.debug("Starting execution generation tick");
         executionGenerationService.generateExecutionsForToday();
-        log.info("Completed daily execution generation");
+        log.debug("Completed execution generation tick");
     }
 
 }

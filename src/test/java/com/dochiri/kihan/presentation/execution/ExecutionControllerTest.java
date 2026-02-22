@@ -3,6 +3,7 @@ package com.dochiri.kihan.presentation.execution;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsPausedService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsDoneService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsInProgressService;
+import com.dochiri.kihan.application.execution.command.MarkExecutionByDeadlineAsDoneService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
 import com.dochiri.kihan.application.execution.query.DateRangeQuery;
 import com.dochiri.kihan.application.execution.query.ExecutionQueryService;
@@ -53,6 +54,9 @@ class ExecutionControllerTest {
     private MarkExecutionAsDoneService markExecutionAsDoneService;
 
     @Mock
+    private MarkExecutionByDeadlineAsDoneService markExecutionByDeadlineAsDoneService;
+
+    @Mock
     private MarkExecutionAsPausedService markExecutionAsPausedService;
 
     @Mock
@@ -69,6 +73,7 @@ class ExecutionControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new ExecutionController(
                         markExecutionAsDoneService,
+                        markExecutionByDeadlineAsDoneService,
                         markExecutionAsPausedService,
                         markExecutionAsInProgressService,
                         executionQueryService
@@ -165,6 +170,17 @@ class ExecutionControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(markExecutionAsPausedService).execute(1L, 10L);
+    }
+
+    @Test
+    @DisplayName("기한 기준 완료 처리 성공 시 204를 반환한다")
+    void shouldMarkExecutionAsDoneByDeadline() throws Exception {
+        authenticate(1L);
+
+        mockMvc.perform(patch("/api/executions/deadline/3/done"))
+                .andExpect(status().isNoContent());
+
+        verify(markExecutionByDeadlineAsDoneService).execute(1L, 3L);
     }
 
     @Test
