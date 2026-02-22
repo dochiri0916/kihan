@@ -132,7 +132,7 @@ GET /api/deadlines?page=0&size=20&sortBy=CREATED_AT&direction=DESC
 - SSE 구독(신규)
 - `GET /api/deadlines/stream`
 - 헤더: `Accept: text/event-stream`
-- 인증: 앱(네이티브) 전용이므로 기존 Access Token(`Authorization: Bearer`) 사용. 향후 웹 지원 시 브라우저 `EventSource`는 커스텀 헤더 불가하므로 쿼리 파라미터 토큰 또는 쿠키 기반으로 전환 필요.
+- 인증: Access Token(`Authorization: Bearer`) 사용. 웹 환경에서 `EventSource`를 쓰는 경우 `withCredentials`와 refresh token 쿠키 기반 재인증 흐름을 함께 사용한다.
 - 재연결 복구
 - 클라이언트는 마지막 수신 ID를 `Last-Event-ID`로 전달
 - 서버는 가능하면 해당 ID 이후 이벤트부터 재전송, 불가능하면 `resync_required` 이벤트 전송

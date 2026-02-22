@@ -39,10 +39,13 @@
 {
   "userId": 1,
   "role": "USER",
-  "accessToken": "eyJ...",
-  "refreshToken": "eyJ..."
+  "accessToken": "eyJ..."
 }
 ```
+
+응답 헤더:
+
+- `Set-Cookie: refreshToken={token}; HttpOnly; Path=/; SameSite=Lax`
 
 ### 2.2 토큰 재발급
 
@@ -51,15 +54,7 @@
 
 요청:
 
-```json
-{
-  "refreshToken": "eyJ..."
-}
-```
-
-유효성:
-
-- `refreshToken`: 필수, 공백 불가
+- Cookie: `refreshToken={token}` (자동 전송)
 
 응답 `200`:
 
@@ -67,10 +62,13 @@
 {
   "userId": 1,
   "role": "USER",
-  "accessToken": "eyJ...",
-  "refreshToken": "eyJ..."
+  "accessToken": "eyJ..."
 }
 ```
+
+응답 헤더:
+
+- `Set-Cookie: refreshToken={newToken}; HttpOnly; Path=/; SameSite=Lax`
 
 ### 2.3 로그아웃
 
@@ -79,20 +77,17 @@
 
 요청(선택):
 
-```json
-{
-  "refreshToken": "eyJ..."
-}
-```
+- Cookie: `refreshToken={token}` (있으면 서버에서 폐기)
 
 응답:
 
 - `204 No Content`
+- `Set-Cookie: refreshToken=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`
 
 동작:
 
-- body에 `refreshToken`이 있으면 서버에서 해당 토큰 폐기
-- body가 없거나 `refreshToken`이 없으면 서버는 토큰 폐기 없이 `204` 반환
+- 쿠키에 `refreshToken`이 있으면 서버에서 해당 토큰 폐기
+- 쿠키가 없으면 서버는 토큰 폐기 없이 `204` 반환
 
 ## 3) 사용자(User)
 
