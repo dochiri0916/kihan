@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,5 +60,16 @@ class RegisterUserServiceTest {
 
         verify(userRepository, never()).save(any(User.class));
         verify(passwordEncoder, never()).encode(any());
+    }
+
+    @Test
+    @DisplayName("중복 체크 통과 후 저장 시 유니크 충돌이 나면 중복 이메일 예외로 변환한다")
+    void shouldConvertDataIntegrityViolationToDuplicateEmailException() {
+        RegisterUserCommand command = new RegisterUserCommand("dup@a.com", "raw", "alice");
+        when(userRepository.existsByEmailAndDeletedAtIsNull(command.email())).thenReturn(false);
+        when(passwordEncoder.encode("raw")).thenReturn("encoded");
+        when(userRepository.save(any(User.class))).thenThrow(new DataIntegrityViolationException("unique constraint"));
+
+        assertThrows(DuplicateEmailException.class, () -> registerUserService.execute(command));
     }
 }
