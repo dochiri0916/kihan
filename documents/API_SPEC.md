@@ -162,12 +162,11 @@
 - `POST /api/deadlines`
 - Auth: 필요
 
-요청(ONE_TIME):
+요청(단건):
 
 ```json
 {
   "title": "프로젝트 제출",
-  "type": "ONE_TIME",
   "dueDate": "2027-12-31",
   "pattern": null,
   "startDate": null,
@@ -180,7 +179,6 @@
 ```json
 {
   "title": "주간 회의",
-  "type": "RECURRING",
   "dueDate": null,
   "pattern": "WEEKLY",
   "startDate": "2027-01-01",
@@ -190,11 +188,12 @@
 
 유효성:
 
+- 요청 바디의 `type` 필드는 사용하지 않음
 - `pattern`이 있으면 `RECURRING`, 없으면 단건(`ONE_TIME`)으로 자동 판별
-- `type`은 선택값이며, 보내는 경우 자동 판별 결과와 일치해야 함
 - 단건(비반복)인 경우 `dueDate`는 필수
 - 반복인 경우 `pattern`은 필수
-- `type=RECURRING`에서 `startDate` 누락 시 서버가 현재 날짜(`LocalDate.now(clock)`)로 대체
+- `dueDate`와 `pattern`이 모두 없으면 `400 Bad Request`
+- 반복에서 `startDate` 누락 시 서버가 현재 날짜(`LocalDate.now(clock)`)로 대체
 - `endDate`는 선택값이며, 누락 시 무기한 반복
 
 응답:
@@ -445,8 +444,7 @@
 {
   "userId": 1,
   "role": "USER",
-  "accessToken": "eyJ...",
-  "refreshToken": "eyJ..."
+  "accessToken": "eyJ..."
 }
 ```
 
