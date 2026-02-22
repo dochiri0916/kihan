@@ -47,7 +47,6 @@ class DeleteDeadlineServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "제목",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );

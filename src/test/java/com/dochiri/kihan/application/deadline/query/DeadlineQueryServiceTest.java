@@ -93,7 +93,6 @@ class DeadlineQueryServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 title,
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );

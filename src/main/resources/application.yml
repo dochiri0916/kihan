@@ -60,3 +60,15 @@ security:
 
 app:
   time-zone: Asia/Seoul
+
+scheduler:
+  execution-generation:
+    cron: "0 * * * * *"
+  overdue-completion:
+    cron: "0 * * * * *"
+
+realtime:
+  stream:
+    sse-timeout-millis: 1800000
+    heartbeat-fixed-delay: 25000
+    max-event-backlog: 200

@@ -37,23 +37,6 @@ public class Deadline extends BaseEntity {
         return deadline;
     }
 
-    public static Deadline register(
-            Long userId,
-            String title,
-            DeadlineType type,
-            LocalDate dueDate,
-            RecurrenceRule recurrenceRule
-    ) {
-        requireNonNull(type);
-        if (type.isSingle() && recurrenceRule != null) {
-            throw InvalidDeadlineRuleException.oneTimeNoRecurrence();
-        }
-        if (type.isRecurring() && recurrenceRule == null) {
-            throw InvalidDeadlineRuleException.recurringRuleRequired();
-        }
-        return register(userId, title, dueDate, recurrenceRule);
-    }
-
     public void update(String newTitle) {
         if (newTitle != null) {
             changeTitle(newTitle);

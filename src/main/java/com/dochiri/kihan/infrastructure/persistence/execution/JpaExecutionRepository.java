@@ -29,6 +29,12 @@ public class JpaExecutionRepository implements ExecutionRepository {
     }
 
     @Override
+    public Execution findByIdAndDeadlineActiveAndDeletedAtIsNull(Long id) {
+        return executionJpaRepository.findByIdAndDeadlineActiveAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ExecutionNotFoundException(id));
+    }
+
+    @Override
     public Optional<Execution> findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate) {
         return executionJpaRepository.findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
     }

@@ -1,5 +1,6 @@
 package com.dochiri.kihan.infrastructure.realtime;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -17,15 +18,23 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 public class DeadlineStreamBroker {
 
-    private static final long SSE_TIMEOUT_MILLIS = 30L * 60L * 1000L;
-    private static final int MAX_EVENT_BACKLOG = 200;
+    private final long sseTimeoutMillis;
+    private final int maxEventBacklog;
 
     private final AtomicLong eventSequence = new AtomicLong(0);
     private final Map<Long, SseEmitter> emittersByUserId = new ConcurrentHashMap<>();
     private final Map<Long, ConcurrentNavigableMap<Long, StreamEvent>> backlogsByUserId = new ConcurrentHashMap<>();
 
+    public DeadlineStreamBroker(
+            @Value("${realtime.stream.sse-timeout-millis:1800000}") long sseTimeoutMillis,
+            @Value("${realtime.stream.max-event-backlog:200}") int maxEventBacklog
+    ) {
+        this.sseTimeoutMillis = sseTimeoutMillis;
+        this.maxEventBacklog = maxEventBacklog;
+    }
+
     public SseEmitter subscribe(Long userId, String lastEventId) {
-        SseEmitter emitter = new SseEmitter(SSE_TIMEOUT_MILLIS);
+        SseEmitter emitter = new SseEmitter(sseTimeoutMillis);
         SseEmitter previous = emittersByUserId.put(userId, emitter);
         if (previous != null) {
             previous.complete();
@@ -50,7 +59,7 @@ public class DeadlineStreamBroker {
         }
     }
 
-    @Scheduled(fixedDelay = 25_000L)
+    @Scheduled(fixedDelayString = "${realtime.stream.heartbeat-fixed-delay:25000}")
     public void sendHeartbeat() {
         List<Map.Entry<Long, SseEmitter>> snapshot = new ArrayList<>(emittersByUserId.entrySet());
         for (Map.Entry<Long, SseEmitter> entry : snapshot) {
@@ -94,7 +103,7 @@ public class DeadlineStreamBroker {
         );
         backlog.put(eventId, new StreamEvent(eventName, data));
 
-        while (backlog.size() > MAX_EVENT_BACKLOG) {
+        while (backlog.size() > maxEventBacklog) {
             backlog.pollFirstEntry();
         }
     }

@@ -51,7 +51,7 @@ class MarkExecutionByDeadlineAsDoneServiceTest {
     @Test
     @DisplayName("실행이 없으면 생성 후 완료 처리한다")
     void shouldCreateAndMarkDoneWhenExecutionDoesNotExist() {
-        Deadline deadline = Deadline.register(1L, "단건", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 20), null);
+        Deadline deadline = Deadline.register(1L, "단건", LocalDate.of(2026, 2, 20), null);
         setId(deadline, 10L);
         Execution created = Execution.create(deadline, LocalDate.of(2026, 2, 20));
         setId(created, 100L);
@@ -76,7 +76,7 @@ class MarkExecutionByDeadlineAsDoneServiceTest {
     @Test
     @DisplayName("기존 실행이 있으면 생성 없이 완료 처리한다")
     void shouldMarkExistingExecutionDone() {
-        Deadline deadline = Deadline.register(1L, "단건", DeadlineType.ONE_TIME, LocalDate.of(2026, 2, 20), null);
+        Deadline deadline = Deadline.register(1L, "단건", LocalDate.of(2026, 2, 20), null);
         setId(deadline, 10L);
         Execution existing = Execution.create(deadline, LocalDate.of(2026, 2, 20));
         setId(existing, 101L);

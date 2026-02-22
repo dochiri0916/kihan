@@ -19,7 +19,6 @@ class DeadlineDomainTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "운동",
-                DeadlineType.ONE_TIME,
                 dueDate,
                 null
         );
@@ -37,7 +36,6 @@ class DeadlineDomainTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "운동",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
@@ -57,7 +55,6 @@ class DeadlineDomainTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "정기 점검",
-                DeadlineType.RECURRING,
                 null,
                 rule
         );
@@ -75,7 +72,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        DeadlineType.ONE_TIME,
                         null,
                         null
                 )
@@ -96,7 +92,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        DeadlineType.ONE_TIME,
                         LocalDate.of(2026, 2, 20),
                         rule
                 )
@@ -104,15 +99,14 @@ class DeadlineDomainTest {
     }
 
     @Test
-    @DisplayName("RECURRING 마감은 recurrenceRule이 없으면 예외가 발생한다")
-    void should_throw_when_recurring_deadline_has_no_recurrence_rule() {
+    @DisplayName("dueDate와 recurrenceRule이 모두 없으면 예외가 발생한다")
+    void should_throw_when_due_date_and_recurrence_rule_are_missing() {
         assertThrows(
                 InvalidDeadlineRuleException.class,
                 () -> Deadline.register(
                         1L,
                         "title",
-                        DeadlineType.RECURRING,
-                        LocalDate.of(2026, 2, 20),
+                        null,
                         null
                 )
         );
@@ -132,7 +126,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         "title",
-                        DeadlineType.RECURRING,
                         LocalDate.of(2026, 2, 20),
                         rule
                 )
@@ -147,7 +140,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         null,
                         "title",
-                        DeadlineType.ONE_TIME,
                         LocalDate.of(2026, 2, 20),
                         null
                 )
@@ -162,7 +154,6 @@ class DeadlineDomainTest {
                 () -> Deadline.register(
                         1L,
                         null,
-                        DeadlineType.ONE_TIME,
                         LocalDate.of(2026, 2, 20),
                         null
                 )
@@ -170,15 +161,14 @@ class DeadlineDomainTest {
     }
 
     @Test
-    @DisplayName("등록 시 type이 null이면 예외가 발생한다")
-    void should_throw_when_type_is_null_on_register() {
+    @DisplayName("등록 시 dueDate와 recurrenceRule이 모두 null이면 예외가 발생한다")
+    void should_throw_when_due_date_and_recurrence_are_null_on_register() {
         assertThrows(
-                NullPointerException.class,
+                InvalidDeadlineRuleException.class,
                 () -> Deadline.register(
                         1L,
                         "title",
                         null,
-                        LocalDate.of(2026, 2, 20),
                         null
                 )
         );
@@ -296,7 +286,6 @@ class DeadlineDomainTest {
         return Deadline.register(
                 1L,
                 "title",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 20),
                 null
         );

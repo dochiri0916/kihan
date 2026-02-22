@@ -2,9 +2,7 @@ package com.dochiri.kihan.application.execution.command;
 
 import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
-import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +31,7 @@ import static org.mockito.Mockito.when;
 class MarkExecutionAsDoneServiceTest {
 
     @Mock
-    private ExecutionRepository executionRepository;
+    private ExecutionCommandSupport executionCommandSupport;
 
     @Mock
     private Clock clock;
@@ -50,12 +48,11 @@ class MarkExecutionAsDoneServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
-        when(executionRepository.findByIdAndDeletedAtIsNull(100L)).thenReturn(execution);
+        when(executionCommandSupport.loadOwnedActiveExecution(1L, 100L)).thenReturn(execution);
 
         Instant fixed = Instant.parse("2026-02-21T10:00:00Z");
         when(clock.instant()).thenReturn(fixed);
@@ -65,7 +62,7 @@ class MarkExecutionAsDoneServiceTest {
 
         assertTrue(execution.isDone());
         assertEquals(LocalDateTime.of(2026, 2, 21, 10, 0), execution.getCompletedAt());
-        verify(executionRepository).findByIdAndDeletedAtIsNull(100L);
+        verify(executionCommandSupport).loadOwnedActiveExecution(1L, 100L);
         ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
         verify(eventPublisher).publishEvent(eventCaptor.capture());
 

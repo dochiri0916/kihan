@@ -9,6 +9,7 @@ public interface ExecutionRepository {
     Execution save(Execution execution);
 
     Execution findByIdAndDeletedAtIsNull(Long id);
+    Execution findByIdAndDeadlineActiveAndDeletedAtIsNull(Long id);
 
     Optional<Execution> findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate);
 

@@ -2,10 +2,8 @@ package com.dochiri.kihan.application.execution.command;
 
 import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
-import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.execution.Execution;
 import com.dochiri.kihan.domain.execution.InvalidExecutionStatusTransitionException;
-import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +30,7 @@ import static org.mockito.Mockito.when;
 class MarkExecutionAsPausedServiceTest {
 
     @Mock
-    private ExecutionRepository executionRepository;
+    private ExecutionCommandSupport executionCommandSupport;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -46,12 +44,11 @@ class MarkExecutionAsPausedServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
-        when(executionRepository.findByIdAndDeletedAtIsNull(101L)).thenReturn(execution);
+        when(executionCommandSupport.loadOwnedActiveExecution(1L, 101L)).thenReturn(execution);
 
         markExecutionAsPausedService.execute(1L, 101L);
 
@@ -72,13 +69,12 @@ class MarkExecutionAsPausedServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "title",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
         Execution execution = Execution.create(deadline, LocalDate.of(2026, 2, 21));
         execution.markAsPaused();
-        when(executionRepository.findByIdAndDeletedAtIsNull(101L)).thenReturn(execution);
+        when(executionCommandSupport.loadOwnedActiveExecution(1L, 101L)).thenReturn(execution);
 
         assertThrows(InvalidExecutionStatusTransitionException.class,
                 () -> markExecutionAsPausedService.execute(1L, 101L));

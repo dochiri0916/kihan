@@ -13,11 +13,11 @@ public class OverdueExecutionCompletionScheduler {
 
     private final OverdueExecutionCompletionService overdueExecutionCompletionService;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "${scheduler.overdue-completion.cron:0 * * * * *}")
     public void completeOverdueExecutions() {
+        long startedAt = System.nanoTime();
         int completedCount = overdueExecutionCompletionService.completeOverdueOneTimeExecutions();
-        if (completedCount > 0) {
-            log.info("Completed overdue executions count={}", completedCount);
-        }
+        long elapsedMillis = (System.nanoTime() - startedAt) / 1_000_000;
+        log.debug("Overdue completion tick completedCount={}, elapsedMs={}", completedCount, elapsedMillis);
     }
 }

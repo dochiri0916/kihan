@@ -43,7 +43,6 @@ class UpdateDeadlineServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "기존 제목",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 21),
                 null
         );
@@ -63,7 +62,6 @@ class UpdateDeadlineServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "제목",
-                DeadlineType.RECURRING,
                 null,
                 RecurrenceRule.create(
                         RecurrencePattern.WEEKLY,

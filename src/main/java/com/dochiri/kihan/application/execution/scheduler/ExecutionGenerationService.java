@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 @Slf4j
@@ -85,12 +84,7 @@ public class ExecutionGenerationService {
             return false;
         }
 
-        return switch (rule.getPattern()) {
-            case DAILY -> shouldCreateDailyExecution(rule, date);
-            case WEEKLY -> shouldCreateWeeklyExecution(rule, date);
-            case MONTHLY -> shouldCreateMonthlyExecution(rule, date);
-            case YEARLY -> shouldCreateYearlyExecution(rule, date);
-        };
+        return rule.getPattern().matches(rule.getStartDate(), date);
     }
 
     private LocalDate resolveScheduledDate(Deadline deadline, LocalDate today) {
@@ -98,36 +92,6 @@ public class ExecutionGenerationService {
             return deadline.getDueDate();
         }
         return today;
-    }
-
-    private boolean shouldCreateDailyExecution(RecurrenceRule rule, LocalDate date) {
-        return !date.isBefore(rule.getStartDate());
-    }
-
-    private boolean shouldCreateWeeklyExecution(RecurrenceRule rule, LocalDate date) {
-        return !date.isBefore(rule.getStartDate())
-                && date.getDayOfWeek() == rule.getStartDate().getDayOfWeek();
-    }
-
-    private boolean shouldCreateMonthlyExecution(RecurrenceRule rule, LocalDate date) {
-        int targetDay = Math.min(
-                rule.getStartDate().getDayOfMonth(),
-                date.lengthOfMonth()
-        );
-
-        return !date.isBefore(rule.getStartDate())
-                && date.getDayOfMonth() == targetDay;
-    }
-
-    private boolean shouldCreateYearlyExecution(RecurrenceRule rule, LocalDate date) {
-        int targetDay = Math.min(
-                rule.getStartDate().getDayOfMonth(),
-                YearMonth.of(date.getYear(), rule.getStartDate().getMonth()).lengthOfMonth()
-        );
-
-        return !date.isBefore(rule.getStartDate())
-                && date.getMonthValue() == rule.getStartDate().getMonthValue()
-                && date.getDayOfMonth() == targetDay;
     }
 
 }

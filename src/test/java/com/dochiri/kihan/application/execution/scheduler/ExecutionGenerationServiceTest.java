@@ -48,7 +48,6 @@ class ExecutionGenerationServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "지연 단건",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 20),
                 null
         );
@@ -69,7 +68,6 @@ class ExecutionGenerationServiceTest {
         Deadline deadline = Deadline.register(
                 1L,
                 "주간 반복",
-                DeadlineType.RECURRING,
                 null,
                 RecurrenceRule.create(RecurrencePattern.DAILY, LocalDate.of(2026, 2, 1), null)
         );

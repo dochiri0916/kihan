@@ -166,7 +166,6 @@ class ExecutionTest {
         return Deadline.register(
                 1L,
                 "title",
-                DeadlineType.ONE_TIME,
                 LocalDate.of(2026, 2, 20),
                 null
         );
