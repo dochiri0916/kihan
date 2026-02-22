@@ -5,15 +5,15 @@ import com.dochiri.kihan.application.auth.dto.LoginResult;
 import com.dochiri.kihan.application.auth.facade.LoginFacade;
 import com.dochiri.kihan.application.auth.facade.ReissueTokenFacade;
 import com.dochiri.kihan.presentation.auth.request.LoginRequest;
-import com.dochiri.kihan.presentation.auth.request.LogoutRequest;
-import com.dochiri.kihan.presentation.auth.request.ReissueRequest;
 import com.dochiri.kihan.presentation.auth.response.AuthResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 API")
@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+    private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
+    private static final long REFRESH_TOKEN_MAX_AGE_SECONDS = 14L * 24 * 60 * 60;
 
     private final LoginFacade loginFacade;
     private final ReissueTokenFacade reissueTokenFacade;
@@ -33,12 +36,14 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request
     ) {
         LoginResult loginResult = loginFacade.login(request.toCommand());
+        ResponseCookie refreshTokenCookie = createRefreshTokenCookie(loginResult.refreshToken());
 
-        return ResponseEntity.ok(
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(
                 AuthResponse.from(
                         loginResult.user(),
-                        loginResult.accessToken(),
-                        loginResult.refreshToken()
+                        loginResult.accessToken()
                 )
         );
     }
@@ -47,15 +52,17 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "재발급 성공")
     @PostMapping("/reissue")
     public ResponseEntity<AuthResponse> reissue(
-            @Valid @RequestBody ReissueRequest request
+            @CookieValue(REFRESH_TOKEN_COOKIE) String refreshToken
     ) {
-        LoginResult loginResult = reissueTokenFacade.reissue(request.refreshToken());
+        LoginResult loginResult = reissueTokenFacade.reissue(refreshToken);
+        ResponseCookie refreshTokenCookie = createRefreshTokenCookie(loginResult.refreshToken());
 
-        return ResponseEntity.ok(
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(
                 AuthResponse.from(
                         loginResult.user(),
-                        loginResult.accessToken(),
-                        loginResult.refreshToken()
+                        loginResult.accessToken()
                 )
         );
     }
@@ -64,13 +71,32 @@ public class AuthController {
     @ApiResponse(responseCode = "204", description = "로그아웃 성공")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestBody(required = false) LogoutRequest request
+            @CookieValue(value = REFRESH_TOKEN_COOKIE, required = false) String refreshToken
     ) {
-        if (request != null && request.refreshToken() != null && !request.refreshToken().isBlank()) {
-            revokeTokenService.revokeByToken(request.refreshToken());
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            revokeTokenService.revokeByToken(refreshToken);
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, deleteRefreshTokenCookie().toString())
+                .build();
     }
 
+    private ResponseCookie createRefreshTokenCookie(String refreshToken) {
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(REFRESH_TOKEN_MAX_AGE_SECONDS)
+                .sameSite("Lax")
+                .build();
+    }
+
+    private ResponseCookie deleteRefreshTokenCookie() {
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+    }
 }

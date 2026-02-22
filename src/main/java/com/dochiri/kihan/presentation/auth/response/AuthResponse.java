@@ -5,19 +5,16 @@ import com.dochiri.kihan.application.user.dto.UserDetail;
 public record AuthResponse(
         Long userId,
         String role,
-    String accessToken,
-        String refreshToken
+        String accessToken
 ) {
     public static AuthResponse from(
             UserDetail user,
-            String accessToken,
-            String refreshToken
+            String accessToken
     ) {
         return new AuthResponse(
                 user.id(),
                 user.role(),
-                accessToken,
-                refreshToken
+                accessToken
         );
     }
 }

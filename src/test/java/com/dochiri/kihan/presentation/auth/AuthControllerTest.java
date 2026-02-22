@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import jakarta.servlet.http.Cookie;
 
 import java.lang.reflect.Field;
 import java.time.Clock;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,8 +73,8 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 성공 시 accessToken과 refreshToken을 응답 본문으로 반환한다")
-    void shouldLoginAndReturnTokensInResponseBody() throws Exception {
+    @DisplayName("로그인 성공 시 accessToken을 응답 본문으로 반환하고 refreshToken을 쿠키로 설정한다")
+    void shouldLoginAndReturnAccessTokenAndSetRefreshTokenCookie() throws Exception {
         User user = userWithId(1L, "user@example.com", "홍길동");
         when(loginFacade.login(any())).thenReturn(LoginResult.from(user, "access-token", "refresh-token"));
 
@@ -88,7 +90,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.userId").value(1))
                 .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.refreshToken").value("refresh-token"));
+                .andExpect(header().string("Set-Cookie", org.hamcrest.Matchers.containsString("refreshToken=refresh-token")));
     }
 
     @Test
@@ -124,43 +126,42 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("재발급 성공 시 요청 바디 refreshToken으로 accessToken과 refreshToken을 반환한다")
-    void shouldReissueWithRequestBodyRefreshToken() throws Exception {
+    @DisplayName("재발급 성공 시 쿠키 refreshToken으로 accessToken을 반환하고 refreshToken 쿠키를 갱신한다")
+    void shouldReissueWithRefreshTokenCookie() throws Exception {
         User user = userWithId(2L, "reissue@example.com", "철수");
         when(reissueTokenFacade.reissue("refresh-1"))
                 .thenReturn(LoginResult.from(user, "new-access", "new-refresh"));
 
         mockMvc.perform(post("/api/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "refreshToken": "refresh-1"
-                                }
-                                """))
+                        .cookie(new Cookie("refreshToken", "refresh-1")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(2))
                 .andExpect(jsonPath("$.accessToken").value("new-access"))
-                .andExpect(jsonPath("$.refreshToken").value("new-refresh"));
+                .andExpect(header().string("Set-Cookie", org.hamcrest.Matchers.containsString("refreshToken=new-refresh")));
     }
 
     @Test
-    @DisplayName("로그아웃 시 요청 바디 refreshToken이 있으면 토큰을 폐기한다")
-    void shouldRevokeTokenWhenLogoutWithRefreshToken() throws Exception {
+    @DisplayName("로그아웃 시 쿠키 refreshToken이 있으면 토큰을 폐기한다")
+    void shouldRevokeTokenWhenLogoutWithRefreshTokenCookie() throws Exception {
         mockMvc.perform(post("/api/auth/logout")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "refreshToken": "refresh-1"
-                                }
-                                """))
+                        .cookie(new Cookie("refreshToken", "refresh-1")))
                 .andExpect(status().isNoContent());
 
         verify(revokeTokenService).revokeByToken("refresh-1");
     }
 
     @Test
-    @DisplayName("로그아웃 시 요청 바디가 없으면 토큰을 폐기하지 않는다")
-    void shouldNotRevokeTokenWhenLogoutWithoutRequestBody() throws Exception {
+    @DisplayName("로그아웃 시 refreshToken 쿠키를 삭제한다")
+    void shouldClearRefreshTokenCookieWhenLogout() throws Exception {
+        mockMvc.perform(post("/api/auth/logout")
+                        .cookie(new Cookie("refreshToken", "refresh-1")))
+                .andExpect(status().isNoContent())
+                .andExpect(header().string("Set-Cookie", org.hamcrest.Matchers.containsString("refreshToken=;")));
+    }
+
+    @Test
+    @DisplayName("로그아웃 시 쿠키가 없으면 토큰을 폐기하지 않는다")
+    void shouldNotRevokeTokenWhenLogoutWithoutCookie() throws Exception {
         mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isNoContent());
 
