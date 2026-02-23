@@ -1,7 +1,9 @@
 package com.dochiri.kihan.domain.execution;
 
 import com.dochiri.kihan.domain.deadline.Deadline;
-import com.dochiri.kihan.domain.deadline.DeadlineType;
+import com.dochiri.kihan.domain.execution.exception.ExecutionAlreadyCompletedException;
+import com.dochiri.kihan.domain.execution.exception.ExecutionNotFoundException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionStatusTransitionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

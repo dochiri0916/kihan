@@ -1,7 +1,7 @@
 package com.dochiri.kihan.infrastructure.persistence.execution;
 
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
+import com.dochiri.kihan.domain.execution.exception.ExecutionNotFoundException;
 import com.dochiri.kihan.domain.execution.ExecutionRepository;
 import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import lombok.RequiredArgsConstructor;
@@ -15,48 +15,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JpaExecutionRepository implements ExecutionRepository {
 
-    private final ExecutionJpaRepository executionJpaRepository;
+    private final ExecutionJpaRepository jpaRepository;
 
     @Override
     public Execution save(Execution execution) {
-        return executionJpaRepository.save(execution);
+        return jpaRepository.save(execution);
     }
 
     @Override
     public Execution findByIdAndDeletedAtIsNull(Long id) {
-        return executionJpaRepository.findByIdAndDeletedAtIsNull(id)
+        return jpaRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ExecutionNotFoundException(id));
     }
 
     @Override
     public Execution findByIdAndDeadlineActiveAndDeletedAtIsNull(Long id) {
-        return executionJpaRepository.findByIdAndDeadlineActiveAndDeletedAtIsNull(id)
+        return jpaRepository.findByIdAndDeadlineActiveAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ExecutionNotFoundException(id));
     }
 
     @Override
     public Optional<Execution> findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate) {
-        return executionJpaRepository.findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
+        return jpaRepository.findByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
     }
 
     @Override
     public List<Execution> findByDeadlineIdAndDeletedAtIsNull(Long deadlineId) {
-        return executionJpaRepository.findByDeadlineIdAndDeletedAtIsNull(deadlineId);
+        return jpaRepository.findByDeadlineIdAndDeletedAtIsNull(deadlineId);
     }
 
     @Override
     public List<Execution> findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(List<Long> deadlineIds, LocalDate startDate, LocalDate endDate) {
-        return executionJpaRepository.findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(deadlineIds, startDate, endDate);
+        return jpaRepository.findByDeadlineIdInAndScheduledDateBetweenAndDeletedAtIsNull(deadlineIds, startDate, endDate);
     }
 
     @Override
     public List<Execution> findOverdueOneTimeAndNotDone(LocalDate today) {
-        return executionJpaRepository.findOverdueOneTimeAndNotDone(today, ExecutionStatus.DONE);
+        return jpaRepository.findOverdueOneTimeAndNotDone(today, ExecutionStatus.DONE);
     }
 
     @Override
     public boolean existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(Long deadlineId, LocalDate scheduledDate) {
-        return executionJpaRepository.existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
+        return jpaRepository.existsByDeadlineIdAndScheduledDateAndDeletedAtIsNull(deadlineId, scheduledDate);
     }
 
 }

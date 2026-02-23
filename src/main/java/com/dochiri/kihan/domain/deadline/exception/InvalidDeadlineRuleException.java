@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.deadline;
+package com.dochiri.kihan.domain.deadline.exception;
 
 public class InvalidDeadlineRuleException extends DeadlineException {
     private static final String ONE_TIME_DUE_DATE_REQUIRED = "ONE_TIME 마감은 dueDate가 필수입니다.";

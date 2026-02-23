@@ -1,9 +1,9 @@
 package com.dochiri.kihan.presentation.common.exception.mapper;
 
-import com.dochiri.kihan.domain.execution.ExecutionAlreadyCompletedException;
-import com.dochiri.kihan.domain.execution.ExecutionException;
-import com.dochiri.kihan.domain.execution.InvalidExecutionStatusTransitionException;
-import com.dochiri.kihan.domain.execution.ExecutionNotFoundException;
+import com.dochiri.kihan.domain.execution.exception.ExecutionAlreadyCompletedException;
+import com.dochiri.kihan.domain.execution.exception.ExecutionException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionStatusTransitionException;
+import com.dochiri.kihan.domain.execution.exception.ExecutionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

@@ -1,5 +1,6 @@
 package com.dochiri.kihan.application.execution.command;
 
+import com.dochiri.kihan.application.execution.dto.ExecutionStatusChangedResult;
 import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.execution.Execution;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class MarkExecutionAsDoneService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void execute(Long userId, Long id) {
+    public ExecutionStatusChangedResult execute(Long userId, Long id) {
         Execution execution = executionCommandSupport.loadOwnedActiveExecution(userId, id);
         execution.markAsDone(LocalDateTime.now(clock));
         eventPublisher.publishEvent(new ExecutionChangedEvent(
@@ -28,6 +29,8 @@ public class MarkExecutionAsDoneService {
                 execution.getDeadline().getId(),
                 execution.getStatus()
         ));
+
+        return ExecutionStatusChangedResult.from(execution);
     }
 
 }

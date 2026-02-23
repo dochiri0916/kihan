@@ -1,8 +1,8 @@
 package com.dochiri.kihan.presentation.common.exception.mapper;
 
-import com.dochiri.kihan.domain.auth.InvalidRefreshTokenException;
-import com.dochiri.kihan.domain.auth.RefreshTokenException;
-import com.dochiri.kihan.domain.auth.RefreshTokenNotFoundException;
+import com.dochiri.kihan.domain.auth.exception.InvalidRefreshTokenException;
+import com.dochiri.kihan.domain.auth.exception.RefreshTokenException;
+import com.dochiri.kihan.domain.auth.exception.RefreshTokenNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

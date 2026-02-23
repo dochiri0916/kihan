@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.execution;
+package com.dochiri.kihan.domain.execution.exception;
 
 public class InvalidExecutionStatusTransitionException extends ExecutionException {
 

@@ -1,6 +1,7 @@
 package com.dochiri.kihan.domain.user;
 
 import com.dochiri.kihan.domain.BaseEntity;
+import com.dochiri.kihan.domain.user.exception.UserAccessDeniedException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String passwordHash;
 
     @Column(nullable = false)
     private String name;
@@ -31,10 +32,10 @@ public class User extends BaseEntity {
 
     private LocalDateTime lastLoginAt;
 
-    public static User register(String email, String password, String name) {
+    public static User register(String email, String passwordHash, String name) {
         User user = new User();
         user.email = requireNonNull(email);
-        user.password = requireNonNull(password);
+        user.passwordHash = requireNonNull(passwordHash);
         user.name = requireNonNull(name);
         user.role = UserRole.USER;
         return user;

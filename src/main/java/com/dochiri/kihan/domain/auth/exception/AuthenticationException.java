@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.auth;
+package com.dochiri.kihan.domain.auth.exception;
 
 public abstract class AuthenticationException extends RuntimeException {
     protected AuthenticationException(String message) {

@@ -8,7 +8,7 @@ import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.dochiri.kihan.application.deadline.dto.UpdateDeadlineCommand;
 import com.dochiri.kihan.application.deadline.query.DeadlineSortBy;
 import com.dochiri.kihan.application.deadline.query.DeadlineQueryService;
-import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineNotFoundException;
 import com.dochiri.kihan.domain.deadline.DeadlineType;
 import com.dochiri.kihan.domain.deadline.RecurrencePattern;
 import com.dochiri.kihan.domain.deadline.RecurrenceRule;

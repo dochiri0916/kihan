@@ -1,6 +1,9 @@
 package com.dochiri.kihan.domain.deadline;
 
 import com.dochiri.kihan.domain.BaseEntity;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineAccessDeniedException;
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineRuleException;
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineTitleException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

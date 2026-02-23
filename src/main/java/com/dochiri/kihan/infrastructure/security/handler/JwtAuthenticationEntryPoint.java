@@ -27,14 +27,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final Clock clock;
 
     @Override
-    public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException exception
-    ) throws IOException {
-
-        ProblemDetail problemDetail =
-                ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
 
         problemDetail.setTitle("UNAUTHORIZED");
         problemDetail.setDetail(resolveDetail(exception));
@@ -45,11 +39,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         writeResponse(response, problemDetail);
     }
 
-    private void writeResponse(
-            HttpServletResponse response,
-            ProblemDetail body
-    ) throws IOException {
-
+    private void writeResponse(HttpServletResponse response, ProblemDetail body) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

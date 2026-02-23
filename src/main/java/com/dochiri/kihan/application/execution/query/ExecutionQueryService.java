@@ -19,14 +19,14 @@ public class ExecutionQueryService {
     private final ExecutionRepository executionRepository;
     private final DeadlineQueryService deadlineQueryService;
 
-    public List<ExecutionDetail> findByDeadlineId(Long userId, Long deadlineId) {
+    public List<ExecutionDetail> getByDeadlineId(Long userId, Long deadlineId) {
         deadlineQueryService.getById(userId, deadlineId);
         return executionRepository.findByDeadlineIdAndDeletedAtIsNull(deadlineId).stream()
                 .map(ExecutionDetail::from)
                 .toList();
     }
 
-    public List<ExecutionDetail> findByDateRange(DateRangeQuery query) {
+    public List<ExecutionDetail> getByDateRange(DateRangeQuery query) {
         List<Long> userDeadlineIds = deadlineQueryService.getAllByUserId(query.userId()).stream()
                 .map(DeadlineDetail::id)
                 .toList();
@@ -44,7 +44,7 @@ public class ExecutionQueryService {
                 .toList();
     }
 
-    public ExecutionDetail findById(Long userId, Long executionId) {
+    public ExecutionDetail getById(Long userId, Long executionId) {
         Execution execution = executionRepository.findByIdAndDeadlineActiveAndDeletedAtIsNull(executionId);
         execution.getDeadline().verifyOwnership(userId);
         return ExecutionDetail.from(execution);

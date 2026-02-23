@@ -6,19 +6,19 @@ import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record ExecutionDetail(
-        Long id,
+public record ExecutionStatusChangedResult(
+        Long executionId,
         Long deadlineId,
-        LocalDate scheduledDate,
         ExecutionStatus status,
+        LocalDate scheduledDate,
         LocalDateTime completedAt
 ) {
-    public static ExecutionDetail from(Execution execution) {
-        return new ExecutionDetail(
+    public static ExecutionStatusChangedResult from(Execution execution) {
+        return new ExecutionStatusChangedResult(
                 execution.getId(),
                 execution.getDeadline().getId(),
-                execution.getScheduledDate(),
                 execution.getStatus(),
+                execution.getScheduledDate(),
                 execution.getCompletedAt()
         );
     }

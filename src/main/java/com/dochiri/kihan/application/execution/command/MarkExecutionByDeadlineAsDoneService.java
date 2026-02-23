@@ -1,5 +1,6 @@
 package com.dochiri.kihan.application.execution.command;
 
+import com.dochiri.kihan.application.execution.dto.ExecutionStatusChangedResult;
 import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
@@ -24,7 +25,7 @@ public class MarkExecutionByDeadlineAsDoneService {
     private final Clock clock;
 
     @Transactional
-    public void execute(Long userId, Long deadlineId) {
+    public ExecutionStatusChangedResult execute(Long userId, Long deadlineId) {
         Deadline deadline = deadlineRepository.findByIdAndUserIdAndDeletedAtIsNull(deadlineId, userId);
         LocalDate scheduledDate = resolveScheduledDate(deadline);
 
@@ -39,6 +40,8 @@ public class MarkExecutionByDeadlineAsDoneService {
                 deadlineId,
                 execution.getStatus()
         ));
+
+        return ExecutionStatusChangedResult.from(execution);
     }
 
     private LocalDate resolveScheduledDate(Deadline deadline) {

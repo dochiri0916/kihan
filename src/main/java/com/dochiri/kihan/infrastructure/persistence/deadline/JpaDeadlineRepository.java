@@ -1,7 +1,7 @@
 package com.dochiri.kihan.infrastructure.persistence.deadline;
 
 import com.dochiri.kihan.domain.deadline.Deadline;
-import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineNotFoundException;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,48 +16,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JpaDeadlineRepository implements DeadlineRepository {
 
-    private final DeadlineJpaRepository deadlineJpaRepository;
+    private final DeadlineJpaRepository jpaRepository;
 
     @Override
     public Deadline save(Deadline deadline) {
-        return deadlineJpaRepository.save(deadline);
+        return jpaRepository.save(deadline);
     }
 
     @Override
     public Deadline findByIdAndDeletedAtIsNull(Long id) {
-        return deadlineJpaRepository.findByIdAndDeletedAtIsNull(id)
+        return jpaRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new DeadlineNotFoundException(id));
     }
 
     @Override
     public Deadline findByIdAndUserIdAndDeletedAtIsNull(Long id, Long userId) {
-        return deadlineJpaRepository.findByIdAndUserIdAndDeletedAtIsNull(id, userId)
+        return jpaRepository.findByIdAndUserIdAndDeletedAtIsNull(id, userId)
                 .orElseThrow(() -> new DeadlineNotFoundException(id));
     }
 
     @Override
     public List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId) {
-        return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId);
+        return jpaRepository.findByUserIdAndDeletedAtIsNull(userId);
     }
 
     @Override
     public List<Deadline> findByUserIdAndDeletedAtIsNull(Long userId, Sort sort) {
-        return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId, sort);
+        return jpaRepository.findByUserIdAndDeletedAtIsNull(userId, sort);
     }
 
     @Override
     public Page<Deadline> findByUserIdAndDeletedAtIsNull(Long userId, Pageable pageable) {
-        return deadlineJpaRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
+        return jpaRepository.findByUserIdAndDeletedAtIsNull(userId, pageable);
     }
 
     @Override
     public LocalDateTime findLastModifiedAtByUserId(Long userId) {
-        return deadlineJpaRepository.findLastModifiedAtByUserId(userId);
+        return jpaRepository.findLastModifiedAtByUserId(userId);
     }
 
     @Override
     public List<Deadline> findAllByDeletedAtIsNull() {
-        return deadlineJpaRepository.findAllByDeletedAtIsNull();
+        return jpaRepository.findAllByDeletedAtIsNull();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.user;
+package com.dochiri.kihan.domain.user.exception;
 
 public class UserAccessDeniedException extends UserException {
 

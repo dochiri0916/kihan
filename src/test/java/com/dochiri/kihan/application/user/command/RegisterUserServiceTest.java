@@ -1,7 +1,7 @@
 package com.dochiri.kihan.application.user.command;
 
 import com.dochiri.kihan.application.user.dto.UserDetail;
-import com.dochiri.kihan.domain.user.DuplicateEmailException;
+import com.dochiri.kihan.domain.user.exception.DuplicateEmailException;
 import com.dochiri.kihan.domain.user.User;
 import com.dochiri.kihan.domain.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;

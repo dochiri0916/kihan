@@ -1,6 +1,8 @@
 package com.dochiri.kihan.domain.auth;
 
 import com.dochiri.kihan.domain.BaseEntity;
+import com.dochiri.kihan.domain.auth.exception.ExpiredRefreshTokenException;
+import com.dochiri.kihan.domain.auth.exception.InvalidRefreshTokenException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

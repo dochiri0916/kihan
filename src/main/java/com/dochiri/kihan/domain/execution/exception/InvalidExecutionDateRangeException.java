@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.execution;
+package com.dochiri.kihan.domain.execution.exception;
 
 import java.time.LocalDate;
 

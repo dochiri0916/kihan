@@ -12,20 +12,20 @@ import java.util.TimeZone;
 @Configuration
 public class TimeConfig {
 
-    private final TimeProperties timeProperties;
+    private final TimeProperties properties;
 
-    public TimeConfig(TimeProperties timeProperties) {
-        this.timeProperties = timeProperties;
+    public TimeConfig(TimeProperties properties) {
+        this.properties = properties;
     }
 
     @Bean
     public Clock clock() {
-        return Clock.system(ZoneId.of(timeProperties.timeZone()));
+        return Clock.system(ZoneId.of(properties.timeZone()));
     }
 
     @PostConstruct
     void initializeDefaultTimeZone() {
-        TimeZone.setDefault(TimeZone.getTimeZone(timeProperties.timeZone()));
+        TimeZone.setDefault(TimeZone.getTimeZone(properties.timeZone()));
     }
 
 }

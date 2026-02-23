@@ -1,7 +1,7 @@
 package com.dochiri.kihan.application.auth.facade;
 
 import com.dochiri.kihan.application.auth.dto.LoginResult;
-import com.dochiri.kihan.domain.auth.InvalidRefreshTokenException;
+import com.dochiri.kihan.domain.auth.exception.InvalidRefreshTokenException;
 import com.dochiri.kihan.domain.auth.RefreshToken;
 import com.dochiri.kihan.domain.auth.RefreshTokenRepository;
 import com.dochiri.kihan.domain.user.User;

@@ -5,21 +5,23 @@ import com.dochiri.kihan.application.execution.command.MarkExecutionAsDoneServic
 import com.dochiri.kihan.application.execution.command.MarkExecutionAsInProgressService;
 import com.dochiri.kihan.application.execution.command.MarkExecutionByDeadlineAsDoneService;
 import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
-import com.dochiri.kihan.application.execution.query.DateRangeQuery;
+import com.dochiri.kihan.application.execution.dto.ExecutionStatusChangedResult;
 import com.dochiri.kihan.application.execution.query.ExecutionQueryService;
-import com.dochiri.kihan.domain.execution.ExecutionAlreadyCompletedException;
+import com.dochiri.kihan.application.execution.usecase.GetExecutionsByDateRangeUseCase;
+import com.dochiri.kihan.domain.execution.exception.ExecutionAlreadyCompletedException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionDateRangeException;
 import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import com.dochiri.kihan.domain.user.UserRole;
 import com.dochiri.kihan.infrastructure.security.jwt.JwtPrincipal;
 import com.dochiri.kihan.presentation.common.exception.ExceptionStatusMapper;
 import com.dochiri.kihan.presentation.common.exception.GlobalExceptionHandler;
 import com.dochiri.kihan.presentation.common.exception.mapper.ExecutionExceptionStatusMapper;
+import com.dochiri.kihan.presentation.execution.mapper.ExecutionResponseMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,6 +67,9 @@ class ExecutionControllerTest {
     @Mock
     private ExecutionQueryService executionQueryService;
 
+    @Mock
+    private GetExecutionsByDateRangeUseCase getExecutionsByDateRangeUseCase;
+
     @BeforeEach
     void setUp() {
         ExceptionStatusMapper exceptionStatusMapper =
@@ -76,7 +81,9 @@ class ExecutionControllerTest {
                         markExecutionByDeadlineAsDoneService,
                         markExecutionAsPausedService,
                         markExecutionAsInProgressService,
-                        executionQueryService
+                        executionQueryService,
+                        getExecutionsByDateRangeUseCase,
+                        new ExecutionResponseMapper()
                 ))
                 .setControllerAdvice(new GlobalExceptionHandler(exceptionStatusMapper, Clock.systemUTC()))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
@@ -92,7 +99,7 @@ class ExecutionControllerTest {
     @DisplayName("실행 단건 조회 성공 시 응답을 반환한다")
     void shouldGetExecutionById() throws Exception {
         authenticate(1L);
-        when(executionQueryService.findById(1L, 10L))
+        when(executionQueryService.getById(1L, 10L))
                 .thenReturn(new ExecutionDetail(
                         10L,
                         3L,
@@ -112,7 +119,7 @@ class ExecutionControllerTest {
     @DisplayName("기한별 실행 목록 조회 성공 시 배열 응답을 반환한다")
     void shouldGetExecutionsByDeadline() throws Exception {
         authenticate(1L);
-        when(executionQueryService.findByDeadlineId(1L, 3L)).thenReturn(List.of(
+        when(executionQueryService.getByDeadlineId(1L, 3L)).thenReturn(List.of(
                 new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.IN_PROGRESS, null),
                 new ExecutionDetail(11L, 3L, LocalDate.of(2026, 2, 22), ExecutionStatus.DONE, LocalDateTime.of(2026, 2, 22, 11, 0))
         ));
@@ -125,14 +132,14 @@ class ExecutionControllerTest {
     }
 
     @Test
-    @DisplayName("기간별 실행 목록 조회 시 DateRangeQuery를 구성해 전달한다")
+    @DisplayName("기간별 실행 목록 조회 시 use case를 통해 응답을 반환한다")
     void shouldGetExecutionsByDateRange() throws Exception {
         authenticate(1L);
-        when(executionQueryService.findByDateRange(new DateRangeQuery(
+        when(getExecutionsByDateRangeUseCase.execute(
                 1L,
                 LocalDate.of(2026, 2, 1),
                 LocalDate.of(2026, 2, 28)
-        ))).thenReturn(List.of(
+        )).thenReturn(List.of(
                 new ExecutionDetail(10L, 3L, LocalDate.of(2026, 2, 21), ExecutionStatus.IN_PROGRESS, null)
         ));
 
@@ -143,53 +150,93 @@ class ExecutionControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].scheduledDate").value("2026-02-21"));
 
-        ArgumentCaptor<DateRangeQuery> captor = ArgumentCaptor.forClass(DateRangeQuery.class);
-        verify(executionQueryService).findByDateRange(captor.capture());
-        assertEquals(1L, captor.getValue().userId());
-        assertEquals(LocalDate.of(2026, 2, 1), captor.getValue().startDate());
-        assertEquals(LocalDate.of(2026, 2, 28), captor.getValue().endDate());
+        verify(getExecutionsByDateRangeUseCase).execute(
+                1L,
+                LocalDate.of(2026, 2, 1),
+                LocalDate.of(2026, 2, 28)
+        );
     }
 
     @Test
-    @DisplayName("실행 완료 처리 성공 시 204를 반환한다")
+    @DisplayName("실행 완료 처리 성공 시 200과 상태 변경 응답을 반환한다")
     void shouldMarkExecutionAsDone() throws Exception {
         authenticate(1L);
+        when(markExecutionAsDoneService.execute(1L, 10L))
+                .thenReturn(new ExecutionStatusChangedResult(
+                        10L,
+                        3L,
+                        ExecutionStatus.DONE,
+                        LocalDate.of(2026, 2, 21),
+                        LocalDateTime.of(2026, 2, 21, 10, 30)
+                ));
 
         mockMvc.perform(patch("/api/executions/10/done"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("DONE"));
 
         verify(markExecutionAsDoneService).execute(1L, 10L);
     }
 
     @Test
-    @DisplayName("실행 중지 처리 성공 시 204를 반환한다")
+    @DisplayName("실행 중지 처리 성공 시 200과 상태 변경 응답을 반환한다")
     void shouldMarkExecutionAsPaused() throws Exception {
         authenticate(1L);
+        when(markExecutionAsPausedService.execute(1L, 10L))
+                .thenReturn(new ExecutionStatusChangedResult(
+                        10L,
+                        3L,
+                        ExecutionStatus.PAUSED,
+                        LocalDate.of(2026, 2, 21),
+                        null
+                ));
 
         mockMvc.perform(patch("/api/executions/10/paused"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("PAUSED"));
 
         verify(markExecutionAsPausedService).execute(1L, 10L);
     }
 
     @Test
-    @DisplayName("기한 기준 완료 처리 성공 시 204를 반환한다")
+    @DisplayName("기한 기준 완료 처리 성공 시 200과 상태 변경 응답을 반환한다")
     void shouldMarkExecutionAsDoneByDeadline() throws Exception {
         authenticate(1L);
+        when(markExecutionByDeadlineAsDoneService.execute(1L, 3L))
+                .thenReturn(new ExecutionStatusChangedResult(
+                        10L,
+                        3L,
+                        ExecutionStatus.DONE,
+                        LocalDate.of(2026, 2, 21),
+                        LocalDateTime.of(2026, 2, 21, 10, 30)
+                ));
 
         mockMvc.perform(patch("/api/executions/deadline/3/done"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("DONE"));
 
         verify(markExecutionByDeadlineAsDoneService).execute(1L, 3L);
     }
 
     @Test
-    @DisplayName("실행 재개 처리 성공 시 204를 반환한다")
+    @DisplayName("실행 재개 처리 성공 시 200과 상태 변경 응답을 반환한다")
     void shouldMarkExecutionAsInProgress() throws Exception {
         authenticate(1L);
+        when(markExecutionAsInProgressService.execute(1L, 10L))
+                .thenReturn(new ExecutionStatusChangedResult(
+                        10L,
+                        3L,
+                        ExecutionStatus.IN_PROGRESS,
+                        LocalDate.of(2026, 2, 21),
+                        null
+                ));
 
         mockMvc.perform(patch("/api/executions/10/resume"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
 
         verify(markExecutionAsInProgressService).execute(1L, 10L);
     }
@@ -210,6 +257,14 @@ class ExecutionControllerTest {
     @DisplayName("startDate가 endDate보다 늦으면 400을 반환한다")
     void shouldReturnBadRequestWhenStartDateIsAfterEndDate() throws Exception {
         authenticate(1L);
+        doThrow(InvalidExecutionDateRangeException.startDateAfterEndDate(
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 2, 28)
+        )).when(getExecutionsByDateRangeUseCase).execute(
+                1L,
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 2, 28)
+        );
 
         mockMvc.perform(get("/api/executions")
                         .param("startDate", "2026-03-01")

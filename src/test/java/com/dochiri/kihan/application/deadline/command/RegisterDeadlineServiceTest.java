@@ -4,7 +4,7 @@ import com.dochiri.kihan.application.deadline.dto.RegisterDeadlineCommand;
 import com.dochiri.kihan.application.realtime.event.DeadlineChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.deadline.DeadlineRepository;
-import com.dochiri.kihan.domain.deadline.InvalidDeadlineRuleException;
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineRuleException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

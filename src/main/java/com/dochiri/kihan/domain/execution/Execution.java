@@ -2,6 +2,8 @@ package com.dochiri.kihan.domain.execution;
 
 import com.dochiri.kihan.domain.BaseEntity;
 import com.dochiri.kihan.domain.deadline.Deadline;
+import com.dochiri.kihan.domain.execution.exception.ExecutionAlreadyCompletedException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionStatusTransitionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 public class Execution extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deadline_id", nullable = false)
+    @JoinColumn(nullable = false, name = "deadline_id")
     private Deadline deadline;
 
     @Column(nullable = false)

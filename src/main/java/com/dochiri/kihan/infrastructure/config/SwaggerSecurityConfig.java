@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SwaggerSecurityConfig {
 
-    private final SwaggerAuthProperties swaggerAuthProperties;
+    private final SwaggerAuthProperties properties;
 
     @Bean
     @Order(1)
@@ -35,10 +35,11 @@ public class SwaggerSecurityConfig {
     @Bean
     public UserDetailsService swaggerUserDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails admin = User.builder()
-                .username(swaggerAuthProperties.username())
-                .password(passwordEncoder.encode(swaggerAuthProperties.password()))
-                .roles(swaggerAuthProperties.role())
+                .username(properties.username())
+                .password(passwordEncoder.encode(properties.password()))
+                .roles(properties.role())
                 .build();
         return new InMemoryUserDetailsManager(admin);
     }
+
 }

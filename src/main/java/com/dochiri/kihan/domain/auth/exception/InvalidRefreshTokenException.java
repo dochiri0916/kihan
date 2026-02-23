@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.auth;
+package com.dochiri.kihan.domain.auth.exception;
 
 public class InvalidRefreshTokenException extends RefreshTokenException {
     private static final String INVALID_TOKEN_TYPE = "리프레시 토큰이 아닙니다.";

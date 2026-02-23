@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.deadline;
+package com.dochiri.kihan.domain.deadline.exception;
 
 public class InvalidDeadlineTitleException extends DeadlineException {
     public InvalidDeadlineTitleException() {

@@ -1,7 +1,7 @@
 package com.dochiri.kihan.infrastructure.persistence.refreshtoken;
 
 import com.dochiri.kihan.domain.auth.RefreshToken;
-import com.dochiri.kihan.domain.auth.RefreshTokenNotFoundException;
+import com.dochiri.kihan.domain.auth.exception.RefreshTokenNotFoundException;
 import com.dochiri.kihan.domain.auth.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,32 +13,32 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JpaRefreshTokenRepository implements RefreshTokenRepository {
 
-    private final RefreshTokenJpaRepository refreshTokenJpaRepository;
+    private final RefreshTokenJpaRepository jpaRepository;
 
     @Override
     public RefreshToken save(RefreshToken refreshToken) {
-        return refreshTokenJpaRepository.save(refreshToken);
+        return jpaRepository.save(refreshToken);
     }
 
     @Override
     public RefreshToken findByToken(String token) {
-        return refreshTokenJpaRepository.findByToken(token)
+        return jpaRepository.findByToken(token)
                 .orElseThrow(RefreshTokenNotFoundException::new);
     }
 
     @Override
     public Optional<RefreshToken> findByUserId(Long userId) {
-        return refreshTokenJpaRepository.findByUserId(userId);
+        return jpaRepository.findByUserId(userId);
     }
 
     @Override
     public long deleteByToken(String token) {
-        return refreshTokenJpaRepository.deleteByToken(token);
+        return jpaRepository.deleteByToken(token);
     }
 
     @Override
     public long deleteByExpiresAtBefore(LocalDateTime now) {
-        return refreshTokenJpaRepository.deleteByExpiresAtBefore(now);
+        return jpaRepository.deleteByExpiresAtBefore(now);
     }
 
 }

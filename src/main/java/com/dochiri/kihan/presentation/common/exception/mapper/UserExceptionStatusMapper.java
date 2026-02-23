@@ -1,9 +1,9 @@
 package com.dochiri.kihan.presentation.common.exception.mapper;
 
-import com.dochiri.kihan.domain.user.DuplicateEmailException;
-import com.dochiri.kihan.domain.user.UserException;
-import com.dochiri.kihan.domain.user.UserAccessDeniedException;
-import com.dochiri.kihan.domain.user.UserNotFoundException;
+import com.dochiri.kihan.domain.user.exception.DuplicateEmailException;
+import com.dochiri.kihan.domain.user.exception.UserException;
+import com.dochiri.kihan.domain.user.exception.UserAccessDeniedException;
+import com.dochiri.kihan.domain.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

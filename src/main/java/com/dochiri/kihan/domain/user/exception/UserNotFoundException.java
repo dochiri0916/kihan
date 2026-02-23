@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.user;
+package com.dochiri.kihan.domain.user.exception;
 
 public class UserNotFoundException extends UserException {
     private UserNotFoundException(String message) {

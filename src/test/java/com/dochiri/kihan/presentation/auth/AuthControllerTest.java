@@ -4,7 +4,7 @@ import com.dochiri.kihan.application.auth.command.RevokeTokenService;
 import com.dochiri.kihan.application.auth.dto.LoginResult;
 import com.dochiri.kihan.application.auth.facade.LoginFacade;
 import com.dochiri.kihan.application.auth.facade.ReissueTokenFacade;
-import com.dochiri.kihan.domain.auth.InvalidCredentialsException;
+import com.dochiri.kihan.domain.auth.exception.InvalidCredentialsException;
 import com.dochiri.kihan.domain.user.User;
 import com.dochiri.kihan.presentation.common.exception.ExceptionStatusMapper;
 import com.dochiri.kihan.presentation.common.exception.GlobalExceptionHandler;

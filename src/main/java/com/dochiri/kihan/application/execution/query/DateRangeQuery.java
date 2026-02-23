@@ -1,6 +1,6 @@
 package com.dochiri.kihan.application.execution.query;
 
-import com.dochiri.kihan.domain.execution.InvalidExecutionDateRangeException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionDateRangeException;
 
 import java.time.LocalDate;
 

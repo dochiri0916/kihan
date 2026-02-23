@@ -1,9 +1,9 @@
 package com.dochiri.kihan.presentation.common.exception.mapper;
 
-import com.dochiri.kihan.domain.deadline.DeadlineAccessDeniedException;
-import com.dochiri.kihan.domain.deadline.DeadlineException;
-import com.dochiri.kihan.domain.deadline.DeadlineNotFoundException;
-import com.dochiri.kihan.domain.deadline.InvalidDeadlineRuleException;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineAccessDeniedException;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineException;
+import com.dochiri.kihan.domain.deadline.exception.DeadlineNotFoundException;
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineRuleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

@@ -1,5 +1,6 @@
 package com.dochiri.kihan.domain.deadline;
 
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineRuleException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -25,14 +25,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     private final Clock clock;
 
     @Override
-    public void handle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AccessDeniedException exception
-    ) throws IOException {
-
-        ProblemDetail problemDetail =
-                ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
 
         problemDetail.setTitle("FORBIDDEN");
         problemDetail.setDetail("접근 권한이 없습니다.");
@@ -43,11 +37,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         writeResponse(response, problemDetail);
     }
 
-    private void writeResponse(
-            HttpServletResponse response,
-            ProblemDetail body
-    ) throws IOException {
-
+    private void writeResponse(HttpServletResponse response, ProblemDetail body) throws IOException {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

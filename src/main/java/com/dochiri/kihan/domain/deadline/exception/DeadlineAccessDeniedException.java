@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.deadline;
+package com.dochiri.kihan.domain.deadline.exception;
 
 public class DeadlineAccessDeniedException extends DeadlineException {
     public DeadlineAccessDeniedException(Long deadlineId, Long userId) {

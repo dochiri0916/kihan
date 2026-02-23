@@ -1,4 +1,4 @@
-package com.dochiri.kihan.domain.auth;
+package com.dochiri.kihan.domain.auth.exception;
 
 public class RefreshTokenNotFoundException extends RefreshTokenException {
     public RefreshTokenNotFoundException() {

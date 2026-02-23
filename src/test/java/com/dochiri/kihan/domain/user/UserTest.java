@@ -1,5 +1,8 @@
 package com.dochiri.kihan.domain.user;
 
+import com.dochiri.kihan.domain.user.exception.DuplicateEmailException;
+import com.dochiri.kihan.domain.user.exception.UserAccessDeniedException;
+import com.dochiri.kihan.domain.user.exception.UserNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +22,7 @@ class UserTest {
         User user = User.register("test@example.com", "password", "홍길동");
 
         assertEquals("test@example.com", user.getEmail());
-        assertEquals("password", user.getPassword());
+        assertEquals("password", user.getPasswordHash());
         assertEquals("홍길동", user.getName());
         assertEquals(UserRole.USER, user.getRole());
     }

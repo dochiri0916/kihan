@@ -1,6 +1,6 @@
 package com.dochiri.kihan.infrastructure.security.jwt;
 
-import com.dochiri.kihan.domain.auth.InvalidRefreshTokenException;
+import com.dochiri.kihan.domain.auth.exception.InvalidRefreshTokenException;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

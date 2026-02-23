@@ -3,7 +3,7 @@ package com.dochiri.kihan.application.execution.command;
 import com.dochiri.kihan.application.realtime.event.ExecutionChangedEvent;
 import com.dochiri.kihan.domain.deadline.Deadline;
 import com.dochiri.kihan.domain.execution.Execution;
-import com.dochiri.kihan.domain.execution.InvalidExecutionStatusTransitionException;
+import com.dochiri.kihan.domain.execution.exception.InvalidExecutionStatusTransitionException;
 import com.dochiri.kihan.domain.execution.ExecutionStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

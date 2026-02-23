@@ -1,6 +1,6 @@
 package com.dochiri.kihan.application.auth.command;
 
-import com.dochiri.kihan.domain.auth.InvalidCredentialsException;
+import com.dochiri.kihan.domain.auth.exception.InvalidCredentialsException;
 import com.dochiri.kihan.domain.user.User;
 import com.dochiri.kihan.domain.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;

@@ -1,17 +1,17 @@
 package com.dochiri.kihan.presentation.execution.response;
 
-import com.dochiri.kihan.application.execution.dto.ExecutionDetail;
+import com.dochiri.kihan.application.execution.dto.ExecutionStatusChangedResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Schema(description = "실행 응답")
-public record ExecutionResponse(
+@Schema(description = "실행 상태 변경 응답")
+public record ExecutionStatusChangedResponse(
         @Schema(description = "실행 ID", example = "1")
         Long id,
 
-        @Schema(description = "기한 ID", example = "1")
+        @Schema(description = "일정 ID", example = "1")
         Long deadlineId,
 
         @Schema(description = "예정일", example = "2026-02-14")
@@ -23,13 +23,13 @@ public record ExecutionResponse(
         @Schema(description = "완료 시각", example = "2026-02-14T10:30:00")
         LocalDateTime completedAt
 ) {
-    public static ExecutionResponse from(final ExecutionDetail detail) {
-        return new ExecutionResponse(
-                detail.id(),
-                detail.deadlineId(),
-                detail.scheduledDate(),
-                detail.status().name(),
-                detail.completedAt()
+    public static ExecutionStatusChangedResponse from(ExecutionStatusChangedResult result) {
+        return new ExecutionStatusChangedResponse(
+                result.executionId(),
+                result.deadlineId(),
+                result.scheduledDate(),
+                result.status().name(),
+                result.completedAt()
         );
     }
 }

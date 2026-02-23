@@ -1,5 +1,6 @@
 package com.dochiri.kihan.domain.deadline;
 
+import com.dochiri.kihan.domain.deadline.exception.InvalidDeadlineRuleException;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,7 +1,7 @@
 package com.dochiri.kihan.presentation.common.exception.mapper;
 
-import com.dochiri.kihan.domain.auth.AuthenticationException;
-import com.dochiri.kihan.domain.auth.InvalidCredentialsException;
+import com.dochiri.kihan.domain.auth.exception.AuthenticationException;
+import com.dochiri.kihan.domain.auth.exception.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
